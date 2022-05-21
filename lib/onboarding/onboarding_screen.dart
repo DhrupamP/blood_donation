@@ -1,9 +1,10 @@
 import 'package:blood_donation/Size%20Config/size_config.dart';
-import 'package:blood_donation/constants/color_constants.dart';
 import 'package:blood_donation/constants/string_constants.dart';
-import 'package:blood_donation/onboarding/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'onboarding_widgets/continue_button.dart';
+import 'onboarding_widgets/onboarding_page.dart';
+import 'onboarding_widgets/page_indicator.dart';
+import 'onboarding_widgets/skip_button.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
@@ -29,32 +30,38 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SkipButton(),
+            const SkipButton(),
             SizedBox(
               height: SizeConfig.screenHeight! * 0.1188,
             ),
             Container(
               height: SizeConfig.screenHeight! * 0.445,
               width: SizeConfig.screenWidth,
-              child: PageView(
-                controller: controller,
-                children: [
-                  OnBoardingPage(
-                    img: 'assets/ob1.png',
-                    title: 'We Save Lives',
-                    subtitle: 'Connecting blood donors with recepients',
-                  ),
-                  OnBoardingPage(
-                    img: 'assets/ob2.png',
-                    title: 'Find Blood',
-                    subtitle: 'We match and connect you with nearby donors',
-                  ),
-                  OnBoardingPage(
-                    img: 'assets/ob3.png',
-                    title: 'Always Free',
-                    subtitle: 'You don' + 't have to pay anything',
-                  ),
-                ],
+              child: NotificationListener<OverscrollIndicatorNotification>(
+                onNotification: (overScroll) {
+                  overScroll.disallowIndicator();
+                  return false;
+                },
+                child: PageView(
+                  controller: controller,
+                  children: const [
+                    OnBoardingPage(
+                      img: 'assets/ob1.png',
+                      title: 'We Save Lives',
+                      subtitle: 'Connecting blood donors with recepients',
+                    ),
+                    OnBoardingPage(
+                      img: 'assets/ob2.png',
+                      title: 'Find Blood',
+                      subtitle: 'We match and connect you with nearby donors',
+                    ),
+                    OnBoardingPage(
+                      img: 'assets/ob3.png',
+                      title: 'Always Free',
+                      subtitle: 'You don' 't have to pay anything',
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(
@@ -66,11 +73,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             SizedBox(
               height: SizeConfig.screenHeight! * 0.0347,
             ),
-            ContinueButton(),
+            const ContinueButton(),
             SizedBox(
               height: SizeConfig.screenHeight! * 0.045,
             ),
-            Text('Language ENG'),
+            const Text('Language ENG'),
             SizedBox(
               height: SizeConfig.screenHeight! * 0.0325,
             ),
