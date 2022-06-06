@@ -5,8 +5,8 @@ import '../Screens/profile_form.dart';
 import '../Size Config/size_config.dart';
 import '../constants/color_constants.dart';
 
-class ProfileInputField extends StatefulWidget {
-  const ProfileInputField(
+class ProfileInputTextArea extends StatefulWidget {
+  const ProfileInputTextArea(
       {Key? key,
       this.controller,
       required this.focusnode,
@@ -27,10 +27,10 @@ class ProfileInputField extends StatefulWidget {
   final String? data;
 
   @override
-  _ProfileInputFieldState createState() => _ProfileInputFieldState();
+  _ProfileInputTextAreaState createState() => _ProfileInputTextAreaState();
 }
 
-class _ProfileInputFieldState extends State<ProfileInputField> {
+class _ProfileInputTextAreaState extends State<ProfileInputTextArea> {
   @override
   void initState() {
     super.initState();
@@ -44,12 +44,11 @@ class _ProfileInputFieldState extends State<ProfileInputField> {
         Padding(
           padding: EdgeInsets.only(bottom: 10.0),
           child: Container(
-            height: SizeConfig.blockSizeVertical! * 8,
+            height: SizeConfig.blockSizeVertical! * 17,
             width: SizeConfig.blockSizeHorizontal! * 86.11,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
             child: TextFormField(
+              maxLines: 5,
               enabled: widget.isEnabled,
               focusNode: widget.focusnode,
               validator: widget.validate,

@@ -33,7 +33,7 @@ class _DropDownFieldState extends State<DropDownField> {
       child: Stack(
         children: [
           IgnorePointer(
-            ignoring: !widget.isEnabled!,
+            ignoring: widget.isEnabled == null ? false : !widget.isEnabled!,
             child: Container(
               height: SizeConfig.blockSizeVertical! * 8,
               width: SizeConfig.blockSizeHorizontal! * 86.11,
@@ -48,7 +48,10 @@ class _DropDownFieldState extends State<DropDownField> {
                   }
                 },
                 decoration: InputDecoration(
-                    border: InputBorder.none,
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     focusColor: focusedTextField,
                     fillColor: background,
                     filled: true,
@@ -59,11 +62,17 @@ class _DropDownFieldState extends State<DropDownField> {
                     value: value,
                     child: Text(value,
                         style: TextStyle(
-                            color: primaryText, fontWeight: FontWeight.w600)),
+                            color: otpCursorColor,
+                            fontWeight: FontWeight.w600)),
                   );
                 }).toList(),
                 onChanged: widget.onchanged,
-                hint: Text(widget.hinttext!),
+                borderRadius: BorderRadius.circular(8),
+                hint: Text(
+                  widget.hinttext!,
+                  style: TextStyle(
+                      color: secondaryText, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
           ),

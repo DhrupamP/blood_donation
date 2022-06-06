@@ -16,6 +16,17 @@ import '../Widgets/edit_button.dart';
 import '../Widgets/profile_image.dart';
 import 'package:intl/intl.dart';
 
+final List<String> bloodgroups = [
+  'A+',
+  'A-',
+  'B+',
+  'B-',
+  'O+',
+  'O-',
+  'AB+',
+  'AB-'
+];
+
 class CompleteProfileFormScreen extends StatefulWidget {
   const CompleteProfileFormScreen({Key? key}) : super(key: key);
 
@@ -26,16 +37,7 @@ class CompleteProfileFormScreen extends StatefulWidget {
 
 class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final List<String> _bloodgroups = [
-    'A+',
-    'A-',
-    'B+',
-    'B-',
-    'O+',
-    'O-',
-    'AB+',
-    'AB-'
-  ];
+
   List<String> genders = ['male', 'female', 'others'];
   FocusNode? newnamefn = FocusNode();
   FocusNode? dobfn = FocusNode();
@@ -210,7 +212,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                   ),
                   DropDownField(
                     value: bloodgroup,
-                    items: _bloodgroups,
+                    items: bloodgroups,
                     isEnabled: isbloodgroupEnabled,
                     hinttext: 'Blood Group',
                     errortxt: 'Select Blood Group',
