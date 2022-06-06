@@ -6,8 +6,12 @@ import '../../constants/color_constants.dart';
 
 //page indicator
 class MyPageIndicator extends StatefulWidget {
-  const MyPageIndicator({Key? key, this.controller}) : super(key: key);
+  const MyPageIndicator(
+      {Key? key, this.controller, this.dotheight, this.dotwidth})
+      : super(key: key);
   final PageController? controller;
+  final double? dotwidth;
+  final double? dotheight;
   @override
   _MyPageIndicatorState createState() => _MyPageIndicatorState();
 }
@@ -19,10 +23,10 @@ class _MyPageIndicatorState extends State<MyPageIndicator> {
       controller: widget.controller as PageController,
       count: 3,
       effect: WormEffect(
-        dotWidth: SizeConfig.screenWidth! * 0.023,
-        dotHeight: SizeConfig.screenHeight! * 0.0103,
-        dotColor: dotColor as Color,
-        activeDotColor: primaryDesign as Color,
+        dotWidth: widget.dotwidth as double,
+        dotHeight: widget.dotheight as double,
+        dotColor: dotColor!,
+        activeDotColor: primaryDesign!,
       ),
     );
   }

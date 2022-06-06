@@ -1,0 +1,85 @@
+{
+  "project_info": {
+    "project_number": "656590956784",
+    "firebase_url": "https://nmo-blood-donation-default-rtdb.firebaseio.com",
+    "project_id": "nmo-blood-donation",
+    "storage_bucket": "nmo-blood-donation.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656590956784:android:ed500dd6f3ec34bada7a35",
+        "android_client_info": {
+          "package_name": "com.example.blood_donation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656590956784-n7d3et0tc87kfvqi8dvq7kecni6s8d0g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.blood_donation",
+            "certificate_hash": "62e2b11edd24383792667dd906338a532274ac0b"
+          }
+        },
+        {
+          "client_id": "656590956784-4udhhtj3qdsqelblnas53s9kjd11ng8t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACENZHiyQVWcr0IS4Ln_HAdOpIJ2Pywhs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656590956784-4udhhtj3qdsqelblnas53s9kjd11ng8t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656590956784:android:7604ad6f6fac3670da7a35",
+        "android_client_info": {
+          "package_name": "com.vysion.nmo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656590956784-g1v2a3vnofmrba5e0g19l23s0lai6kjt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vysion.nmo",
+            "certificate_hash": "62e2b11edd24383792667dd906338a532274ac0b"
+          }
+        },
+        {
+          "client_id": "656590956784-4udhhtj3qdsqelblnas53s9kjd11ng8t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACENZHiyQVWcr0IS4Ln_HAdOpIJ2Pywhs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656590956784-4udhhtj3qdsqelblnas53s9kjd11ng8t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
