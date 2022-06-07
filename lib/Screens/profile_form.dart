@@ -120,7 +120,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 SizedBox(
                   height: h * 2.88,
                 ),
-                const ProfileImage(profileimg: 'assets/user1.png'),
+                const ProfileImage(),
                 SizedBox(
                   height: h * 1.75,
                 ),

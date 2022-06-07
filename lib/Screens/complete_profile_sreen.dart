@@ -63,6 +63,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
   String? city;
   DateTime? hasDonatedDate;
   DateTime? _selectedDate;
+  String? imgurl;
 
   @override
   void initState() {
@@ -87,8 +88,10 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
     dobcontroller.text = userdata.dateOfBirth!;
     bloodgroup = userdata.bloodGroup;
     gender = userdata.sex;
+    imgurl = userdata.profilePhoto;
     emailcontroller.text = userdata.emailAddress!;
     streetaddresscontroller.text = userdata.address!;
+
     isnameEnabled = false;
     isdobEnabled = false;
     isbloodgroupEnabled = false;
@@ -165,7 +168,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                   SizedBox(
                     height: h * 2.88,
                   ),
-                  const ProfileImage(profileimg: 'assets/user1.png'),
+                  ProfileImage(profilepicurl: imgurl),
                   SizedBox(
                     height: h * 1.75,
                   ),

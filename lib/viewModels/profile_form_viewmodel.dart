@@ -38,7 +38,7 @@ class ProfileFormVM {
     Map<dynamic, dynamic> jsondata =
         evt.snapshot.value as Map<dynamic, dynamic>;
     userdata = UserDetailModel.fromJson(jsondata);
-    print('citytxt = ' + userdata.city!);
+    print('imgurl = ' + userdata.profilePhoto!);
     citytxt = userdata.city! + ' ';
     print('data recieved');
   }
