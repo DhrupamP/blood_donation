@@ -1,6 +1,5 @@
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,12 +22,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var w = SizeConfig.blockSizeHorizontal!;
     return SafeArea(
       child: Scaffold(
-          body: Container(
+          body: SizedBox(
         height: h * 100,
         width: w * 100,
         child: ListView(
           children: [
-            Container(
+            SizedBox(
               height: h * 30,
               child: Stack(
                 children: [
@@ -42,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Stack(
                     children: [
-                      Align(
+                      const Align(
                         alignment: Alignment(-0.9, -0.9),
                         child: Icon(
                           FontAwesomeIcons.arrowLeftLong,
@@ -50,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       Align(
-                        alignment: Alignment(0, -0.9),
+                        alignment: const Alignment(0, -0.9),
                         child: Text(
                           'My Profile',
                           style: TextStyle(
@@ -60,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       Align(
-                        alignment: Alignment(1, -0.9),
+                        alignment: const Alignment(1, -0.9),
                         child: Container(
                             height: h * 3.38,
                             width: w * 21,
@@ -90,11 +89,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             )),
                       ),
                       Align(
-                        alignment: Alignment(0, 0.5),
+                        alignment: const Alignment(0, 0.5),
                         child: Container(
                             height: h * 21.38,
                             width: h * 21.38,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                                 shape: BoxShape.circle, color: Colors.white),
                             child: Padding(
                               padding: EdgeInsets.all(w * 1),
@@ -274,10 +273,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: secondaryText, fontWeight: FontWeight.w800),
                       ),
                     ),
-                    Container(
+                    SizedBox(
                       height: h * 20.5,
                       width: w * 73.24,
-                      child: Center(child: Text("achievements")),
+                      child: const Center(child: Text("achievements")),
                     ),
                     SizedBox(
                       height: h * 3,

@@ -1,5 +1,4 @@
 import 'package:blood_donation/Screens/number_input.dart';
-import 'package:blood_donation/Screens/otp_input_screen.dart';
 import 'package:blood_donation/Widgets/otp_textField.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';

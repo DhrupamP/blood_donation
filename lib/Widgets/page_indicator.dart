@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../../Size Config/size_config.dart';
 import '../../constants/color_constants.dart';
 
 //page indicator

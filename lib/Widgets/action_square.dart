@@ -25,7 +25,7 @@ class ActionSquare extends StatelessWidget {
           child: Stack(
             children: [
               Align(
-                alignment: Alignment(0, -0.5),
+                alignment: const Alignment(0, -0.5),
                 child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -36,7 +36,7 @@ class ActionSquare extends StatelessWidget {
                     child: img),
               ),
               Align(
-                alignment: Alignment(0, 0.6),
+                alignment: const Alignment(0, 0.6),
                 child: Text(
                   txt!,
                   style: TextStyle(

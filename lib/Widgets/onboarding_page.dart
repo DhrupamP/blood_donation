@@ -22,14 +22,14 @@ class OnBoardingPage extends StatelessWidget {
       children: [
         Column(
           children: [
-            Container(
+            SizedBox(
               child: Image.asset(img),
               height: SizeConfig.blockSizeVertical! * 25.12,
             ),
             SizedBox(
               height: SizeConfig.blockSizeVertical! * 10,
             ),
-            Container(
+            SizedBox(
               width: SizeConfig.blockSizeHorizontal! * 70,
               child: Column(
                 children: [

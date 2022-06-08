@@ -1,3 +1,4 @@
+
 import 'package:blood_donation/Models/profile_data_model.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Screens/profile_form.dart';
@@ -5,7 +6,6 @@ import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/Widgets/dropdown_field.dart';
 import 'package:blood_donation/Widgets/profile_input_field.dart';
 import 'package:blood_donation/constants/color_constants.dart';
-import 'package:blood_donation/constants/string_constants.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,7 +14,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/edit_button.dart';
 import '../Widgets/profile_image.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../Providers/profile_provider.dart';
+
 
 final List<String> bloodgroups = [
   'A+',
@@ -63,7 +65,6 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
   String? city;
   DateTime? hasDonatedDate;
   DateTime? _selectedDate;
-  String? imgurl;
 
   @override
   void initState() {
@@ -88,7 +89,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
     dobcontroller.text = userdata.dateOfBirth!;
     bloodgroup = userdata.bloodGroup;
     gender = userdata.sex;
-    imgurl = userdata.profilePhoto;
+    print(profilepic);
     emailcontroller.text = userdata.emailAddress!;
     streetaddresscontroller.text = userdata.address!;
 
@@ -106,7 +107,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
       TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: selected == null ? DateTime(2004) : selected!,
+        initialDate: selected ?? DateTime(2004),
         firstDate: DateTime(1920),
         lastDate: DateTime(2004));
     if (picked != null) {
@@ -125,7 +126,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
     double h = SizeConfig.blockSizeVertical!;
     return SafeArea(
         child: Scaffold(
-      body: Container(
+      body: SizedBox(
         height: h * 100,
         width: SizeConfig.blockSizeHorizontal! * 100,
         child: ListView(
@@ -168,7 +169,14 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                   SizedBox(
                     height: h * 2.88,
                   ),
-                  ProfileImage(profilepicurl: imgurl),
+                  ProfileImage(
+                      profilepicurl:
+                          context.watch<ProfileProvider>().profilepicurl,
+                      onpressed: () {
+                        context
+                            .read<ProfileProvider>()
+                            .addupdateProfilePicture();
+                      }),
                   SizedBox(
                     height: h * 1.75,
                   ),
@@ -291,7 +299,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                   Padding(
                     padding: EdgeInsets.only(
                         right: SizeConfig.blockSizeHorizontal! * 40),
-                    child: Container(
+                    child: SizedBox(
                       width: SizeConfig.blockSizeHorizontal! * 53,
                       height: h * 3.07,
                       child: Row(
@@ -418,13 +426,13 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (BuildContext context) => HomePage(),
+                              builder: (BuildContext context) => const HomePage(),
                             ),
                             (route) => false,
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('City not available')));
+                              const SnackBar(content: Text('City not available')));
                         }
                       }
                     },

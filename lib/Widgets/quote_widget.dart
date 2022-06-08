@@ -10,7 +10,7 @@ class QuoteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       child: Text(
         "\"A drop of blood can save a life! Don't waste it and donate blood\"",
         textAlign: TextAlign.center,

@@ -1,4 +1,3 @@
-import 'package:blood_donation/Screens/number_input.dart';
 import 'package:flutter/material.dart';
 
 import '../Size Config/size_config.dart';
@@ -30,9 +29,9 @@ class ContinueButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height == null ? SizeConfig.blockSizeVertical! * 7 : height,
-      width: width == null ? SizeConfig.blockSizeHorizontal! * 86.11 : width,
+    return SizedBox(
+      height: height ?? SizeConfig.blockSizeVertical! * 7,
+      width: width ?? SizeConfig.blockSizeHorizontal! * 86.11,
       child: ElevatedButton(
         style: ButtonStyle(
             elevation: MaterialStateProperty.all(0),

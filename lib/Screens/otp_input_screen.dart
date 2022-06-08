@@ -1,8 +1,5 @@
-import 'package:blood_donation/Screens/number_input.dart';
-import 'package:blood_donation/auth/auth_functions.dart';
-import 'package:blood_donation/login_viewmodel.dart';
+import 'package:blood_donation/viewModels/login_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/continue_button.dart';
 import '../Widgets/details_box.dart';
@@ -43,7 +40,7 @@ class _OTPInputScreenState extends State<OTPInputScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BackButton(),
+            const BackButton(),
             SizedBox(
               height: h * 5.13,
             ),
@@ -71,7 +68,7 @@ class _OTPInputScreenState extends State<OTPInputScreen> {
                 LoginVM.instance.SignInWithOTP(otpController.text, context);
               },
             ),
-            Center(child: isotpEmpty ? ResendCodeButton() : Container())
+            Center(child: isotpEmpty ? const ResendCodeButton() : Container())
           ],
         ),
       ),

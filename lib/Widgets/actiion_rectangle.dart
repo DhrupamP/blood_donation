@@ -21,7 +21,7 @@ class ActionRectangle extends StatelessWidget {
         child: Stack(
           children: [
             Align(
-              alignment: Alignment(-0.8, 0),
+              alignment: const Alignment(-0.8, 0),
               child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -32,8 +32,8 @@ class ActionRectangle extends StatelessWidget {
                   child: img),
             ),
             Align(
-              alignment: Alignment(0.1, 0),
-              child: Container(
+              alignment: const Alignment(0.1, 0),
+              child: SizedBox(
                 width: SizeConfig.blockSizeHorizontal! * 30,
                 child: Text(
                   txt!,

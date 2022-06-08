@@ -81,13 +81,13 @@ class _RequestFormState extends State<RequestForm> {
                   });
                 },
               ),
-              UploadDocRow(
+              const UploadDocRow(
                 text: 'Upload ID',
               ),
               SizedBox(
                 height: h * 1.3,
               ),
-              UploadDocRow(
+              const UploadDocRow(
                 text: 'Blood Requirement Form',
               )
             ],

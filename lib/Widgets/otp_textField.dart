@@ -13,11 +13,13 @@ class OTPInput extends StatelessWidget {
   final TextEditingController? controller;
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: SizeConfig.blockSizeHorizontal! * 86.68,
       height: SizeConfig.blockSizeVertical! * 7,
       child: PinCodeTextField(
-        validator: (value) {},
+        validator: (value) {
+          return null;
+        },
         controller: controller,
         hintCharacter: "0",
         length: 6,

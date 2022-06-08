@@ -23,9 +23,9 @@ class _ActivityPageState extends State<ActivityPage> {
         child: Scaffold(
       body: Stack(
         children: [
-          isHome ? HomePage() : RequestsPage(),
+          isHome ? const HomePage() : const RequestsPage(),
           Align(
-            alignment: Alignment(0, 0.9),
+            alignment: const Alignment(0, 0.9),
             child: Container(
               height: h * 8,
               width: w * 65.83,

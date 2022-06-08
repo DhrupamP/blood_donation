@@ -57,24 +57,24 @@ class UserDetailModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['address'] = this.address;
-    data['age'] = this.age;
-    data['bloodGroup'] = this.bloodGroup;
-    data['city'] = this.city;
-    data['contactNo'] = this.contactNo;
-    data['dateOfBirth'] = this.dateOfBirth;
-    data['dateOfLastDonationOfBlood'] = this.dateOfLastDonationOfBlood;
-    data['emailAddress'] = this.emailAddress;
-    data['isDonatedBloodBefore'] = this.isDonatedBloodBefore;
-    data['isMedico'] = this.isMedico;
-    data['medicalCollege'] = this.medicalCollege;
-    data['name'] = this.name;
-    data['nearByBloodBank'] = this.nearByBloodBank;
-    data['noOfAchievments'] = this.noOfAchievments;
-    data['noOfBloodDonations'] = this.noOfBloodDonations;
-    data['profilePhoto'] = this.profilePhoto;
-    data['sex'] = this.sex;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['address'] = address;
+    data['age'] = age;
+    data['bloodGroup'] = bloodGroup;
+    data['city'] = city;
+    data['contactNo'] = contactNo;
+    data['dateOfBirth'] = dateOfBirth;
+    data['dateOfLastDonationOfBlood'] = dateOfLastDonationOfBlood;
+    data['emailAddress'] = emailAddress;
+    data['isDonatedBloodBefore'] = isDonatedBloodBefore;
+    data['isMedico'] = isMedico;
+    data['medicalCollege'] = medicalCollege;
+    data['name'] = name;
+    data['nearByBloodBank'] = nearByBloodBank;
+    data['noOfAchievments'] = noOfAchievments;
+    data['noOfBloodDonations'] = noOfBloodDonations;
+    data['profilePhoto'] = profilePhoto;
+    data['sex'] = sex;
     return data;
   }
 }

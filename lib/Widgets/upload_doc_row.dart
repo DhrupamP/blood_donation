@@ -20,7 +20,7 @@ class UploadDocRow extends StatelessWidget {
             style:
                 TextStyle(color: otpCursorColor, fontWeight: FontWeight.w600),
           ),
-          Spacer(),
+          const Spacer(),
           GestureDetector(
             onTap: () async {
               final result = await FilePicker.platform.pickFiles(

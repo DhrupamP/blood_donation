@@ -15,7 +15,7 @@ class AboutPage extends StatelessWidget {
         child: Scaffold(
       body: Stack(
         children: [
-          Positioned(top: h * 2, left: h * 2, child: BackButton()),
+          Positioned(top: h * 2, left: h * 2, child: const BackButton()),
           Center(
             child: Padding(
               padding: EdgeInsets.only(top: h * 4),

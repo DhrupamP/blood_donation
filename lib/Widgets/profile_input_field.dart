@@ -1,4 +1,3 @@
-import 'package:blood_donation/Screens/home_page.dart';
 import 'package:flutter/material.dart';
 
 import '../Screens/profile_form.dart';
@@ -42,7 +41,7 @@ class _ProfileInputFieldState extends State<ProfileInputField> {
     return Stack(
       children: [
         Padding(
-          padding: EdgeInsets.only(bottom: 10.0),
+          padding: const EdgeInsets.only(bottom: 10.0),
           child: Container(
             height: SizeConfig.blockSizeVertical! * 8,
             width: SizeConfig.blockSizeHorizontal! * 86.11,
@@ -73,10 +72,10 @@ class _ProfileInputFieldState extends State<ProfileInputField> {
                     widget.focusnode!.hasFocus ? focusedTextField : background,
                 enabled: widget.isEnabled == null ? true : widget.isEnabled!,
                 filled: true,
-                errorStyle: TextStyle(textBaseline: TextBaseline.alphabetic),
+                errorStyle: const TextStyle(textBaseline: TextBaseline.alphabetic),
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.transparent)),
+                    borderSide: const BorderSide(color: Colors.transparent)),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: primaryDesign!, width: 2.0),
                   borderRadius: BorderRadius.circular(8.0),

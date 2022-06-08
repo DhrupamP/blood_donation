@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../Size Config/size_config.dart';
 import '../constants/color_constants.dart';
-import '../constants/string_constants.dart';
 
 class EditButton extends StatelessWidget {
   const EditButton({Key? key, this.hper, this.wper, this.onPressed})

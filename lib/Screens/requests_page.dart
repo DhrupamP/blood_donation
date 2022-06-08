@@ -1,6 +1,5 @@
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../Size Config/size_config.dart';
 
@@ -26,13 +25,13 @@ class _RequestsPageState extends State<RequestsPage> {
           child: TabBar(
             labelColor: primaryDesign,
             unselectedLabelColor: primaryColor,
-            labelStyle: TextStyle(fontWeight: FontWeight.w700),
+            labelStyle: const TextStyle(fontWeight: FontWeight.w700),
             labelPadding: EdgeInsets.only(top: h * 4, bottom: h * 1),
             indicatorWeight: 3,
             indicator: UnderlineTabIndicator(
                 insets: EdgeInsets.symmetric(horizontal: w * 10),
                 borderSide: BorderSide(width: 3, color: primaryDesign!)),
-            tabs: [
+            tabs: const [
               Text(
                 'New Requests',
               ),
@@ -60,14 +59,14 @@ class _RequestsPageState extends State<RequestsPage> {
                       child: Stack(
                         children: [
                           Align(
-                              alignment: Alignment(-0.9, -0.9),
+                              alignment: const Alignment(-0.9, -0.9),
                               child: Text(
                                 'Patient Name',
                                 style: TextStyle(
                                     color: secondaryText, fontSize: h * 1.8),
                               )),
                           Align(
-                            alignment: Alignment(-0.9, -0.5),
+                            alignment: const Alignment(-0.9, -0.5),
                             child: Text(
                               'Nishant Singh',
                               style: TextStyle(
@@ -77,8 +76,8 @@ class _RequestsPageState extends State<RequestsPage> {
                             ),
                           ),
                           Align(
-                            alignment: Alignment(1, -0.9),
-                            child: Container(
+                            alignment: const Alignment(1, -0.9),
+                            child: SizedBox(
                               width: w * 30,
                               height: h * 4,
                               child: Text(
@@ -88,7 +87,7 @@ class _RequestsPageState extends State<RequestsPage> {
                             ),
                           ),
                           Align(
-                            alignment: Alignment(-0.9, 0.8),
+                            alignment: const Alignment(-0.9, 0.8),
                             child: Container(
                               width: w * 43.89,
                               height: h * 3.38,
@@ -105,7 +104,7 @@ class _RequestsPageState extends State<RequestsPage> {
                             ),
                           ),
                           Align(
-                            alignment: Alignment(0.9, 0.8),
+                            alignment: const Alignment(0.9, 0.8),
                             child: Container(
                               width: w * 23.33,
                               height: h * 4.38,
@@ -113,7 +112,7 @@ class _RequestsPageState extends State<RequestsPage> {
                                 color: acceptColor,
                                 borderRadius: BorderRadius.circular(63),
                               ),
-                              child: Center(
+                              child: const Center(
                                 child: Text(
                                   'Accept',
                                   style: TextStyle(color: Colors.white),
@@ -146,14 +145,14 @@ class _RequestsPageState extends State<RequestsPage> {
                       child: Stack(
                         children: [
                           Align(
-                              alignment: Alignment(-0.9, -0.5),
+                              alignment: const Alignment(-0.9, -0.5),
                               child: Text(
                                 'Patient Name',
                                 style: TextStyle(
                                     color: secondaryText, fontSize: h * 1.8),
                               )),
                           Align(
-                            alignment: Alignment(-0.9, 0.5),
+                            alignment: const Alignment(-0.9, 0.5),
                             child: Text(
                               'Nishant Singh',
                               style: TextStyle(
@@ -163,7 +162,7 @@ class _RequestsPageState extends State<RequestsPage> {
                             ),
                           ),
                           Align(
-                            alignment: Alignment(0.8, 0),
+                            alignment: const Alignment(0.8, 0),
                             child: Text(
                               'O+ blood required',
                               style: TextStyle(

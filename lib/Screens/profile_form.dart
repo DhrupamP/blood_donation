@@ -96,7 +96,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
             onPressed: () {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (_) {
-                return HomePage();
+                return const HomePage();
               }));
             },
             hper: 2,
@@ -266,13 +266,13 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                            builder: (BuildContext context) => HomePage(),
+                            builder: (BuildContext context) => const HomePage(),
                           ),
                           (route) => false,
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('City not available')));
+                            const SnackBar(content: Text('City not available')));
                       }
                     }
                   },

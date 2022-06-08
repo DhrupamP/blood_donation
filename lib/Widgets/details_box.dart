@@ -10,7 +10,7 @@ class DetailsBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: SizeConfig.blockSizeVertical! * 9.63,
       width: SizeConfig.blockSizeHorizontal! * 68.33,
       child: Column(

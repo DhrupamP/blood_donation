@@ -1,6 +1,4 @@
-import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Screens/number_input.dart';
-import 'package:blood_donation/Screens/otp_input_screen.dart';
 import 'package:blood_donation/Size%20Config/size_config.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:blood_donation/constants/string_constants.dart';
@@ -48,14 +46,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   wper: 75,
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return NumberInputScreen();
+                      return const NumberInputScreen();
                     }));
                   },
                 ),
                 SizedBox(
                   height: SizeConfig.blockSizeVertical! * 11.88,
                 ),
-                Container(
+                SizedBox(
                   height: SizeConfig.blockSizeVertical! * 44.5,
                   width: SizeConfig.screenWidth,
                   child: NotificationListener<OverscrollIndicatorNotification>(
@@ -150,7 +148,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                             return DropdownMenuItem(
                               value: items,
                               child: items == 'divider'
-                                  ? Divider()
+                                  ? const Divider()
                                   : Text(
                                       items,
                                       textAlign: TextAlign.center,

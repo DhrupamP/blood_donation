@@ -1,9 +1,17 @@
+import 'dart:io';
+
 import 'package:blood_donation/Screens/profile_form.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/profile_data_model.dart';
+import '../Providers/homepage_provider.dart';
 import '../Screens/home_page.dart';
+import '../Screens/number_input.dart';
 
 List<String> cities = [];
 List<String> citycodes = [];
@@ -31,7 +39,7 @@ class ProfileFormVM {
     }
   }
 
-  Future<void> getProfileData() async {
+  Future<void> getProfileData(BuildContext ctx) async {
     DatabaseReference profileref = FirebaseDatabase.instance
         .ref('users/C1/${FirebaseAuth.instance.currentUser?.uid}');
     DatabaseEvent evt = await profileref.once();
@@ -40,6 +48,8 @@ class ProfileFormVM {
     userdata = UserDetailModel.fromJson(jsondata);
     print('imgurl = ' + userdata.profilePhoto!);
     citytxt = userdata.city! + ' ';
+    profilepic = userdata.profilePhoto!;
+    ctx.read<HomePageProvider>().Stoploading();
     print('data recieved');
   }
 
@@ -94,6 +104,40 @@ class ProfileFormVM {
           .child("users/$citycode/${FirebaseAuth.instance.currentUser!.uid}/")
           .update(model.toJson());
       print('done!!');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  addupdateProfilePicture() async {
+    final profileresult = await FilePicker.platform.pickFiles(
+        type: FileType.custom, allowedExtensions: ['jpg', 'png', 'jpeg']);
+
+    if (profileresult == null) return;
+    File profilefile = File(profileresult.files.first.path!);
+    final storageref = FirebaseStorage.instance.ref();
+    final profileref = storageref.child('profile.jpg');
+    try {
+      await profileref.putFile(
+          profilefile,
+          SettableMetadata(
+            contentType: "image/jpeg",
+          ));
+      print('done');
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      String? code = pref.getString('citycode');
+      print(code);
+      print(auth.currentUser!.uid);
+      String profileurl = await profileref.getDownloadURL();
+
+      await FirebaseDatabase.instance
+          .ref()
+          .child("users/$code/${auth.currentUser!.uid}/")
+          .update({'profilePhoto': profileurl});
+
+      profilepic = profileurl;
+
+      print('profile pic updates');
     } catch (e) {
       print(e);
     }

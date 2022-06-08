@@ -8,7 +8,7 @@ import '../Size Config/size_config.dart';
 import '../Widgets/details_box.dart';
 import '../Widgets/number_input_field.dart';
 
-SnackBar invalidNumber = SnackBar(content: Text('Invalid Phone Number'));
+SnackBar invalidNumber = const SnackBar(content: Text('Invalid Phone Number'));
 
 FirebaseAuth auth = FirebaseAuth.instance;
 String verificationIDrecieved = '';

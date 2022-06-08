@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import '../Screens/profile_form.dart';
 import '../Size Config/size_config.dart';
 import '../constants/color_constants.dart';
 
 class DropDownField extends StatefulWidget {
-  DropDownField(
+  const DropDownField(
       {Key? key,
       this.hinttext,
       this.items,
@@ -29,7 +28,7 @@ class _DropDownFieldState extends State<DropDownField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 10.0),
+      padding: const EdgeInsets.only(bottom: 10.0),
       child: Stack(
         children: [
           IgnorePointer(
@@ -46,6 +45,7 @@ class _DropDownFieldState extends State<DropDownField> {
                   if (value == null) {
                     return widget.errortxt;
                   }
+                  return null;
                 },
                 decoration: InputDecoration(
                     border: OutlineInputBorder(
