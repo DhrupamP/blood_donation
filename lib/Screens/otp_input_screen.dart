@@ -1,5 +1,6 @@
 import 'package:blood_donation/viewModels/login_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/continue_button.dart';
 import '../Widgets/details_box.dart';
@@ -64,8 +65,10 @@ class _OTPInputScreenState extends State<OTPInputScreen> {
               txt: "Continue",
               bgcolor: isotpEmpty ? Colors.white : primaryDesign,
               txtColor: isotpEmpty ? primaryDesign : Colors.white,
-              onpressed: () {
+              onpressed: () async {
                 LoginVM.instance.SignInWithOTP(otpController.text, context);
+                final pref = await SharedPreferences.getInstance();
+                pref.setBool('isloggedin', true);
               },
             ),
             Center(child: isotpEmpty ? const ResendCodeButton() : Container())

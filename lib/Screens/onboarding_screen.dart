@@ -1,3 +1,4 @@
+import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Size%20Config/size_config.dart';
 import 'package:blood_donation/constants/color_constants.dart';
@@ -46,7 +47,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   wper: 75,
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) {
-                      return const NumberInputScreen();
+                      return const HomePage();
                     }));
                   },
                 ),

@@ -7,8 +7,10 @@ import 'package:blood_donation/Widgets/page_indicator.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/actiion_rectangle.dart';
 import '../Widgets/action_square.dart';
@@ -18,11 +20,13 @@ import '../Widgets/quote_widget.dart';
 import 'package:provider/provider.dart';
 import '../Providers/profile_provider.dart';
 
+bool? isProfileComplete;
 GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
 int? draweridx = 0;
 UserDetailModel userdata = UserDetailModel();
 bool isLoading = false;
 String profilepic = '';
+String? usercitycode = '';
 String defaultprofilepic =
     'https://firebasestorage.googleapis.com/v0/b/nmo-blood-donation.appspot.com/o/user1.png?alt=media&token=8c7b068f-29da-4beb-9df3-9141f990d343';
 
@@ -40,8 +44,7 @@ class _HomePageState extends State<HomePage> {
 
     ProfileFormVM.instance.getProfileData(context);
     ProfileFormVM.instance.getCityNames();
-
-    print(citytxt);
+    print("name " + userdata.name.toString());
   }
 
   @override
@@ -61,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                     child: ListView(
                       children: [
                         Text(
-                          userdata.name!,
+                          userdata.name ?? 'N/A',
                           style:
                               TextStyle(fontSize: h * 3, color: primaryColor),
                         ),
@@ -69,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                           height: h * 1.26,
                         ),
                         Text(
-                          'Blood Group: ${userdata.bloodGroup}',
+                          'Blood Group: ${userdata.bloodGroup ?? 'N/A'}',
                           style: TextStyle(
                             color: primaryText,
                           ),
@@ -87,7 +90,9 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(
                               width: w * 1,
                             ),
-                            Text(userdata.contactNo!.toString())
+                            Text(userdata.contactNo == null
+                                ? 'N/A'
+                                : userdata.contactNo.toString())
                           ],
                         ),
                         SizedBox(

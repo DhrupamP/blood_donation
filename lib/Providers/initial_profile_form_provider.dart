@@ -9,11 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Screens/number_input.dart';
 
-class ProfileProvider extends ChangeNotifier {
+class InitialProfileProvider extends ChangeNotifier {
   bool isloading = false;
-  String profilepicurl = userdata.profilePhoto == null
-      ? defaultprofilepic
-      : userdata.profilePhoto!;
+  String profilepicurl = defaultprofilepic;
+  File? profilefile;
   File? tempProfilePic;
   addupdateProfilePicture() async {
     final profileresult = await FilePicker.platform.pickFiles(
@@ -21,28 +20,27 @@ class ProfileProvider extends ChangeNotifier {
     isloading = true;
     notifyListeners();
     if (profileresult == null) return;
-    File profilefile = File(profileresult.files.first.path!);
-    tempProfilePic = profilefile;
+    profilefile = File(profileresult.files.first.path!);
+    tempProfilePic = File(profilefile!.path);
     notifyListeners();
+  }
 
+  submitimage(String ccode) async {
     final storageref = FirebaseStorage.instance.ref();
     final profileref = storageref.child('profile.jpg');
     try {
       await profileref.putFile(
-          profilefile,
+          profilefile!,
           SettableMetadata(
             contentType: "image/jpeg",
           ));
       print('done');
-      SharedPreferences pref = await SharedPreferences.getInstance();
-      String? code = pref.getString('citycode');
-      print(code);
       print(auth.currentUser!.uid);
       String profileurl = await profileref.getDownloadURL();
 
       await FirebaseDatabase.instance
           .ref()
-          .child("users/$code/${auth.currentUser!.uid}/")
+          .child("users/$ccode/${auth.currentUser!.uid}/")
           .update({'profilePhoto': profileurl});
 
       profilepicurl = profileurl;

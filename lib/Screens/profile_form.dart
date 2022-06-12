@@ -1,7 +1,9 @@
 import 'package:blood_donation/Models/profile_data_model.dart';
+import 'package:blood_donation/Providers/initial_profile_form_provider.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/Widgets/dropdown_field.dart';
+import 'package:blood_donation/Widgets/initial_profile_pic.dart';
 import 'package:blood_donation/Widgets/profile_input_field.dart';
 import 'package:blood_donation/Widgets/skip_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
@@ -11,8 +13,10 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Providers/profile_provider.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/profile_image.dart';
+import 'package:provider/provider.dart';
 
 String? dobtxt;
 String? citytxt;
@@ -48,6 +52,9 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
   String? bloodgroup;
   String? gender;
   String? city;
+  String defaultpic =
+      'https://firebasestorage.googleapis.com/v0/b/nmo-blood-donation.appspot.com/o/user1.png?alt=media&token=8c7b068f-29da-4beb-9df3-9141f990d343';
+
   @override
   void initState() {
     super.initState();
@@ -62,9 +69,6 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
     dobcontroller = TextEditingController();
     emailcontroller = TextEditingController();
     streetaddresscontroller = TextEditingController();
-    int phonenumber = int.parse(FirebaseAuth.instance.currentUser?.phoneNumber
-        .toString()
-        .substring(1) as String);
   }
 
   DateTime? _selectedDate;
@@ -120,7 +124,15 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 SizedBox(
                   height: h * 2.88,
                 ),
-                const ProfileImage(),
+                InitialProfileImage(
+                  profilepicurl:
+                      context.watch<InitialProfileProvider>().profilepicurl,
+                  onpressed: () {
+                    context
+                        .read<InitialProfileProvider>()
+                        .addupdateProfilePicture();
+                  },
+                ),
                 SizedBox(
                   height: h * 1.75,
                 ),
@@ -232,6 +244,17 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                             emailcontroller.text, false, true)) {
                       if (ProfileFormVM.instance.isCityAvailable()) {
                         ProfileFormVM.instance.getCityCode();
+                        SharedPreferences pref =
+                            await SharedPreferences.getInstance();
+
+                        pref.setString('citycode', citycode!);
+                        print("stored locally");
+                        context
+                            .read<InitialProfileProvider>()
+                            .submitimage(citycode!);
+                        String? dpurl =
+                            Provider.of<ProfileProvider>(context, listen: false)
+                                .profilepicurl;
                         UserDetailModel usermodel = UserDetailModel(
                           age: DateTime.now().year - _selectedDate!.year,
                           address: streetaddresscontroller.text.trim(),
@@ -254,15 +277,12 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                           nearByBloodBank: '',
                           noOfAchievments: 0,
                           noOfBloodDonations: 0,
-                          profilePhoto: 'assets/user1.png',
+                          profilePhoto: dpurl,
                         );
                         await ProfileFormVM.instance
                             .addUpdateProfile(context, usermodel);
-                        SharedPreferences pref =
-                            await SharedPreferences.getInstance();
+
                         pref.setBool('isinitialprofilecomplete', true);
-                        pref.setString('citycode', citycode!);
-                        print("stored locally");
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
@@ -272,7 +292,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('City not available')));
+                            const SnackBar(
+                                content: Text('City not available')));
                       }
                     }
                   },

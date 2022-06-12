@@ -1,4 +1,3 @@
-
 import 'package:blood_donation/Models/profile_data_model.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Screens/profile_form.dart';
@@ -16,7 +15,6 @@ import '../Widgets/edit_button.dart';
 import '../Widgets/profile_image.dart';
 import 'package:provider/provider.dart';
 import '../Providers/profile_provider.dart';
-
 
 final List<String> bloodgroups = [
   'A+',
@@ -38,7 +36,7 @@ class CompleteProfileFormScreen extends StatefulWidget {
 }
 
 class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _key = GlobalKey<FormState>();
 
   List<String> genders = ['male', 'female', 'others'];
   FocusNode? newnamefn = FocusNode();
@@ -81,17 +79,19 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
     hasDonatedController = TextEditingController();
 
     //setting data
-    hasdonatedgroup = userdata.noOfBloodDonations == 0 ? 'No' : 'yes';
-    newnamecontroller.text = userdata.name!;
-    hasDonatedController.text = (userdata.noOfBloodDonations == 0
-        ? ''
-        : userdata.dateOfLastDonationOfBlood)!;
-    dobcontroller.text = userdata.dateOfBirth!;
-    bloodgroup = userdata.bloodGroup;
-    gender = userdata.sex;
-    print(profilepic);
-    emailcontroller.text = userdata.emailAddress!;
-    streetaddresscontroller.text = userdata.address!;
+    if (citytxt != null) {
+      hasdonatedgroup = userdata.noOfBloodDonations == 0 ? 'No' : 'yes';
+      newnamecontroller.text = userdata.name!;
+      hasDonatedController.text = (userdata.noOfBloodDonations == 0
+          ? ''
+          : userdata.dateOfLastDonationOfBlood)!;
+      dobcontroller.text = userdata.dateOfBirth!;
+      bloodgroup = userdata.bloodGroup;
+      gender = userdata.sex;
+      print(profilepic);
+      emailcontroller.text = userdata.emailAddress!;
+      streetaddresscontroller.text = userdata.address!;
+    }
 
     isnameEnabled = false;
     isdobEnabled = false;
@@ -152,7 +152,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
               ],
             ),
             Form(
-              key: _formKey,
+              key: _key,
               child: Column(
                 children: [
                   Padding(
@@ -390,11 +390,17 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     txtColor: Colors.white,
                     bgcolor: primaryDesign,
                     onpressed: () async {
-                      if (_formKey.currentState!.validate() &&
+                      print('citytxt: ' + citytxt.toString());
+                      if (_key.currentState!.validate() &&
                           EmailValidator.validate(
                               emailcontroller.text, false, true)) {
                         if (ProfileFormVM.instance.isCityAvailable()) {
                           ProfileFormVM.instance.getCityCode();
+                          SharedPreferences pref =
+                              await SharedPreferences.getInstance();
+
+                          pref.setString('citycode', citycode!);
+                          print("stored locally");
                           UserDetailModel usermodel = UserDetailModel(
                             address: streetaddresscontroller.text.trim(),
                             bloodGroup: bloodgroup,
@@ -415,24 +421,32 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                             nearByBloodBank: '',
                             noOfAchievments: 0,
                             noOfBloodDonations: 0,
-                            profilePhoto: 'assets/user1.png',
+                            profilePhoto: Provider.of<ProfileProvider>(context,
+                                    listen: false)
+                                .profilepicurl,
                           );
+                          setState(() {
+                            isProfileComplete = true;
+                          });
+
                           await ProfileFormVM.instance
                               .addUpdateProfile(context, usermodel);
-                          SharedPreferences pref =
-                              await SharedPreferences.getInstance();
+
                           pref.setBool('isinitialprofilecomplete', true);
                           print("stored locally");
+
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (BuildContext context) => const HomePage(),
+                              builder: (BuildContext context) =>
+                                  const HomePage(),
                             ),
                             (route) => false,
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('City not available')));
+                              const SnackBar(
+                                  content: Text('City not available')));
                         }
                       }
                     },

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:blood_donation/Screens/profile_form.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,17 +39,30 @@ class ProfileFormVM {
   }
 
   Future<void> getProfileData(BuildContext ctx) async {
-    DatabaseReference profileref = FirebaseDatabase.instance
-        .ref('users/C1/${FirebaseAuth.instance.currentUser?.uid}');
-    DatabaseEvent evt = await profileref.once();
-    Map<dynamic, dynamic> jsondata =
-        evt.snapshot.value as Map<dynamic, dynamic>;
-    userdata = UserDetailModel.fromJson(jsondata);
-    print('imgurl = ' + userdata.profilePhoto!);
-    citytxt = userdata.city! + ' ';
-    profilepic = userdata.profilePhoto!;
-    ctx.read<HomePageProvider>().Stoploading();
-    print('data recieved');
+    print(isProfileComplete);
+    final pref = await SharedPreferences.getInstance();
+
+    isProfileComplete = pref.getBool('isinitialprofilecomplete');
+    if (isProfileComplete == true) {
+      print('getting data.....');
+      Provider.of<HomePageProvider>(ctx, listen: false).Startloading();
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      String? cc = pref.getString('citycode');
+      print('profile completed');
+      print('code: ' + cc.toString());
+      print(auth.currentUser?.uid.toString());
+      DatabaseReference profileref = FirebaseDatabase.instance
+          .ref('users/$cc/${FirebaseAuth.instance.currentUser?.uid}');
+      DatabaseEvent evt = await profileref.once();
+      Map<dynamic, dynamic> jsondata =
+          evt.snapshot.value as Map<dynamic, dynamic>;
+      userdata = UserDetailModel.fromJson(jsondata);
+      print('imgurl = ' + userdata.profilePhoto!);
+      citytxt = userdata.city! + ' ';
+      profilepic = userdata.profilePhoto!;
+      Provider.of<HomePageProvider>(ctx, listen: false).Stoploading();
+      print('data recieved');
+    }
   }
 
   /*
@@ -90,7 +102,7 @@ class ProfileFormVM {
       temp.add(getFirstWord(cities[j]).trim());
     }
     int idx = temp.indexOf(getFirstWord(citytxt!).trim());
-
+    print("cityavailabe?");
     return citiesactive[idx];
   }
 

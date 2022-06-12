@@ -13,3 +13,5 @@ Color? acceptColor = const Color(0xFF3AD08D);
 Color? unavailablecolor = const Color(0xFFE61E26);
 Color? sharebg = const Color(0xFF40BEDB);
 Color? white = const Color(0xffffffff);
+Color? tickgreen = const Color(0xff8CCDB0);
+Color? red = const Color(0xffE61E26);
