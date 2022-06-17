@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/profile_data_model.dart';
+import '../Models/request_model.dart';
 import '../Providers/homepage_provider.dart';
 import '../Screens/home_page.dart';
 import '../Screens/number_input.dart';
@@ -39,29 +40,23 @@ class ProfileFormVM {
   }
 
   Future<void> getProfileData(BuildContext ctx) async {
-    print(isProfileComplete);
     final pref = await SharedPreferences.getInstance();
 
     isProfileComplete = pref.getBool('isinitialprofilecomplete');
     if (isProfileComplete == true) {
-      print('getting data.....');
       Provider.of<HomePageProvider>(ctx, listen: false).Startloading();
       SharedPreferences pref = await SharedPreferences.getInstance();
       String? cc = pref.getString('citycode');
-      print('profile completed');
-      print('code: ' + cc.toString());
-      print(auth.currentUser?.uid.toString());
       DatabaseReference profileref = FirebaseDatabase.instance
           .ref('users/$cc/${FirebaseAuth.instance.currentUser?.uid}');
       DatabaseEvent evt = await profileref.once();
       Map<dynamic, dynamic> jsondata =
           evt.snapshot.value as Map<dynamic, dynamic>;
-      userdata = UserDetailModel.fromJson(jsondata);
-      print('imgurl = ' + userdata.profilePhoto!);
+      userdata = UserDetailModel.fromJson(jsondata, auth.currentUser!.uid);
       citytxt = userdata.city! + ' ';
       profilepic = userdata.profilePhoto!;
       Provider.of<HomePageProvider>(ctx, listen: false).Stoploading();
-      print('data recieved');
+      print(userdata.requestList);
     }
   }
 
@@ -119,6 +114,27 @@ class ProfileFormVM {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<void> addRequest(Request req, String donoruid) async {
+    print('adding request............');
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String? cc = pref.getString('citycode');
+    await FirebaseDatabase.instance
+        .ref()
+        .child('users/$cc/$donoruid/requestList')
+        .push()
+        .update(req.toJson());
+  }
+
+  getRequests() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String? cc = pref.getString('citycode');
+    DatabaseEvent evt = await FirebaseDatabase.instance
+        .ref()
+        .child('users/$cc/${userdata.uid}/requestList')
+        .once();
+    print(evt.snapshot.value);
   }
 
   addupdateProfilePicture() async {

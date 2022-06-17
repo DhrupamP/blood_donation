@@ -1,5 +1,7 @@
+import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -33,9 +35,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Positioned(
                     child: Container(
+                      decoration: BoxDecoration(
+                          color: primaryDesign,
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(w * 30),
+                              bottomRight: Radius.circular(w * 30))),
                       height: h * 30,
                       width: w * 100,
-                      color: primaryDesign,
                     ),
                     top: -h * 10,
                   ),
@@ -93,15 +99,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Container(
                             height: h * 21.38,
                             width: h * 21.38,
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle, color: Colors.white),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                            ),
                             child: Padding(
                               padding: EdgeInsets.all(w * 1),
-                              child: Image.asset(
-                                'assets/user.png',
-                                height: h * 20,
-                                width: w * 45,
-                                fit: BoxFit.fill,
+                              child: CircleAvatar(
+                                backgroundImage: CachedNetworkImageProvider(
+                                    isProfileComplete!
+                                        ? userdata.profilePhoto.toString()
+                                        : defaultprofilepic),
                               ),
                             )),
                       ),
@@ -116,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   children: [
                     Text(
-                      'Dhrupam Patel',
+                      userdata.name ?? 'N/A',
                       style: TextStyle(
                           fontSize: h * 2,
                           color: primaryColor,
@@ -126,7 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: h * 1,
                     ),
                     Text(
-                      'Blood Group: NA',
+                      'Blood Group: ${userdata.bloodGroup ?? 'N/A'}',
                       style: TextStyle(
                         fontSize: h * 1.8,
                         color: primaryText,
@@ -166,72 +174,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: h * 2,
                     ),
                     Container(
-                      height: h * 17.5,
-                      width: w * 86.11,
-                      decoration: BoxDecoration(
-                          color: background,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: w * 10, right: w * 30),
-                        child: Column(
+                        height: h * 17.5,
+                        width: w * 86.11,
+                        decoration: BoxDecoration(
+                            color: background,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Age',
-                                    style: detailsStyle,
-                                  ),
-                                  Text(
-                                    'NA',
-                                    style: detailsStyle,
-                                  )
-                                ]),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Sex',
-                                    style: detailsStyle,
-                                  ),
-                                  Text(
-                                    'NA',
-                                    style: detailsStyle,
-                                  )
-                                ]),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Contact Number',
-                                    style: detailsStyle,
-                                  ),
-                                  Text(
-                                    'NA',
-                                    style: detailsStyle,
-                                  )
-                                ]),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Number of Donations',
-                                    style: detailsStyle,
-                                  ),
-                                  Text(
-                                    'NA',
-                                    style: detailsStyle,
-                                  )
-                                ]),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  'Age',
+                                  style: detailsStyle,
+                                ),
+                                Text(
+                                  'Sex',
+                                  style: detailsStyle,
+                                ),
+                                Text(
+                                  'Contact Number',
+                                  style: detailsStyle,
+                                ),
+                                Text(
+                                  'Number of Donations',
+                                  style: detailsStyle,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  userdata.age.toString(),
+                                  style: detailsStyle,
+                                ),
+                                Text(
+                                  userdata.sex ?? 'N/A',
+                                  style: detailsStyle,
+                                ),
+                                Text(
+                                  userdata.contactNo.toString(),
+                                  style: detailsStyle,
+                                ),
+                                Text(
+                                  userdata.noOfBloodDonations.toString(),
+                                  style: detailsStyle,
+                                )
+                              ],
+                            )
                           ],
-                        ),
-                      ),
-                    ),
+                        )),
                     SizedBox(
                       height: h * 3.75,
                     ),
@@ -317,3 +313,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 TextStyle detailsStyle =
     TextStyle(color: primaryText, fontWeight: FontWeight.w700);
+
+// Padding(
+//   padding: EdgeInsets.only(left: w * 10, right: w * 20),
+//   child:
+//   Column(
+//     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//     children: [
+//       Row(
+//           mainAxisAlignment:
+//               MainAxisAlignment.spaceBetween,
+//           children: [
+//             Text(
+//               'Age',
+//               style: detailsStyle,
+//             ),
+//             Text(
+//               userdata.age.toString(),
+//               style: detailsStyle,
+//             )
+//           ]),
+//       Row(
+//           mainAxisAlignment:
+//               MainAxisAlignment.spaceBetween,
+//           children: [
+//             Text(
+//               'Sex',
+//               style: detailsStyle,
+//             ),
+//             Text(
+//               userdata.sex ?? 'N/A',
+//               style: detailsStyle,
+//             )
+//           ]),
+//       Row(
+//           mainAxisAlignment:
+//               MainAxisAlignment.spaceBetween,
+//           children: [
+//             Text(
+//               'Contact Number',
+//               style: detailsStyle,
+//             ),
+//             Text(
+//               userdata.contactNo.toString(),
+//               style: detailsStyle,
+//             )
+//           ]),
+//       Row(
+//           mainAxisAlignment:
+//               MainAxisAlignment.spaceBetween,
+//           children: [
+//             Text(
+//               'Number of Donations',
+//               style: detailsStyle,
+//             ),
+//             Text(
+//               userdata.noOfBloodDonations.toString(),
+//               style: detailsStyle,
+//             )
+//           ]),
+//     ],
+//   ),
+// ),

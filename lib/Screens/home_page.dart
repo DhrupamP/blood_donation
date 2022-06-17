@@ -1,13 +1,18 @@
 import 'package:blood_donation/Models/profile_data_model.dart';
 import 'package:blood_donation/Providers/homepage_provider.dart';
+import 'package:blood_donation/Screens/available_donors_page.dart';
 import 'package:blood_donation/Screens/complete_profile_sreen.dart';
+import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Screens/profile_form.dart';
+import 'package:blood_donation/Screens/profile_screen.dart';
 import 'package:blood_donation/Screens/request_form.dart';
 import 'package:blood_donation/Widgets/page_indicator.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
+import 'package:blood_donation/viewModels/request_form_viewmodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +24,7 @@ import '../Widgets/drawer_tile.dart';
 import '../Widgets/quote_widget.dart';
 import 'package:provider/provider.dart';
 import '../Providers/profile_provider.dart';
+import '../viewModels/request_form_viewmodel.dart';
 
 bool? isProfileComplete;
 GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
@@ -44,7 +50,7 @@ class _HomePageState extends State<HomePage> {
 
     ProfileFormVM.instance.getProfileData(context);
     ProfileFormVM.instance.getCityNames();
-    print("name " + userdata.name.toString());
+    RequestFormVM.instance.getRequestData(context);
   }
 
   @override
@@ -144,171 +150,201 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                key: _scaffoldkey,
-                body: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(right: w * 4, top: w * 4),
-                          child: IconButton(
-                              onPressed: () {
-                                _scaffoldkey.currentState?.openDrawer();
-                              },
-                              icon: const Icon(Icons.menu)),
+                appBar: AppBar(
+                  backgroundColor: white,
+                  elevation: 0,
+                  leading: IconButton(
+                      onPressed: () {
+                        _scaffoldkey.currentState?.openDrawer();
+                      },
+                      icon: Icon(
+                        Icons.menu,
+                        color: primaryText,
+                      )),
+                  actions: [
+                    Padding(
+                      padding: EdgeInsets.only(right: w * 4, top: w * 4),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ProfileScreen()));
+                        },
+                        child: CircleAvatar(
+                          radius: h * 2,
+                          backgroundImage: (profilepic == '')
+                              ? CachedNetworkImageProvider(defaultprofilepic)
+                              : CachedNetworkImageProvider(context
+                                  .watch<ProfileProvider>()
+                                  .profilepicurl),
                         ),
-                        const Spacer(),
-                        Padding(
-                          padding: EdgeInsets.only(right: w * 4, top: w * 4),
-                          child: CircleAvatar(
-                            radius: h * 2,
-                            backgroundImage: (profilepic == '')
-                                ? CachedNetworkImageProvider(defaultprofilepic)
-                                : CachedNetworkImageProvider(context
-                                    .watch<ProfileProvider>()
-                                    .profilepicurl),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                    SizedBox(
-                      height: h * 85,
-                      width: w * 86.11,
-                      child: ListView(
-                        children: [
-                          SizedBox(
-                            width: w * 100,
-                            height: h * 6,
-                            child: PageView(
-                              controller: _mycontroller,
-                              children: const [
-                                QuoteWidget(),
-                                QuoteWidget(),
-                                QuoteWidget(),
-                              ],
+                  ],
+                ),
+                key: _scaffoldkey,
+                body: ListView(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: w * 100,
+                          height: h * 6,
+                          child: PageView(
+                            controller: _mycontroller,
+                            children: const [
+                              QuoteWidget(),
+                              QuoteWidget(),
+                              QuoteWidget(),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: h * 4,
+                        ),
+                        Center(
+                          child: MyPageIndicator(
+                            controller: _mycontroller,
+                            dotwidth: w * 1.19,
+                            dotheight: h * 0.53,
+                          ),
+                        ),
+                        SizedBox(
+                          height: h * 2,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: w * 6.94,
                             ),
-                          ),
-                          SizedBox(
-                            height: h * 4,
-                          ),
-                          Center(
-                            child: MyPageIndicator(
-                              controller: _mycontroller,
-                              dotwidth: w * 1.19,
-                              dotheight: h * 0.53,
+                            Text(
+                              'Actions',
+                              style: TextStyle(
+                                  color: secondaryText,
+                                  fontWeight: FontWeight.w800),
                             ),
-                          ),
-                          SizedBox(
-                            height: h * 2,
-                          ),
-                          Text(
-                            'Actions',
-                            style: TextStyle(
-                                color: secondaryText,
-                                fontWeight: FontWeight.w800),
-                          ),
-                          //1.83
-                          SizedBox(
-                            height: h * 1.83,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              ActionSquare(
-                                txt: 'Donate Blood',
-                                img: Image.asset("assets/blood_donate.png"),
-                                onpressed: () async {
-                                  print(cities);
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (_) {
-                                    return const CompleteProfileFormScreen();
-                                  }));
-                                },
-                              ),
-                              ActionSquare(
-                                txt: 'Send Request',
-                                img: Image.asset("assets/send_request.png"),
-                                onpressed: () {
+                          ],
+                        ),
+                        //1.83
+                        SizedBox(
+                          height: h * 1.83,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ActionSquare(
+                              txt: 'Donate Blood',
+                              img: Image.asset("assets/blood_donate.png"),
+                              onpressed: () async {
+                                print(cities);
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) {
+                                  return const CompleteProfileFormScreen();
+                                }));
+                              },
+                            ),
+                            ActionSquare(
+                              txt: 'Send Request',
+                              img: Image.asset("assets/send_request.png"),
+                              onpressed: () async {
+                                print(createdmap);
+                                if (!createdmap.isEmpty) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => AvailableDonors()));
+                                } else {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (_) => const RequestForm()));
-                                },
+                                }
+                                // DatabaseEvent evt = await ref;
+                                // print(evt.snapshot.value);
+                              },
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: h * 3,
+                        ),
+                        ActionRectangle(
+                          img: Image.asset('assets/urgent_req.png'),
+                          txt: "Call for Urgent Requirement",
+                        ),
+                        SizedBox(
+                          height: h * 2,
+                        ),
+                        Row(
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: w * 6.94,
+                            ),
+                            Text(
+                              'Stories',
+                              style: TextStyle(
+                                  color: secondaryText,
+                                  fontWeight: FontWeight.w800),
+                            ),
+                            Spacer(),
+                            Text(
+                              'View all',
+                              style: TextStyle(
+                                  color: secondaryText,
+                                  fontWeight: FontWeight.w800),
+                            ),
+                            SizedBox(
+                              width: w * 6.94,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: h * 2,
+                        ),
+                        Container(
+                          width: w * 86.11,
+                          height: h * 13.2,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: primaryText!)),
+                          child: Row(
+                            children: [
+                              Container(
+                                child: Image.asset(
+                                  'assets/news_img.png',
+                                  height: h * 50,
+                                ),
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    width: w * 48.33,
+                                    child: Text(
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: true,
+                                      maxLines: 4,
+                                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electron",
+                                      style: TextStyle(
+                                          color: primaryColor,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                  Text(
+                                    '10/12/2022',
+                                    style: TextStyle(color: secondaryText),
+                                  ),
+                                ],
                               )
                             ],
                           ),
-                          SizedBox(
-                            height: h * 3,
-                          ),
-                          ActionRectangle(
-                            img: Image.asset('assets/urgent_req.png'),
-                            txt: "Call for Urgent Requirement",
-                          ),
-                          SizedBox(
-                            height: h * 2,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Stories',
-                                style: TextStyle(
-                                    color: secondaryText,
-                                    fontWeight: FontWeight.w800),
-                              ),
-                              Text(
-                                'View all',
-                                style: TextStyle(
-                                    color: secondaryText,
-                                    fontWeight: FontWeight.w800),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: h * 2,
-                          ),
-                          Container(
-                            width: w * 86.11,
-                            height: h * 13.2,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: primaryText!)),
-                            child: Row(
-                              children: [
-                                Container(
-                                  child: Image.asset(
-                                    'assets/news_img.png',
-                                    height: h * 50,
-                                  ),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: w * 48.33,
-                                      child: Text(
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: true,
-                                        maxLines: 4,
-                                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electron",
-                                        style: TextStyle(
-                                            color: primaryColor,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                    ),
-                                    Text(
-                                      '10/12/2022',
-                                      style: TextStyle(color: secondaryText),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
+                        )
+                      ],
                     )
                   ],
                 ),

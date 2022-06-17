@@ -2,9 +2,9 @@ import 'package:blood_donation/Providers/homepage_provider.dart';
 import 'package:blood_donation/Providers/initial_profile_form_provider.dart';
 import 'package:blood_donation/Providers/profile_provider.dart';
 import 'package:blood_donation/Providers/request_form_provider.dart';
+import 'package:blood_donation/Screens/activity.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Screens/number_input.dart';
-import 'package:blood_donation/Screens/profile_form.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +36,7 @@ Future<void> main() async {
                 ? NumberInputScreen()
                 : profileform == false || profileform == null
                     ? const NumberInputScreen()
-                    : const HomePage()),
+                    : const ActivityPage()),
   ));
 }
-// adb connect 192.168.1.9:5555
+// adb connect 192.168.1.6:5555

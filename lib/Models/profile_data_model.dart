@@ -1,3 +1,6 @@
+import 'package:blood_donation/Models/request_form_model.dart';
+import 'package:blood_donation/Models/request_model.dart';
+
 class UserDetailModel {
   String? address;
   int? age;
@@ -16,9 +19,12 @@ class UserDetailModel {
   int? noOfBloodDonations;
   String? profilePhoto;
   String? sex;
+  String? uid;
+  Map<dynamic, dynamic>? requestList;
 
   UserDetailModel(
-      {this.address,
+      {this.uid,
+      this.address,
       this.age,
       this.bloodGroup,
       this.city,
@@ -34,9 +40,11 @@ class UserDetailModel {
       this.noOfAchievments,
       this.noOfBloodDonations,
       this.profilePhoto,
-      this.sex});
+      this.sex,
+      this.requestList});
 
-  UserDetailModel.fromJson(Map<dynamic, dynamic> json) {
+  UserDetailModel.fromJson(Map json, String key) {
+    uid = key;
     address = json['address'];
     age = json['age'];
     bloodGroup = json['bloodGroup'];
@@ -54,6 +62,7 @@ class UserDetailModel {
     noOfBloodDonations = json['noOfBloodDonations'];
     profilePhoto = json['profilePhoto'];
     sex = json['sex'];
+    requestList = json['requestList'];
   }
 
   Map<String, dynamic> toJson() {
@@ -75,6 +84,7 @@ class UserDetailModel {
     data['noOfBloodDonations'] = noOfBloodDonations;
     data['profilePhoto'] = profilePhoto;
     data['sex'] = sex;
+    data['requestList'] = requestList;
     return data;
   }
 }

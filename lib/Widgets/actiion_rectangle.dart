@@ -14,7 +14,7 @@ class ActionRectangle extends StatelessWidget {
       elevation: 5,
       child: Container(
         height: SizeConfig.blockSizeVertical! * 14.7,
-        width: SizeConfig.blockSizeHorizontal! * 39.44,
+        width: SizeConfig.blockSizeHorizontal! * 86.11,
         decoration: BoxDecoration(
             border: Border.all(color: primaryText!),
             borderRadius: BorderRadius.circular(10)),

@@ -32,7 +32,7 @@ class RequestModel {
       this.status,
       this.yourLocation});
 
-  RequestModel.fromJson(Map<String, dynamic> json) {
+  RequestModel.fromJson(Map<dynamic, dynamic> json) {
     bloodGroup = json['bloodGroup'];
     bloodRequirementForm = json['bloodRequirementForm'];
     dateCreated = json['dateCreated'];
