@@ -17,7 +17,6 @@ class _RequestsPageState extends State<RequestsPage> {
   void initState() {
     super.initState();
     print('requests....');
-    ProfileFormVM.instance.getRequests();
   }
 
   @override

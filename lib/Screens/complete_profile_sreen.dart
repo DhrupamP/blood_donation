@@ -424,6 +424,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                             profilePhoto: Provider.of<ProfileProvider>(context,
                                     listen: false)
                                 .profilepicurl,
+                            isAvailable: true,
                           );
                           setState(() {
                             isProfileComplete = true;

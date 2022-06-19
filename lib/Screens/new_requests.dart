@@ -1,7 +1,10 @@
+import 'package:blood_donation/Models/request_form_model.dart';
+import 'package:blood_donation/Models/request_model.dart';
+import 'package:blood_donation/Screens/number_input.dart';
+import 'package:blood_donation/Widgets/new_request.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-
-import '../Size Config/size_config.dart';
-import '../constants/color_constants.dart';
+import '../viewModels/request_form_viewmodel.dart';
 
 class NewRequestsPage extends StatefulWidget {
   const NewRequestsPage({Key? key}) : super(key: key);
@@ -11,117 +14,71 @@ class NewRequestsPage extends StatefulWidget {
 }
 
 class _NewRequestsPageState extends State<NewRequestsPage> {
+  List<Request>? requestsdetails;
+  @override
+  void initState() {
+    requestsdetails = [];
+    RequestFormVM.instance.getCityCodeFromSharedPref();
+    print(code);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    requestsdetails!.clear();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
-    var h = SizeConfig.blockSizeVertical!;
-    var w = SizeConfig.blockSizeHorizontal!;
-    return ListView(
-      children: [
-        SizedBox(
-          height: h * 2.88,
-        ),
-        NewRequest(),
-      ],
-    );
+    return StreamBuilder(
+        stream: FirebaseDatabase.instance
+            .ref()
+            .child('users/C1/${auth.currentUser!.uid}/requestList/')
+            .onValue,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.data != null) {
+            Map _map = snapshot.data.snapshot.value ?? {};
+
+            _map.forEach((key, value) {
+              requestsdetails!.add(Request.fromJson(value));
+            });
+            return ListView.builder(
+                itemCount: requestsdetails!.length,
+                itemBuilder: (context, idx) {
+                  return FutureBuilder(
+                      future: getReqIdData(requestsdetails![idx].requestId!,
+                          requestsdetails![idx].requestUid!),
+                      builder: (context, snapshot) {
+                        if (idx == requestsdetails!.length - 1) {
+                          requestsdetails!.clear();
+                        }
+                        if (snapshot.hasData) {
+                          RequestModel temp = snapshot.data as RequestModel;
+
+                          return NewRequest(
+                            nearestbank: temp.nearByBloodBank,
+                            patientbloodgroup: temp.bloodGroup,
+                            patientname: temp.patientName,
+                          );
+                        } else {
+                          return Center(child: Container());
+                        }
+                      });
+                });
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        });
   }
 }
 
-class NewRequest extends StatelessWidget {
-  const NewRequest({
-    this.patientname,
-    this.nearestbank,
-    this.patientbloodgroup,
-    Key? key,
-  }) : super(key: key);
-  final String? patientname;
-  final String? patientbloodgroup;
-  final String? nearestbank;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: SizeConfig.blockSizeVertical! * 2,
-        left: SizeConfig.blockSizeHorizontal! * 10,
-        right: SizeConfig.blockSizeHorizontal! * 10,
-      ),
-      child: Container(
-        width: SizeConfig.blockSizeHorizontal! * 86.11,
-        height: SizeConfig.blockSizeVertical! * 14.63,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: secondaryText!,
-            )),
-        child: Stack(
-          children: [
-            Align(
-                alignment: const Alignment(-0.9, -0.9),
-                child: Text(
-                  'Patient Name',
-                  style: TextStyle(
-                      color: secondaryText,
-                      fontSize: SizeConfig.blockSizeVertical! * 1.8),
-                )),
-            Align(
-              alignment: const Alignment(-0.9, -0.5),
-              child: Text(
-                patientname.toString(),
-                style: TextStyle(
-                    color: primaryColor,
-                    fontWeight: FontWeight.w800,
-                    fontSize: SizeConfig.blockSizeVertical! * 2),
-              ),
-            ),
-            Align(
-              alignment: const Alignment(1, -0.9),
-              child: SizedBox(
-                width: SizeConfig.blockSizeHorizontal! * 30,
-                height: SizeConfig.blockSizeVertical! * 4,
-                child: Text(
-                  'Nearest blood bank $nearestbank',
-                  style: TextStyle(color: primaryColor),
-                ),
-              ),
-            ),
-            Align(
-              alignment: const Alignment(-0.9, 0.8),
-              child: Container(
-                width: SizeConfig.blockSizeHorizontal! * 43.89,
-                height: SizeConfig.blockSizeVertical! * 3.38,
-                decoration: BoxDecoration(
-                  color: focusedTextField,
-                  borderRadius: BorderRadius.circular(63),
-                ),
-                child: Center(
-                  child: Text(
-                    '$patientbloodgroup blood requires',
-                    style: TextStyle(color: primaryDesign),
-                  ),
-                ),
-              ),
-            ),
-            Align(
-              alignment: const Alignment(0.9, 0.8),
-              child: Container(
-                width: SizeConfig.blockSizeHorizontal! * 23.33,
-                height: SizeConfig.blockSizeVertical! * 4.38,
-                decoration: BoxDecoration(
-                  color: acceptColor,
-                  borderRadius: BorderRadius.circular(63),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Accept',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
+Future<RequestModel> getReqIdData(String reqid, String uid) async {
+  DatabaseEvent evt = await FirebaseDatabase.instance
+      .ref()
+      .child('requestBloodSection/C1/$uid/$reqid')
+      .once();
+  Map<dynamic, dynamic> jsondata = evt.snapshot.value as Map<dynamic, dynamic>;
+  RequestModel req = RequestModel.fromJson(jsondata);
+  return req;
 }

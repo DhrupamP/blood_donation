@@ -21,6 +21,7 @@ class UserDetailModel {
   String? sex;
   String? uid;
   Map<dynamic, dynamic>? requestList;
+  bool? isAvailable;
 
   UserDetailModel(
       {this.uid,
@@ -41,7 +42,8 @@ class UserDetailModel {
       this.noOfBloodDonations,
       this.profilePhoto,
       this.sex,
-      this.requestList});
+      this.requestList,
+      this.isAvailable});
 
   UserDetailModel.fromJson(Map json, String key) {
     uid = key;
@@ -63,6 +65,7 @@ class UserDetailModel {
     profilePhoto = json['profilePhoto'];
     sex = json['sex'];
     requestList = json['requestList'];
+    isAvailable = json['isAvailable'];
   }
 
   Map<String, dynamic> toJson() {
@@ -85,6 +88,7 @@ class UserDetailModel {
     data['profilePhoto'] = profilePhoto;
     data['sex'] = sex;
     data['requestList'] = requestList;
+    data['isAvailable'] = isAvailable;
     return data;
   }
 }

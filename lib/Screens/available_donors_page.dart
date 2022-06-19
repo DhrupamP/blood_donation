@@ -6,7 +6,7 @@ import 'package:blood_donation/constants/color_constants.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-int i = 0;
+int temp = 0;
 
 class AvailableDonors extends StatefulWidget {
   const AvailableDonors({Key? key}) : super(key: key);
@@ -53,8 +53,9 @@ class _AvailableDonorsState extends State<AvailableDonors> {
             ),
           ),
           backgroundColor: white,
-          body: FutureBuilder(
-              future: usersref.orderByChild('isAvailable').equalTo(true).once(),
+          body: StreamBuilder(
+              stream:
+                  usersref.orderByChild('isAvailable').equalTo(true).onValue,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data != null) {
@@ -62,8 +63,14 @@ class _AvailableDonorsState extends State<AvailableDonors> {
                     _map.forEach((key, value) {
                       completedetails!
                           .add(UserDetailModel.fromJson(value, key));
+                      temp = temp + completedetails!.length;
                     });
                     print(completedetails!.length);
+                    if (temp == completedetails!.length - 1) {
+                      completedetails!.clear();
+                      temp = 0;
+                    }
+
                     return Column(
                       children: <Widget>[
                         Expanded(

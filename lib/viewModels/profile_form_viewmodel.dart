@@ -128,8 +128,8 @@ class ProfileFormVM {
   }
 
   getRequests() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    String? cc = pref.getString('citycode');
+    final pref = await SharedPreferences.getInstance();
+    String cc = pref.getString('citycode')!;
     DatabaseEvent evt = await FirebaseDatabase.instance
         .ref()
         .child('users/$cc/${userdata.uid}/requestList')

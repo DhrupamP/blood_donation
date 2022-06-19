@@ -10,16 +10,20 @@ class QuoteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Text(
-        "\"A drop of blood can save a life! Don't waste it and donate blood\"",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: quote,
-            fontSize: SizeConfig.blockSizeVertical! * 2,
-            fontWeight: FontWeight.w800),
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.blockSizeHorizontal! * 6.9),
+      child: SizedBox(
+        child: Text(
+          "\"A drop of blood can save a life! Don't waste it and donate blood\"",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: quote,
+              fontSize: SizeConfig.blockSizeVertical! * 2,
+              fontWeight: FontWeight.w800),
+        ),
+        width: SizeConfig.blockSizeHorizontal! * 77.78,
       ),
-      width: SizeConfig.blockSizeHorizontal! * 77.78,
     );
   }
 }

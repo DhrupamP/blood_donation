@@ -4,6 +4,8 @@ import 'package:blood_donation/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 
 import '../Size Config/size_config.dart';
+import '../viewModels/profile_form_viewmodel.dart';
+import '../viewModels/request_form_viewmodel.dart';
 
 class ActivityPage extends StatefulWidget {
   const ActivityPage({Key? key}) : super(key: key);
@@ -12,8 +14,17 @@ class ActivityPage extends StatefulWidget {
   _ActivityPageState createState() => _ActivityPageState();
 }
 
+bool? isHome;
+
 class _ActivityPageState extends State<ActivityPage> {
-  bool isHome = true;
+  @override
+  void initState() {
+    ProfileFormVM.instance.getProfileData(context);
+    RequestFormVM.instance.getRequestData(context);
+    isHome = true;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -23,7 +34,7 @@ class _ActivityPageState extends State<ActivityPage> {
         child: Scaffold(
       body: Stack(
         children: [
-          isHome ? const HomePage() : const RequestsPage(),
+          isHome! ? const HomePage() : const RequestsPage(),
           Align(
             alignment: const Alignment(0, 0.9),
             child: Container(
@@ -46,19 +57,19 @@ class _ActivityPageState extends State<ActivityPage> {
                       height: h * 6.75,
                       width: w * 29.72,
                       decoration: BoxDecoration(
-                          color: isHome ? primaryDesign : focusedTextField,
+                          color: isHome! ? primaryDesign : focusedTextField,
                           borderRadius: BorderRadius.circular(10)),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
                             "assets/home.png",
-                            color: isHome ? Colors.white : primaryDesign,
+                            color: isHome! ? Colors.white : primaryDesign,
                           ),
                           Text(
                             'Home',
                             style: TextStyle(
-                                color: isHome ? Colors.white : primaryDesign),
+                                color: isHome! ? Colors.white : primaryDesign),
                           )
                         ],
                       ),
@@ -74,19 +85,19 @@ class _ActivityPageState extends State<ActivityPage> {
                       height: h * 6.75,
                       width: w * 29.72,
                       decoration: BoxDecoration(
-                          color: isHome ? focusedTextField : primaryDesign,
+                          color: isHome! ? focusedTextField : primaryDesign,
                           borderRadius: BorderRadius.circular(10)),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
                             "assets/request.png",
-                            color: isHome ? primaryDesign : Colors.white,
+                            color: isHome! ? primaryDesign : Colors.white,
                           ),
                           Text(
                             'Requests',
                             style: TextStyle(
-                                color: isHome ? primaryDesign : Colors.white),
+                                color: isHome! ? primaryDesign : Colors.white),
                           )
                         ],
                       ),

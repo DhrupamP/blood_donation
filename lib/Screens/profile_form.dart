@@ -278,6 +278,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                           noOfAchievments: 0,
                           noOfBloodDonations: 0,
                           profilePhoto: dpurl,
+                          isAvailable: true,
                         );
                         await ProfileFormVM.instance
                             .addUpdateProfile(context, usermodel);

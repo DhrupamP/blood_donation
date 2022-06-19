@@ -47,10 +47,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
-    ProfileFormVM.instance.getProfileData(context);
-    ProfileFormVM.instance.getCityNames();
-    RequestFormVM.instance.getRequestData(context);
   }
 
   @override
@@ -316,8 +312,9 @@ class _HomePageState extends State<HomePage> {
                               Container(
                                 child: Image.asset(
                                   'assets/news_img.png',
-                                  height: h * 50,
+                                  height: h * 11.92,
                                 ),
+                                padding: EdgeInsets.all(h * 0.6),
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,13 +328,17 @@ class _HomePageState extends State<HomePage> {
                                       maxLines: 4,
                                       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electron",
                                       style: TextStyle(
+                                          fontSize: h * 1.54,
                                           color: primaryColor,
-                                          fontWeight: FontWeight.w700),
+                                          fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                   Text(
                                     '10/12/2022',
-                                    style: TextStyle(color: secondaryText),
+                                    style: TextStyle(
+                                      color: secondaryText,
+                                      fontSize: h * 1.54,
+                                    ),
                                   ),
                                 ],
                               )

@@ -5,7 +5,7 @@ class Request {
 
   Request({this.requestId, this.requestUid, this.requestedBy});
 
-  Request.fromJson(Map<String, dynamic> json) {
+  Request.fromJson(Map<dynamic, dynamic> json) {
     requestId = json['requestId'];
     requestUid = json['requestUid'];
     requestedBy = json['requestedBy'];

@@ -13,6 +13,7 @@ String? reqid = '';
 RequestModel currentuserRequest = RequestModel();
 Map<dynamic, dynamic> createdmap = {};
 String k = '';
+String code = '';
 
 class RequestFormVM {
   static RequestFormVM instance = RequestFormVM._();
@@ -108,5 +109,10 @@ class RequestFormVM {
     // print('confirmedmap jsondata: .... ' + confirmedmap.toString());
 
     print('data recieved');
+  }
+
+  Future<void> getCityCodeFromSharedPref() async {
+    final pref = await SharedPreferences.getInstance();
+    code = pref.getString('citycode')!;
   }
 }
