@@ -175,6 +175,7 @@ class _DonorProfileState extends State<DonorProfile> {
                               .addRequest(newrequest, widget.donorID!);
                           await RequestFormVM.instance
                               .UpdateProfile(context, currentuserRequest);
+                          print(currentuserRequest.status);
                         },
                         child: Container(
                           decoration: BoxDecoration(

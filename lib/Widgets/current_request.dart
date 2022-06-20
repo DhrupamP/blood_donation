@@ -3,18 +3,12 @@ import 'package:blood_donation/constants/color_constants.dart';
 import '../Size Config/size_config.dart';
 import '../viewModels/request_form_viewmodel.dart';
 
-class NewRequest extends StatelessWidget {
-  const NewRequest({
-    this.patientname,
-    this.nearestbank,
-    this.patientbloodgroup,
+class CurrentRequest extends StatelessWidget {
+  const CurrentRequest({
     this.requestUid,
     this.requestPushId,
     Key? key,
   }) : super(key: key);
-  final String? patientname;
-  final String? patientbloodgroup;
-  final String? nearestbank;
   final String? requestUid;
   final String? requestPushId;
   @override
@@ -46,7 +40,7 @@ class NewRequest extends StatelessWidget {
             Align(
               alignment: const Alignment(-0.9, -0.5),
               child: Text(
-                patientname.toString(),
+                acceptedRequest.patientName ?? '',
                 style: TextStyle(
                     color: primaryColor,
                     fontWeight: FontWeight.w800,
@@ -59,38 +53,36 @@ class NewRequest extends StatelessWidget {
                 width: SizeConfig.blockSizeHorizontal! * 30,
                 height: SizeConfig.blockSizeVertical! * 4,
                 child: Text(
-                  'Nearest blood bank $nearestbank',
+                  'Nearest blood bank ${acceptedRequest.nearByBloodBank}',
                   style: TextStyle(color: primaryColor),
                 ),
               ),
             ),
             Align(
-              alignment: const Alignment(-0.9, 0.8),
+              alignment: const Alignment(-0.8, 0.7),
               child: Container(
-                width: SizeConfig.blockSizeHorizontal! * 43.89,
+                width: SizeConfig.blockSizeHorizontal! * 26.11,
                 height: SizeConfig.blockSizeVertical! * 3.38,
-                decoration: BoxDecoration(
-                  color: focusedTextField,
-                  borderRadius: BorderRadius.circular(63),
-                ),
                 child: Center(
                   child: Text(
-                    '$patientbloodgroup blood requires',
-                    style: TextStyle(color: primaryDesign),
+                    'Cancel Request',
+                    style: TextStyle(
+                        color: primaryDesign,
+                        fontSize: SizeConfig.blockSizeVertical! * 1.79,
+                        fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
             ),
             Align(
-              alignment: const Alignment(0.9, 0.8),
+              alignment: const Alignment(0.9, 0.7),
               child: GestureDetector(
                 onTap: () async {
-                  await RequestFormVM.instance
-                      .acceptRequest(context, requestUid!, requestPushId!);
+                  await RequestFormVM.instance.confirmRequest(context);
                   print(currentuserRequest.status);
                 },
                 child: Container(
-                  width: SizeConfig.blockSizeHorizontal! * 23.33,
+                  width: SizeConfig.blockSizeHorizontal! * 42.5,
                   height: SizeConfig.blockSizeVertical! * 4.38,
                   decoration: BoxDecoration(
                     color: acceptColor,
@@ -98,8 +90,11 @@ class NewRequest extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      'Accept',
-                      style: TextStyle(color: Colors.white),
+                      'Confirm Donation',
+                      style: TextStyle(
+                          color: white,
+                          fontSize: SizeConfig.blockSizeVertical! * 1.79,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),

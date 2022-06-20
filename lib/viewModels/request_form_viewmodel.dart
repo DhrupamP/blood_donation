@@ -11,6 +11,10 @@ import '../Screens/number_input.dart';
 
 String? reqid = '';
 RequestModel currentuserRequest = RequestModel();
+RequestModel acceptedRequest = RequestModel();
+RequestModel confirmedRequest = RequestModel();
+RequestModel sentRequest = RequestModel();
+
 Map<dynamic, dynamic> createdmap = {};
 String k = '';
 String code = '';
@@ -64,33 +68,49 @@ class RequestFormVM {
         'requestBloodSection/$cc/${FirebaseAuth.instance.currentUser?.uid}');
     DatabaseEvent createdevt =
         await reqref.orderByChild('status').equalTo('created').once();
-    // DatabaseEvent sentevt =
-    //     await reqref.orderByChild('status').equalTo('sent').once();
-    // DatabaseEvent acceptedevt =
-    //     await reqref.orderByChild('status').equalTo('accepted').once();
+    DatabaseEvent sentevt =
+        await reqref.orderByChild('status').equalTo('sent').once();
+    DatabaseEvent acceptedevt =
+        await reqref.orderByChild('status').equalTo('ACCEPTED').once();
     // DatabaseEvent cancelledevt =
     //     await reqref.orderByChild('status').equalTo('cancelled').once();
-    // DatabaseEvent confirmedevt =
-    //     await reqref.orderByChild('status').equalTo('confirmed').once();
+    DatabaseEvent confirmedevt =
+        await reqref.orderByChild('status').equalTo('confirmed').once();
     // DatabaseEvent completedevt =
     //     await reqref.orderByChild('status').equalTo('completed').once();
     if (createdevt.snapshot.value != null) {
+      print('created data');
       createdmap = createdevt.snapshot.value as Map<dynamic, dynamic>;
       k = createdmap.keys.toList().first;
-
       currentuserRequest = RequestModel.fromJson(createdmap[k]);
-      print(createdmap);
     } else {
       createdmap = {};
     }
 
-    // if (sentevt.snapshot.value != null) {
-    //   Map<dynamic, dynamic> sentmap =
-    //       sentevt.snapshot.value as Map<dynamic, dynamic>;
-    //
-    // } else {
-    //   print('sent data is null');
-    // }
+    if (acceptedevt.snapshot.value != null) {
+      Map<dynamic, dynamic> acceptedmap =
+          acceptedevt.snapshot.value as Map<dynamic, dynamic>;
+      k = acceptedmap.keys.toList().first;
+      acceptedRequest = RequestModel.fromJson(acceptedmap[k]);
+    } else {
+      print('sent data is null');
+    }
+    if (sentevt.snapshot.value != null) {
+      Map<dynamic, dynamic> sentmap =
+          acceptedevt.snapshot.value as Map<dynamic, dynamic>;
+      k = sentmap.keys.toList().first;
+      sentRequest = RequestModel.fromJson(sentmap[k]);
+    } else {
+      print('sent data is null');
+    }
+    if (confirmedevt.snapshot.value != null) {
+      Map<dynamic, dynamic> sentmap =
+          confirmedevt.snapshot.value as Map<dynamic, dynamic>;
+      k = sentmap.keys.toList().first;
+      confirmedRequest = RequestModel.fromJson(sentmap[k]);
+    } else {
+      print('sent data is null');
+    }
 
     // Map<dynamic, dynamic> acceptedmap =
     //     acceptedevt.snapshot.value as Map<dynamic, dynamic>;
@@ -114,5 +134,21 @@ class RequestFormVM {
   Future<void> getCityCodeFromSharedPref() async {
     final pref = await SharedPreferences.getInstance();
     code = pref.getString('citycode')!;
+  }
+
+  Future<void> acceptRequest(
+      BuildContext context, String requestuid, String requestpushid) async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('requestBloodSection/C1/$requestuid/$requestpushid')
+        .update({'status': 'ACCEPTED'});
+  }
+
+  Future<void> confirmRequest(BuildContext context) async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('requestBloodSection/C1/${userdata.uid}/$k')
+        .update({'status': 'CONFIRMED'});
+    print(k);
   }
 }

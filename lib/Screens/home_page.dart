@@ -59,6 +59,7 @@ class _HomePageState extends State<HomePage> {
         child: context.watch<HomePageProvider>().isloading
             ? const Scaffold(body: Center(child: CircularProgressIndicator()))
             : Scaffold(
+                backgroundColor: white,
                 drawer: Drawer(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
