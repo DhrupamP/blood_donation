@@ -6,6 +6,9 @@ import 'package:blood_donation/constants/color_constants.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../Providers/profile_provider.dart';
+import 'activity.dart';
+
 int temp = 0;
 
 class AvailableDonors extends StatefulWidget {
@@ -17,7 +20,7 @@ class AvailableDonors extends StatefulWidget {
 
 class _AvailableDonorsState extends State<AvailableDonors> {
   DatabaseReference usersref =
-      FirebaseDatabase.instance.ref().child('users/C1');
+      FirebaseDatabase.instance.ref().child('users/$usercity');
   UserDetailModel? detail;
   List<UserDetailModel>? completedetails;
   @override
@@ -43,7 +46,10 @@ class _AvailableDonorsState extends State<AvailableDonors> {
             leading: BackButton(
               color: secondaryText,
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => ActivityPage()),
+                    (route) => false);
               },
             ),
             title: Text(

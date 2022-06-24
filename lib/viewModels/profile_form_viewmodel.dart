@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:blood_donation/Providers/profile_provider.dart';
 import 'package:blood_donation/Screens/profile_form.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -47,6 +48,9 @@ class ProfileFormVM {
       Provider.of<HomePageProvider>(ctx, listen: false).Startloading();
       SharedPreferences pref = await SharedPreferences.getInstance();
       String? cc = pref.getString('citycode');
+      usercity = cc;
+      print('city:    ' + usercity.toString());
+
       DatabaseReference profileref = FirebaseDatabase.instance
           .ref('users/$cc/${FirebaseAuth.instance.currentUser?.uid}');
       DatabaseEvent evt = await profileref.once();
@@ -55,7 +59,7 @@ class ProfileFormVM {
       userdata = UserDetailModel.fromJson(jsondata, auth.currentUser!.uid);
       citytxt = userdata.city! + ' ';
       profilepic = userdata.profilePhoto!;
-      Provider.of<HomePageProvider>(ctx, listen: false).Stoploading();
+      // Provider.of<HomePageProvider>(ctx, listen: false).Stoploading();
       print(userdata.requestList);
     }
   }

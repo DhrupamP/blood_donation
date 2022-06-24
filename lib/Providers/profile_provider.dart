@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Screens/number_input.dart';
 
+String? usercity;
+
 class ProfileProvider extends ChangeNotifier {
   bool isloading = false;
   String profilepicurl = userdata.profilePhoto == null
@@ -36,6 +38,7 @@ class ProfileProvider extends ChangeNotifier {
       print('done');
       SharedPreferences pref = await SharedPreferences.getInstance();
       String? code = pref.getString('citycode');
+      usercity = pref.getString('citycode');
       print(code);
       print(auth.currentUser!.uid);
       String profileurl = await profileref.getDownloadURL();
@@ -46,6 +49,7 @@ class ProfileProvider extends ChangeNotifier {
           .update({'profilePhoto': profileurl});
 
       profilepicurl = profileurl;
+
       isloading = false;
       notifyListeners();
 

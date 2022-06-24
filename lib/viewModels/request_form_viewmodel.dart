@@ -1,12 +1,14 @@
-import 'package:blood_donation/Models/profile_data_model.dart';
 import 'package:blood_donation/Models/request_form_model.dart';
 import 'package:blood_donation/Screens/home_page.dart';
-import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Providers/homepage_provider.dart';
+import '../Providers/profile_provider.dart';
 import '../Screens/number_input.dart';
 
 String? reqid = '';
@@ -16,6 +18,10 @@ RequestModel confirmedRequest = RequestModel();
 RequestModel sentRequest = RequestModel();
 
 Map<dynamic, dynamic> createdmap = {};
+Map<dynamic, dynamic> sentmap = {};
+Map<dynamic, dynamic> acceptedmap = {};
+Map<dynamic, dynamic> confirmedmap = {};
+
 String k = '';
 String code = '';
 
@@ -69,7 +75,7 @@ class RequestFormVM {
     DatabaseEvent createdevt =
         await reqref.orderByChild('status').equalTo('created').once();
     DatabaseEvent sentevt =
-        await reqref.orderByChild('status').equalTo('sent').once();
+        await reqref.orderByChild('status').equalTo('SENT').once();
     DatabaseEvent acceptedevt =
         await reqref.orderByChild('status').equalTo('ACCEPTED').once();
     // DatabaseEvent cancelledevt =
@@ -78,55 +84,38 @@ class RequestFormVM {
         await reqref.orderByChild('status').equalTo('confirmed').once();
     // DatabaseEvent completedevt =
     //     await reqref.orderByChild('status').equalTo('completed').once();
+
     if (createdevt.snapshot.value != null) {
       print('created data');
       createdmap = createdevt.snapshot.value as Map<dynamic, dynamic>;
-      k = createdmap.keys.toList().first;
+      k = createdmap.keys.toList().last;
       currentuserRequest = RequestModel.fromJson(createdmap[k]);
     } else {
       createdmap = {};
     }
 
     if (acceptedevt.snapshot.value != null) {
-      Map<dynamic, dynamic> acceptedmap =
-          acceptedevt.snapshot.value as Map<dynamic, dynamic>;
-      k = acceptedmap.keys.toList().first;
+      acceptedmap = acceptedevt.snapshot.value as Map<dynamic, dynamic>;
+      k = acceptedmap.keys.toList().last;
       acceptedRequest = RequestModel.fromJson(acceptedmap[k]);
     } else {
-      print('sent data is null');
+      acceptedmap = {};
     }
     if (sentevt.snapshot.value != null) {
-      Map<dynamic, dynamic> sentmap =
-          acceptedevt.snapshot.value as Map<dynamic, dynamic>;
-      k = sentmap.keys.toList().first;
+      sentmap = sentevt.snapshot.value as Map<dynamic, dynamic>;
+      k = sentmap.keys.toList().last;
       sentRequest = RequestModel.fromJson(sentmap[k]);
     } else {
-      print('sent data is null');
+      sentmap = {};
     }
     if (confirmedevt.snapshot.value != null) {
-      Map<dynamic, dynamic> sentmap =
-          confirmedevt.snapshot.value as Map<dynamic, dynamic>;
-      k = sentmap.keys.toList().first;
-      confirmedRequest = RequestModel.fromJson(sentmap[k]);
+      confirmedmap = confirmedevt.snapshot.value as Map<dynamic, dynamic>;
+      k = confirmedmap.keys.toList().last;
+      confirmedRequest = RequestModel.fromJson(confirmedmap[k]);
     } else {
-      print('sent data is null');
+      confirmedmap = {};
     }
-
-    // Map<dynamic, dynamic> acceptedmap =
-    //     acceptedevt.snapshot.value as Map<dynamic, dynamic>;
-    // Map<dynamic, dynamic> cancelledmap =
-    //     cancelledevt.snapshot.value as Map<dynamic, dynamic>;
-    // Map<dynamic, dynamic> confirmedmap =
-    //     confirmedevt.snapshot.value as Map<dynamic, dynamic>;
-    // Map<dynamic, dynamic> completedmap =
-    //     completedevt.snapshot.value as Map<dynamic, dynamic>;
-    // print('createdmap jsondata: .... ' + createdmap.toString());
-    // print(createdmap.values.first['status']);
-
-    // print('acceptedmap jsondata: .... ' + acceptedmap.toString());
-    // print('cancelledmap jsondata: .... ' + cancelledmap.toString());
-    // print('completedmap jsondata: .... ' + completedmap.toString());
-    // print('confirmedmap jsondata: .... ' + confirmedmap.toString());
+    Provider.of<HomePageProvider>(ctx, listen: false).Stoploading();
 
     print('data recieved');
   }
@@ -142,13 +131,40 @@ class RequestFormVM {
         .ref()
         .child('requestBloodSection/C1/$requestuid/$requestpushid')
         .update({'status': 'ACCEPTED'});
+    sentmap.clear();
+  }
+
+  Future<void> uploadDocument(
+      BuildContext context, String requestuid, String requestpushid) async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('requestBloodSection/C1/$requestuid/$requestpushid')
+        .update({'status': 'COMPLETED'});
+    sentmap.clear();
+    confirmedmap.clear();
+    acceptedmap.clear();
+    createdmap.clear();
   }
 
   Future<void> confirmRequest(BuildContext context) async {
     await FirebaseDatabase.instance
         .ref()
-        .child('requestBloodSection/C1/${userdata.uid}/$k')
+        .child('requestBloodSection/$usercity/${userdata.uid}/$k')
         .update({'status': 'CONFIRMED'});
     print(k);
+  }
+
+  Future<void> cancelRequest(
+      BuildContext context, String uid, String requestPushID) async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('requestBloodSection/$usercity/$uid/$requestPushID')
+        .update({'status': 'CANCELLED'});
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Request Cancelled')));
+    sentmap.clear();
+    confirmedmap.clear();
+    acceptedmap.clear();
+    createdmap.clear();
   }
 }

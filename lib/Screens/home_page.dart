@@ -15,7 +15,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/actiion_rectangle.dart';
 import '../Widgets/action_square.dart';
@@ -46,6 +45,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
+    // ProfileFormVM.instance.getProfileData(context);
+    // RequestFormVM.instance.getRequestData(context);
     super.initState();
   }
 
@@ -253,6 +254,13 @@ class _HomePageState extends State<HomePage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (_) => AvailableDonors()));
+                                } else if (!sentmap.isEmpty ||
+                                    !acceptedmap.isEmpty ||
+                                    !confirmedmap.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Only one request can be sent.')));
                                 } else {
                                   Navigator.push(
                                       context,

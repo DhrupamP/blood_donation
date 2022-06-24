@@ -1,4 +1,5 @@
 import 'package:blood_donation/Models/request_form_model.dart';
+import 'package:blood_donation/Screens/activity.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
@@ -10,7 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:provider/provider.dart';
+import 'package:blood_donation/Providers/requests_provider.dart';
 import '../Models/request_model.dart';
 import '../Size Config/size_config.dart';
 
@@ -41,6 +43,7 @@ class DonorProfile extends StatefulWidget {
 }
 
 class _DonorProfileState extends State<DonorProfile> {
+  bool ignoringSentBtn = false;
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -161,7 +164,11 @@ class _DonorProfileState extends State<DonorProfile> {
                       ),
                       GestureDetector(
                         onTap: () async {
+                          setState(() {
+                            ignoringSentBtn = true;
+                          });
                           await RequestFormVM.instance.getRequestData(context);
+
                           currentuserRequest.status = 'SENT';
                           currentuserRequest.donorName =
                               widget.donorname.toString();
@@ -175,33 +182,42 @@ class _DonorProfileState extends State<DonorProfile> {
                               .addRequest(newrequest, widget.donorID!);
                           await RequestFormVM.instance
                               .UpdateProfile(context, currentuserRequest);
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (_) => ActivityPage()),
+                              (route) => false);
+
                           print(currentuserRequest.status);
                         },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: acceptColor,
-                              borderRadius: BorderRadius.circular(36)),
-                          height: h * 4.38,
-                          width: w * 53.61,
-                          child: Center(
-                              child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                FontAwesomeIcons.paperPlane,
-                                color: white,
-                                size: h * 2.05,
-                              ),
-                              SizedBox(
-                                width: w * 4,
-                              ),
-                              Text(
-                                'Send Request',
-                                style: TextStyle(
-                                    color: white, fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          )),
+                        child: IgnorePointer(
+                          ignoring: ignoringSentBtn,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: acceptColor,
+                                borderRadius: BorderRadius.circular(36)),
+                            height: h * 4.38,
+                            width: w * 53.61,
+                            child: Center(
+                                child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  FontAwesomeIcons.paperPlane,
+                                  color: white,
+                                  size: h * 2.05,
+                                ),
+                                SizedBox(
+                                  width: w * 4,
+                                ),
+                                Text(
+                                  'Send Request',
+                                  style: TextStyle(
+                                      color: white,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            )),
+                          ),
                         ),
                       ),
                       SizedBox(

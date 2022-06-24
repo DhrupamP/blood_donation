@@ -1,3 +1,6 @@
+import 'package:blood_donation/Screens/number_input.dart';
+import 'package:blood_donation/Widgets/accepted_request.dart';
+import 'package:blood_donation/Widgets/new_request.dart';
 import 'package:flutter/material.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import '../Size Config/size_config.dart';
@@ -7,90 +10,96 @@ class CurrentRequest extends StatelessWidget {
   const CurrentRequest({
     this.requestUid,
     this.requestPushId,
+    this.status,
     Key? key,
   }) : super(key: key);
   final String? requestUid;
   final String? requestPushId;
+  final String? status;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: SizeConfig.blockSizeVertical! * 2,
-        left: SizeConfig.blockSizeHorizontal! * 10,
-        right: SizeConfig.blockSizeHorizontal! * 10,
-      ),
-      child: Container(
-        width: SizeConfig.blockSizeHorizontal! * 86.11,
-        height: SizeConfig.blockSizeVertical! * 14.63,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: secondaryText!,
-            )),
-        child: Stack(
-          children: [
-            Align(
-                alignment: const Alignment(-0.9, -0.9),
+    if (status == 'SENT') {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: SizeConfig.blockSizeVertical! * 2,
+          left: SizeConfig.blockSizeHorizontal! * 10,
+          right: SizeConfig.blockSizeHorizontal! * 10,
+        ),
+        child: Container(
+          width: SizeConfig.blockSizeHorizontal! * 86.11,
+          height: SizeConfig.blockSizeVertical! * 14.63,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: secondaryText!,
+              )),
+          child: Stack(
+            children: [
+              Align(
+                  alignment: const Alignment(-0.9, -0.9),
+                  child: Text(
+                    'Patient Name',
+                    style: TextStyle(
+                        color: secondaryText,
+                        fontSize: SizeConfig.blockSizeVertical! * 1.8),
+                  )),
+              Align(
+                alignment: const Alignment(-0.9, -0.5),
                 child: Text(
-                  'Patient Name',
+                  sentRequest.patientName ?? '',
                   style: TextStyle(
-                      color: secondaryText,
-                      fontSize: SizeConfig.blockSizeVertical! * 1.8),
-                )),
-            Align(
-              alignment: const Alignment(-0.9, -0.5),
-              child: Text(
-                acceptedRequest.patientName ?? '',
-                style: TextStyle(
-                    color: primaryColor,
-                    fontWeight: FontWeight.w800,
-                    fontSize: SizeConfig.blockSizeVertical! * 2),
-              ),
-            ),
-            Align(
-              alignment: const Alignment(1, -0.9),
-              child: SizedBox(
-                width: SizeConfig.blockSizeHorizontal! * 30,
-                height: SizeConfig.blockSizeVertical! * 4,
-                child: Text(
-                  'Nearest blood bank ${acceptedRequest.nearByBloodBank}',
-                  style: TextStyle(color: primaryColor),
+                      color: primaryColor,
+                      fontWeight: FontWeight.w800,
+                      fontSize: SizeConfig.blockSizeVertical! * 2),
                 ),
               ),
-            ),
-            Align(
-              alignment: const Alignment(-0.8, 0.7),
-              child: Container(
-                width: SizeConfig.blockSizeHorizontal! * 26.11,
-                height: SizeConfig.blockSizeVertical! * 3.38,
-                child: Center(
+              Align(
+                alignment: const Alignment(1, -0.9),
+                child: SizedBox(
+                  width: SizeConfig.blockSizeHorizontal! * 30,
+                  height: SizeConfig.blockSizeVertical! * 4,
                   child: Text(
-                    'Cancel Request',
-                    style: TextStyle(
-                        color: primaryDesign,
-                        fontSize: SizeConfig.blockSizeVertical! * 1.79,
-                        fontWeight: FontWeight.w600),
+                    'Nearest blood bank ${sentRequest.nearByBloodBank}',
+                    style: TextStyle(color: primaryColor),
                   ),
                 ),
               ),
-            ),
-            Align(
-              alignment: const Alignment(0.9, 0.7),
-              child: GestureDetector(
-                onTap: () async {
-                  await RequestFormVM.instance.confirmRequest(context);
-                  print(currentuserRequest.status);
-                },
+              Align(
+                alignment: const Alignment(-0.8, 0.7),
+                child: GestureDetector(
+                  onTap: () {
+                    print(k.toString());
+                    RequestFormVM.instance
+                        .cancelRequest(context, auth.currentUser!.uid, k);
+                    RequestFormVM.instance.getRequestData(context);
+                  },
+                  child: Container(
+                    width: SizeConfig.blockSizeHorizontal! * 26.11,
+                    height: SizeConfig.blockSizeVertical! * 3.38,
+                    child: Center(
+                      child: Text(
+                        'Cancel Request',
+                        style: TextStyle(
+                            color: primaryDesign,
+                            fontSize: SizeConfig.blockSizeVertical! * 1.79,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: const Alignment(0.9, 0.7),
                 child: Container(
-                  width: SizeConfig.blockSizeHorizontal! * 42.5,
+                  width: SizeConfig.blockSizeHorizontal! * 35.5,
                   height: SizeConfig.blockSizeVertical! * 4.38,
                   decoration: BoxDecoration(
-                    color: acceptColor,
+                    color: Colors.grey,
                     borderRadius: BorderRadius.circular(63),
                   ),
                   child: Center(
                     child: Text(
-                      'Confirm Donation',
+                      'Pending',
                       style: TextStyle(
                           color: white,
                           fontSize: SizeConfig.blockSizeVertical! * 1.79,
@@ -98,11 +107,125 @@ class CurrentRequest extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else if (status == 'ACCEPTED') {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: SizeConfig.blockSizeVertical! * 2,
+          left: SizeConfig.blockSizeHorizontal! * 10,
+          right: SizeConfig.blockSizeHorizontal! * 10,
+        ),
+        child: Container(
+          width: SizeConfig.blockSizeHorizontal! * 86.11,
+          height: SizeConfig.blockSizeVertical! * 14.63,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: secondaryText!,
+              )),
+          child: Stack(
+            children: [
+              Align(
+                  alignment: const Alignment(-0.9, -0.9),
+                  child: Text(
+                    'Patient Name',
+                    style: TextStyle(
+                        color: secondaryText,
+                        fontSize: SizeConfig.blockSizeVertical! * 1.8),
+                  )),
+              Align(
+                alignment: const Alignment(-0.9, -0.5),
+                child: Text(
+                  acceptedRequest.patientName ?? '',
+                  style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w800,
+                      fontSize: SizeConfig.blockSizeVertical! * 2),
+                ),
+              ),
+              Align(
+                alignment: const Alignment(1, -0.9),
+                child: SizedBox(
+                  width: SizeConfig.blockSizeHorizontal! * 30,
+                  height: SizeConfig.blockSizeVertical! * 4,
+                  child: Text(
+                    'Nearest blood bank ${acceptedRequest.nearByBloodBank}',
+                    style: TextStyle(color: primaryColor),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: const Alignment(-0.8, 0.7),
+                child: GestureDetector(
+                  onTap: () {
+                    print(k);
+                    RequestFormVM.instance
+                        .cancelRequest(context, auth.currentUser!.uid, k);
+                    RequestFormVM.instance.getRequestData(context);
+                  },
+                  child: Container(
+                    width: SizeConfig.blockSizeHorizontal! * 26.11,
+                    height: SizeConfig.blockSizeVertical! * 3.38,
+                    child: Center(
+                      child: Text(
+                        'Cancel Request',
+                        style: TextStyle(
+                            color: primaryDesign,
+                            fontSize: SizeConfig.blockSizeVertical! * 1.79,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: const Alignment(0.9, 0.7),
+                child: GestureDetector(
+                  onTap: () async {
+                    await RequestFormVM.instance.confirmRequest(context);
+                    print(currentuserRequest.status);
+                  },
+                  child: Container(
+                    width: SizeConfig.blockSizeHorizontal! * 42.5,
+                    height: SizeConfig.blockSizeVertical! * 4.38,
+                    decoration: BoxDecoration(
+                      color: acceptColor,
+                      borderRadius: BorderRadius.circular(63),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Confirm Donation',
+                        style: TextStyle(
+                            color: white,
+                            fontSize: SizeConfig.blockSizeVertical! * 1.79,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    } else if (status == 'CONFIRMED') {
+      return AcceptedRequest(
+        patientname: sentRequest.patientName,
+        nearestbank: sentRequest.nearByBloodBank,
+        status: status,
+      );
+    } else if (status == 'COMPLETED') {
+      return AcceptedRequest(
+        patientname: sentRequest.patientName,
+        nearestbank: sentRequest.nearByBloodBank,
+        status: status,
+      );
+    } else {
+      return SizedBox();
+    }
   }
 }

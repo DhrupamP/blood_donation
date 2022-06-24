@@ -1,3 +1,4 @@
+import 'package:blood_donation/Providers/profile_provider.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Screens/requests_page.dart';
 import 'package:blood_donation/constants/color_constants.dart';
@@ -21,6 +22,7 @@ class _ActivityPageState extends State<ActivityPage> {
   void initState() {
     ProfileFormVM.instance.getProfileData(context);
     RequestFormVM.instance.getRequestData(context);
+
     isHome = true;
     super.initState();
   }
