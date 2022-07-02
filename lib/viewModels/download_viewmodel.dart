@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
@@ -25,6 +26,8 @@ class DownloadVM {
       //final _assetImage = await flutterImageProvider(NetworkImage(url));
       final _assetImage =
           await flutterImageProvider(AssetImage("assets/certificate.jpg"));
+      // pdf.Image(AssetImage("assets/certificate.jpg") as PdfImage);
+      //     await AssetImage("assets/certificate.jpg");
       // final _assetImage = await pdfImageFromImageProvider(
       //   pdf: _pdf.document,
       //   image: AssetImage(
@@ -144,8 +147,9 @@ class DownloadVM {
 
       storagePermission = await Permission.storage.status;
       if (storagePermission.isGranted) {
-        final String dir = await ExternalPath.getExternalStoragePublicDirectory(
-            External.DIRECTORY_DOWNLOADS);
+        final d = await getExternalStorageDirectory();
+        final dir = d!.path;
+
         List<int> list = await _pdf.save();
         final file = File('$dir/$name$donationCount.pdf');
         file.writeAsBytesSync(list.toList());

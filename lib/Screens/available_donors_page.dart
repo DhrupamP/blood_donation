@@ -1,5 +1,6 @@
 import 'package:blood_donation/Models/profile_data_model.dart';
 import 'package:blood_donation/Screens/donor_profile.dart';
+import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Size%20Config/size_config.dart';
 import 'package:blood_donation/Widgets/donor_item.dart';
 import 'package:blood_donation/constants/color_constants.dart';
@@ -65,17 +66,18 @@ class _AvailableDonorsState extends State<AvailableDonors> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data != null) {
+                    completedetails!.clear();
                     Map _map = snapshot.data.snapshot.value;
                     _map.forEach((key, value) {
+                      UserDetailModel check =
+                          UserDetailModel.fromJson(value, key);
+                      if (check.uid == userdata.uid) {
+                        return;
+                      }
                       completedetails!
                           .add(UserDetailModel.fromJson(value, key));
-                      temp = temp + completedetails!.length;
                     });
                     print(completedetails!.length);
-                    if (temp == completedetails!.length - 1) {
-                      completedetails!.clear();
-                      temp = 0;
-                    }
 
                     return Column(
                       children: <Widget>[
@@ -97,6 +99,8 @@ class _AvailableDonorsState extends State<AvailableDonors> {
                                 crossAxisCount: 2,
                               ),
                               itemBuilder: (context, index) {
+                                if (completedetails![index].uid == userdata.uid)
+                                  return SizedBox();
                                 return GestureDetector(
                                     onTap: () {
                                       Navigator.push(context,

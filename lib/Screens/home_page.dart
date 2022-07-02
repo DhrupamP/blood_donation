@@ -2,9 +2,12 @@ import 'package:blood_donation/Models/profile_data_model.dart';
 import 'package:blood_donation/Models/story_model.dart';
 import 'package:blood_donation/Providers/homepage_provider.dart';
 import 'package:blood_donation/Providers/requests_provider.dart';
+import 'package:blood_donation/Screens/about_screen.dart';
 import 'package:blood_donation/Screens/available_donors_page.dart';
 import 'package:blood_donation/Screens/complete_profile_sreen.dart';
+import 'package:blood_donation/Screens/help_page.dart';
 import 'package:blood_donation/Screens/number_input.dart';
+import 'package:blood_donation/Screens/our_experts.dart';
 import 'package:blood_donation/Screens/profile_form.dart';
 import 'package:blood_donation/viewModels/login_viewmodel.dart';
 import 'package:blood_donation/viewModels/story_viewmodel.dart';
@@ -29,8 +32,10 @@ import '../Widgets/drawer_tile.dart';
 import '../Widgets/quote_widget.dart';
 import 'package:provider/provider.dart';
 import '../Providers/profile_provider.dart';
+import '../Widgets/story_widget.dart';
 import '../viewModels/request_form_viewmodel.dart';
 
+List<Widget> allScreens = [OurExperts(), Container(), AboutPage()];
 bool? isProfileComplete = false;
 GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
 int? draweridx = 0;
@@ -53,6 +58,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // ProfileFormVM.instance.getProfileData(context);
     // RequestFormVM.instance.getRequestData(context);
+    print('userdata.uid:  ' + userdata.uid.toString());
     super.initState();
   }
 
@@ -177,7 +183,14 @@ class _HomePageState extends State<HomePage> {
                           icon: FontAwesomeIcons.shareNodes,
                           text: 'Share the App',
                         ),
-                        const DrawerShare(
+                        DrawerShare(
+                          onpressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const HelpPage(),
+                                ));
+                          },
                           icon: FontAwesomeIcons.circleQuestion,
                           text: 'Help',
                         )
@@ -395,73 +408,5 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ));
-  }
-}
-
-class Story extends StatelessWidget {
-  const Story({
-    Key? key,
-    this.url,
-    this.date,
-    this.description,
-  }) : super(key: key);
-  final String? description;
-  final String? date;
-  final String? url;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: SizeConfig.blockSizeHorizontal! * 6.94),
-      child: Container(
-        height: SizeConfig.blockSizeVertical! * 13.2,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: primaryText!)),
-        child: Row(
-          children: [
-            SizedBox(
-              width: SizeConfig.blockSizeHorizontal! * 1,
-            ),
-            StoryImage(
-              url: url,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: SizeConfig.blockSizeVertical! * 0.6,
-                ),
-                SizedBox(
-                  width: SizeConfig.blockSizeHorizontal! * 48.33,
-                  child: Text(
-                    description!,
-                    overflow: TextOverflow.ellipsis,
-                    softWrap: true,
-                    maxLines: 4,
-                    style: TextStyle(
-                        fontSize: SizeConfig.blockSizeVertical! * 1.54,
-                        color: primaryColor,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
-                Spacer(),
-                Text(
-                  date!,
-                  style: TextStyle(
-                    color: secondaryText,
-                    fontSize: SizeConfig.blockSizeVertical! * 1.54,
-                  ),
-                ),
-                SizedBox(
-                  height: SizeConfig.blockSizeVertical! * 1,
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

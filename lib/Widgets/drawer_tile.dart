@@ -25,7 +25,13 @@ class _DrawerTileState extends State<DrawerTile> {
       onTap: () async {
         setState(() {
           draweridx = widget.index;
+
           Navigator.pop(context);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => allScreens[widget.index],
+              ));
         });
       },
       child: Container(

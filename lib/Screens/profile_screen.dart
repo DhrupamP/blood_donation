@@ -1,8 +1,10 @@
+import 'package:blood_donation/Screens/all_user_stories.dart';
 import 'package:blood_donation/Screens/edit_story_screen.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Screens/story_screen.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
+import 'package:blood_donation/viewModels/download_viewmodel.dart';
 import 'package:blood_donation/viewModels/story_viewmodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -255,17 +257,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: secondaryText,
                               fontWeight: FontWeight.w800),
                         ),
-                        Text(
-                          'View all',
-                          style: TextStyle(
-                              color: secondaryText,
-                              fontWeight: FontWeight.w800),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AllUserStories(),
+                                ));
+                          },
+                          child: Text(
+                            'View all',
+                            style: TextStyle(
+                                color: secondaryText,
+                                fontWeight: FontWeight.w800),
+                          ),
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: h * 2,
-                    ),
+                    // SizedBox(
+                    //   height: h * 2,
+                    // ),
                     Container(
                       height: h * 12,
                       width: w * 100,
@@ -365,6 +376,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     Container(
                       child: ContinueButton(
+                        onpressed: () {
+                          DownloadVM.instance
+                              .pdfGenerator('dhrupam', 2, context);
+                        },
                         txt: 'Download Certificate',
                         txtColor: Colors.white,
                         icon: FontAwesomeIcons.download,

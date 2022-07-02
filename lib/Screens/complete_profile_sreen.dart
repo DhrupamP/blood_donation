@@ -69,6 +69,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
   @override
   void initState() {
     super.initState();
+    print('useruid:' + userdata.uid.toString());
     ProfileFormVM.instance.getCityNames();
     newnamefn = FocusNode();
     dobfn = FocusNode();

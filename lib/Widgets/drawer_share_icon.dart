@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import '../constants/color_constants.dart';
 
 class DrawerShare extends StatefulWidget {
-  const DrawerShare({Key? key, this.text, this.icon}) : super(key: key);
+  const DrawerShare({Key? key, this.text, this.icon, this.onpressed})
+      : super(key: key);
   final IconData? icon;
   final String? text;
+  final VoidCallback? onpressed;
   @override
   _DrawerShareState createState() => _DrawerShareState();
 }
@@ -15,6 +17,7 @@ class _DrawerShareState extends State<DrawerShare> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: widget.onpressed,
       child: Container(
         width: SizeConfig.blockSizeHorizontal! * 60,
         height: SizeConfig.blockSizeVertical! * 6,

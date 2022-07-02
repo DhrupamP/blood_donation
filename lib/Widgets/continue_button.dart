@@ -55,14 +55,14 @@ class ContinueButton extends StatelessWidget {
                   ),
             icon == null
                 ? Container()
-                : SizedBox(width: SizeConfig.blockSizeHorizontal! * 2),
+                : SizedBox(width: SizeConfig.blockSizeHorizontal! * 2.3),
             Text(
               txt.toString(),
               style: TextStyle(
                   letterSpacing: 0.5,
                   color: txtColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: SizeConfig.blockSizeVertical! * 2),
+                  fontWeight: FontWeight.w600,
+                  fontSize: SizeConfig.blockSizeVertical! * 2.3),
             ),
           ],
         ),
