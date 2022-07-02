@@ -1,6 +1,7 @@
 import 'package:blood_donation/Models/request_form_model.dart';
 import 'package:blood_donation/Models/request_model.dart';
 import 'package:blood_donation/Providers/profile_provider.dart';
+import 'package:blood_donation/Providers/requests_provider.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Size%20Config/size_config.dart';
@@ -11,6 +12,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../Widgets/sentRequest.dart';
 import '../viewModels/request_form_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class NewRequestsPage extends StatefulWidget {
   const NewRequestsPage({Key? key}) : super(key: key);
@@ -114,8 +116,15 @@ class _NewRequestsPageState extends State<NewRequestsPage> {
                                       requestPushId: tempreqpushid,
                                       status: temp.status,
                                     );
-                                  } else if (temp.status == 'CONFIRMED' ||
-                                      temp.status == 'COMPLETED') {
+                                  } else if (temp.status == 'CONFIRMED') {
+                                    return AcceptedRequest(
+                                      requestPushId: tempreqpushid,
+                                      requestUid: temprequid,
+                                      status: temp.status,
+                                      patientname: temp.patientName,
+                                      nearestbank: temp.nearByBloodBank,
+                                    );
+                                  } else if (temp.status == 'COMPLETED') {
                                     return AcceptedRequest(
                                       requestPushId: tempreqpushid,
                                       requestUid: temprequid,
@@ -146,6 +155,22 @@ class _NewRequestsPageState extends State<NewRequestsPage> {
                 if (snapshot.hasData) {
                   print("data..............");
                   print((snapshot.data! as DatabaseEvent).snapshot.value);
+
+                  if ((snapshot.data! as DatabaseEvent)
+                          .snapshot
+                          .value
+                          .toString() ==
+                      'COMPLETED') {
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      Provider.of<RequestsProvider>(context, listen: false)
+                          .requestcomplete();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Request Completed')));
+                    });
+                    RequestFormVM.instance.completeandmoveRequest();
+                  }
+                  print(k);
+
                   return CurrentRequest(
                     requestUid: userdata.uid,
                     status: (snapshot.data! as DatabaseEvent)
@@ -171,4 +196,8 @@ Future<RequestModel> getReqIdData(String reqid, String uid) async {
   Map<dynamic, dynamic> jsondata = evt.snapshot.value as Map<dynamic, dynamic>;
   RequestModel req = RequestModel.fromJson(jsondata);
   return req;
+}
+
+Future<void> delayedFunction(Duration time) async {
+  await Future.delayed(time);
 }

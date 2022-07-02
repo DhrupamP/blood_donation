@@ -1,4 +1,8 @@
+import 'package:blood_donation/Screens/activity.dart';
+import 'package:blood_donation/Screens/number_input.dart';
+import 'package:blood_donation/Screens/profile_form.dart';
 import 'package:blood_donation/viewModels/login_viewmodel.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Size Config/size_config.dart';
@@ -10,6 +14,7 @@ import '../constants/color_constants.dart';
 import '../constants/string_constants.dart';
 
 bool isotpEmpty = true;
+TextEditingController otpController = TextEditingController();
 
 class OTPInputScreen extends StatefulWidget {
   const OTPInputScreen({Key? key, this.phoneNumber}) : super(key: key);
@@ -22,6 +27,7 @@ class OTPInputScreen extends StatefulWidget {
 class _OTPInputScreenState extends State<OTPInputScreen> {
   @override
   void initState() {
+    otpController = TextEditingController();
     super.initState();
     LoginVM.instance
         .verifyPhone(context, '+91' + widget.phoneNumber.toString());
@@ -55,8 +61,7 @@ class _OTPInputScreenState extends State<OTPInputScreen> {
               height: h * 2.75,
             ),
             Center(
-              child:
-                  OTPInput(focusnode: otpfocusnode, controller: otpController),
+              child: OTPInput(focusnode: otpfocusnode),
             ),
             SizedBox(
               height: h * 47,
@@ -66,9 +71,20 @@ class _OTPInputScreenState extends State<OTPInputScreen> {
               bgcolor: isotpEmpty ? Colors.white : primaryDesign,
               txtColor: isotpEmpty ? primaryDesign : Colors.white,
               onpressed: () async {
-                LoginVM.instance.SignInWithOTP(otpController.text, context);
+                await LoginVM.instance
+                    .SignInWithOTP(otpController.text, context);
                 final pref = await SharedPreferences.getInstance();
+                pref.setString('citycode', 'C1');
                 pref.setBool('isloggedin', true);
+                print("loggedin:  " + pref.getBool('isloggedin').toString());
+
+                // String? code = pref.getString('citycode');
+                // DatabaseEvent evt = await FirebaseDatabase.instance
+                //     .ref()
+                //     .child('users//${auth.currentUser!.uid}')
+                //     .once();
+                // Map temp = evt.snapshot.value as Map;
+                // if (evt.snapshot.value == null) {}
               },
             ),
             Center(child: isotpEmpty ? const ResendCodeButton() : Container())

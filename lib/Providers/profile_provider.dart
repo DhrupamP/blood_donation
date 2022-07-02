@@ -26,9 +26,9 @@ class ProfileProvider extends ChangeNotifier {
     File profilefile = File(profileresult.files.first.path!);
     tempProfilePic = profilefile;
     notifyListeners();
-
     final storageref = FirebaseStorage.instance.ref();
-    final profileref = storageref.child('profile.jpg');
+    final profileref =
+        storageref.child('users/C1/${auth.currentUser!.uid}/profile.jpg');
     try {
       await profileref.putFile(
           profilefile,

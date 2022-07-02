@@ -59,6 +59,8 @@ class ProfileFormVM {
       userdata = UserDetailModel.fromJson(jsondata, auth.currentUser!.uid);
       citytxt = userdata.city! + ' ';
       profilepic = userdata.profilePhoto!;
+      Provider.of<ProfileProvider>(ctx, listen: false).profilepicurl =
+          userdata.profilePhoto!;
       // Provider.of<HomePageProvider>(ctx, listen: false).Stoploading();
       print(userdata.requestList);
     }
@@ -139,39 +141,5 @@ class ProfileFormVM {
         .child('users/$cc/${userdata.uid}/requestList')
         .once();
     print(evt.snapshot.value);
-  }
-
-  addupdateProfilePicture() async {
-    final profileresult = await FilePicker.platform.pickFiles(
-        type: FileType.custom, allowedExtensions: ['jpg', 'png', 'jpeg']);
-
-    if (profileresult == null) return;
-    File profilefile = File(profileresult.files.first.path!);
-    final storageref = FirebaseStorage.instance.ref();
-    final profileref = storageref.child('profile.jpg');
-    try {
-      await profileref.putFile(
-          profilefile,
-          SettableMetadata(
-            contentType: "image/jpeg",
-          ));
-      print('done');
-      SharedPreferences pref = await SharedPreferences.getInstance();
-      String? code = pref.getString('citycode');
-      print(code);
-      print(auth.currentUser!.uid);
-      String profileurl = await profileref.getDownloadURL();
-
-      await FirebaseDatabase.instance
-          .ref()
-          .child("users/$code/${auth.currentUser!.uid}/")
-          .update({'profilePhoto': profileurl});
-
-      profilepic = profileurl;
-
-      print('profile pic updates');
-    } catch (e) {
-      print(e);
-    }
   }
 }

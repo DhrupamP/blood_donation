@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Providers/homepage_provider.dart';
 import '../Providers/profile_provider.dart';
+import '../Providers/requests_provider.dart';
 import '../Screens/number_input.dart';
 
 String? reqid = '';
@@ -16,11 +17,13 @@ RequestModel currentuserRequest = RequestModel();
 RequestModel acceptedRequest = RequestModel();
 RequestModel confirmedRequest = RequestModel();
 RequestModel sentRequest = RequestModel();
+RequestModel userRequest = RequestModel();
 
 Map<dynamic, dynamic> createdmap = {};
 Map<dynamic, dynamic> sentmap = {};
 Map<dynamic, dynamic> acceptedmap = {};
 Map<dynamic, dynamic> confirmedmap = {};
+Map<dynamic, dynamic> userrequestmap = {};
 
 String k = '';
 String code = '';
@@ -67,6 +70,7 @@ class RequestFormVM {
   }
 
   Future<void> getRequestData(BuildContext ctx) async {
+    // Provider.of<HomePageProvider>(ctx, listen: false).Startloading();
     print('getting request data.....');
     SharedPreferences pref = await SharedPreferences.getInstance();
     String? cc = pref.getString('citycode');
@@ -81,7 +85,7 @@ class RequestFormVM {
     // DatabaseEvent cancelledevt =
     //     await reqref.orderByChild('status').equalTo('cancelled').once();
     DatabaseEvent confirmedevt =
-        await reqref.orderByChild('status').equalTo('confirmed').once();
+        await reqref.orderByChild('status').equalTo('CONFIRMED').once();
     // DatabaseEvent completedevt =
     //     await reqref.orderByChild('status').equalTo('completed').once();
 
@@ -90,6 +94,7 @@ class RequestFormVM {
       createdmap = createdevt.snapshot.value as Map<dynamic, dynamic>;
       k = createdmap.keys.toList().last;
       currentuserRequest = RequestModel.fromJson(createdmap[k]);
+      userRequest = currentuserRequest;
     } else {
       createdmap = {};
     }
@@ -98,6 +103,8 @@ class RequestFormVM {
       acceptedmap = acceptedevt.snapshot.value as Map<dynamic, dynamic>;
       k = acceptedmap.keys.toList().last;
       acceptedRequest = RequestModel.fromJson(acceptedmap[k]);
+      userRequest = acceptedRequest;
+      ctx.read<RequestsProvider>().onerequestdone();
     } else {
       acceptedmap = {};
     }
@@ -105,6 +112,8 @@ class RequestFormVM {
       sentmap = sentevt.snapshot.value as Map<dynamic, dynamic>;
       k = sentmap.keys.toList().last;
       sentRequest = RequestModel.fromJson(sentmap[k]);
+      userRequest = sentRequest;
+      ctx.read<RequestsProvider>().onerequestdone();
     } else {
       sentmap = {};
     }
@@ -112,6 +121,8 @@ class RequestFormVM {
       confirmedmap = confirmedevt.snapshot.value as Map<dynamic, dynamic>;
       k = confirmedmap.keys.toList().last;
       confirmedRequest = RequestModel.fromJson(confirmedmap[k]);
+      userRequest = confirmedRequest;
+      ctx.read<RequestsProvider>().onerequestdone();
     } else {
       confirmedmap = {};
     }
@@ -140,10 +151,11 @@ class RequestFormVM {
         .ref()
         .child('requestBloodSection/C1/$requestuid/$requestpushid')
         .update({'status': 'COMPLETED'});
-    sentmap.clear();
-    confirmedmap.clear();
-    acceptedmap.clear();
-    createdmap.clear();
+
+    // Provider.of<RequestsProvider>(context, listen: false).psentmap.clear();
+    // Provider.of<RequestsProvider>(context, listen: false).pconfirmedmap.clear();
+    // Provider.of<RequestsProvider>(context, listen: false).pacceptedmap.clear();
+    // Provider.of<RequestsProvider>(context, listen: false).pcreatedmap.clear();
   }
 
   Future<void> confirmRequest(BuildContext context) async {
@@ -154,6 +166,13 @@ class RequestFormVM {
     print(k);
   }
 
+  Future<void> completeandmoveRequest() async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('requestBloodSection/$usercity/${userdata.uid}/$k')
+        .update({'status': 'COMPLETED AND MOVED'});
+  }
+
   Future<void> cancelRequest(
       BuildContext context, String uid, String requestPushID) async {
     await FirebaseDatabase.instance
@@ -162,9 +181,32 @@ class RequestFormVM {
         .update({'status': 'CANCELLED'});
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Request Cancelled')));
-    sentmap.clear();
-    confirmedmap.clear();
-    acceptedmap.clear();
-    createdmap.clear();
+  }
+
+  Future<void> cancelCurrentRequest(
+      BuildContext context, String uid, String requestPushID) async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('requestBloodSection/$usercity/$uid/$requestPushID')
+        .update({'status': 'CANCELLED'});
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Request Cancelled')));
+
+    print('all requests..................      ');
+    context.read<RequestsProvider>().requestcancelled();
+  }
+
+  Future<void> check(BuildContext context) async {
+    Provider.of<HomePageProvider>(context, listen: false).Startloading();
+    DatabaseEvent completedevt = await FirebaseDatabase.instance
+        .ref()
+        .child('requestBloodSection/$usercity')
+        .orderByChild('status')
+        .equalTo('COMPLETED')
+        .once();
+    print(completedevt.snapshot.value);
+    if (completedevt.snapshot.value == null) {
+      Provider.of<RequestsProvider>(context, listen: false).requestcomplete();
+    }
   }
 }

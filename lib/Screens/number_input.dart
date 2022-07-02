@@ -1,9 +1,11 @@
+import 'package:blood_donation/Screens/onboarding_screen.dart';
 import 'package:blood_donation/Screens/otp_input_screen.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:blood_donation/constants/string_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/details_box.dart';
 import '../Widgets/number_input_field.dart';
@@ -12,6 +14,7 @@ SnackBar invalidNumber = const SnackBar(content: Text('Invalid Phone Number'));
 
 FirebaseAuth auth = FirebaseAuth.instance;
 String verificationIDrecieved = '';
+int onboardingflag = 0;
 
 bool isEmpty = true;
 
@@ -25,6 +28,12 @@ class NumberInputScreen extends StatefulWidget {
 class _NumberInputScreenState extends State<NumberInputScreen> {
   FocusNode numberfocusnode = FocusNode();
   TextEditingController numbercontroller = TextEditingController();
+  @override
+  void initState() {
+    isOnboardingdone();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -41,7 +50,11 @@ class _NumberInputScreenState extends State<NumberInputScreen> {
           children: [
             BackButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return OnBoardingScreen();
+                  },
+                ));
               },
             ),
             SizedBox(
@@ -80,5 +93,12 @@ class _NumberInputScreenState extends State<NumberInputScreen> {
         ),
       ),
     ));
+  }
+
+  Future<void> isOnboardingdone() async {
+    final pref = await SharedPreferences.getInstance();
+    setState(() {
+      onboardingflag = pref.getInt('initScreen')!;
+    });
   }
 }

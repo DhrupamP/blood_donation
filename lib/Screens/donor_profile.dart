@@ -12,8 +12,8 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
-import 'package:blood_donation/Providers/requests_provider.dart';
 import '../Models/request_model.dart';
+import '../Providers/requests_provider.dart';
 import '../Size Config/size_config.dart';
 
 class DonorProfile extends StatefulWidget {
@@ -168,7 +168,6 @@ class _DonorProfileState extends State<DonorProfile> {
                             ignoringSentBtn = true;
                           });
                           await RequestFormVM.instance.getRequestData(context);
-
                           currentuserRequest.status = 'SENT';
                           currentuserRequest.donorName =
                               widget.donorname.toString();
@@ -182,6 +181,7 @@ class _DonorProfileState extends State<DonorProfile> {
                               .addRequest(newrequest, widget.donorID!);
                           await RequestFormVM.instance
                               .UpdateProfile(context, currentuserRequest);
+                          context.read<RequestsProvider>().onerequestdone();
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (_) => ActivityPage()),

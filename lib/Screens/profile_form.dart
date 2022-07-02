@@ -1,5 +1,6 @@
 import 'package:blood_donation/Models/profile_data_model.dart';
 import 'package:blood_donation/Providers/initial_profile_form_provider.dart';
+import 'package:blood_donation/Screens/activity.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/Widgets/dropdown_field.dart';
@@ -11,12 +12,15 @@ import 'package:blood_donation/constants/string_constants.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Providers/profile_provider.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/profile_image.dart';
 import 'package:provider/provider.dart';
+
+import 'number_input.dart';
 
 String? dobtxt;
 String? citytxt;
@@ -58,6 +62,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
   @override
   void initState() {
     super.initState();
+    check();
     print(
         FirebaseAuth.instance.currentUser?.phoneNumber.toString().substring(1));
     ProfileFormVM.instance.getCityNames();
@@ -308,5 +313,21 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
         ],
       ),
     ));
+  }
+
+  Future<void> check() async {
+    DatabaseEvent evt = await FirebaseDatabase.instance
+        .ref()
+        .child('users/C1')
+        .orderByKey()
+        .equalTo(auth.currentUser!.uid)
+        .once();
+    print(evt.snapshot.value);
+    if (evt.snapshot.value != null) {
+      final pref = await SharedPreferences.getInstance();
+      pref.setBool('isinitialprofilecomplete', true);
+      Navigator.pushAndRemoveUntil(context,
+          MaterialPageRoute(builder: (_) => ActivityPage()), (route) => false);
+    }
   }
 }

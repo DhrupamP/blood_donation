@@ -5,12 +5,9 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import '../Screens/otp_input_screen.dart';
 import '../Size Config/size_config.dart';
 
-TextEditingController otpController = TextEditingController();
-
 class OTPInput extends StatelessWidget {
-  const OTPInput({Key? key, this.focusnode, this.controller}) : super(key: key);
+  const OTPInput({Key? key, this.focusnode}) : super(key: key);
   final FocusNode? focusnode;
-  final TextEditingController? controller;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -20,7 +17,7 @@ class OTPInput extends StatelessWidget {
         validator: (value) {
           return null;
         },
-        controller: controller,
+        controller: otpController,
         hintCharacter: "0",
         length: 6,
         appContext: context,

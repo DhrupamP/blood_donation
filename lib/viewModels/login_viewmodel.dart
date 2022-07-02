@@ -1,6 +1,8 @@
+import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Screens/profile_form.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginVM {
   static LoginVM instance = LoginVM._();
@@ -8,7 +10,7 @@ class LoginVM {
   String verificationID = '';
   bool codeSent = false;
 
-  void SignInWithOTP(String otpsms, BuildContext context) async {
+  Future<void> SignInWithOTP(String otpsms, BuildContext context) async {
     AuthCredential credential = PhoneAuthProvider.credential(
       verificationId: verificationID,
       smsCode: otpsms,
@@ -45,5 +47,12 @@ class LoginVM {
         verificationFailed: verifyFailure,
         codeSent: smsCodeSent,
         codeAutoRetrievalTimeout: autoRetrieve);
+  }
+
+  Future<void> signout() async {
+    await auth.signOut();
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setBool('isloggedin', false);
+    pref.setBool('isinitialprofilecomplete', false);
   }
 }

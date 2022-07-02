@@ -1,9 +1,15 @@
 import 'package:blood_donation/Models/profile_data_model.dart';
+import 'package:blood_donation/Models/story_model.dart';
 import 'package:blood_donation/Providers/homepage_provider.dart';
+import 'package:blood_donation/Providers/requests_provider.dart';
 import 'package:blood_donation/Screens/available_donors_page.dart';
 import 'package:blood_donation/Screens/complete_profile_sreen.dart';
 import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Screens/profile_form.dart';
+import 'package:blood_donation/viewModels/login_viewmodel.dart';
+import 'package:blood_donation/viewModels/story_viewmodel.dart';
+import 'package:provider/provider.dart';
+import 'package:blood_donation/Providers/requests_provider.dart';
 import 'package:blood_donation/Screens/profile_screen.dart';
 import 'package:blood_donation/Screens/request_form.dart';
 import 'package:blood_donation/Widgets/page_indicator.dart';
@@ -25,7 +31,7 @@ import 'package:provider/provider.dart';
 import '../Providers/profile_provider.dart';
 import '../viewModels/request_form_viewmodel.dart';
 
-bool? isProfileComplete;
+bool? isProfileComplete = false;
 GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
 int? draweridx = 0;
 UserDetailModel userdata = UserDetailModel();
@@ -124,10 +130,41 @@ class _HomePageState extends State<HomePage> {
                           text: 'About Us',
                           icon: FontAwesomeIcons.circleInfo,
                         ),
-                        const DrawerTile(
-                          index: 3,
-                          text: 'Log Out',
-                          icon: FontAwesomeIcons.arrowRightFromBracket,
+                        GestureDetector(
+                          onTap: () async {
+                            print("signing out....");
+                            await LoginVM.instance.signout();
+                            print("logged out");
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => NumberInputScreen()),
+                                (route) => false);
+                          },
+                          child: Container(
+                            width: SizeConfig.blockSizeHorizontal! * 60,
+                            height: SizeConfig.blockSizeVertical! * 6,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.93),
+                            ),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: SizeConfig.blockSizeHorizontal! * 2,
+                                ),
+                                Icon(Icons.logout),
+                                SizedBox(
+                                  width: SizeConfig.blockSizeHorizontal! * 5,
+                                ),
+                                Text(
+                                  'Log Out',
+                                  style: TextStyle(
+                                      color: primaryColor,
+                                      fontWeight: FontWeight.w700),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
                         SizedBox(
                           height: h * 32,
@@ -182,182 +219,249 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 key: _scaffoldkey,
-                body: ListView(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: w * 100,
-                          height: h * 6,
-                          child: PageView(
-                            controller: _mycontroller,
-                            children: const [
-                              QuoteWidget(),
-                              QuoteWidget(),
-                              QuoteWidget(),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: h * 4,
-                        ),
-                        Center(
-                          child: MyPageIndicator(
-                            controller: _mycontroller,
-                            dotwidth: w * 1.19,
-                            dotheight: h * 0.53,
-                          ),
-                        ),
-                        SizedBox(
-                          height: h * 2,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: w * 6.94,
-                            ),
-                            Text(
-                              'Actions',
-                              style: TextStyle(
-                                  color: secondaryText,
-                                  fontWeight: FontWeight.w800),
-                            ),
+                body: SizedBox(
+                  height: h * 100,
+                  width: w * 100,
+                  child: ListView(
+                    children: [
+                      SizedBox(
+                        width: w * 100,
+                        height: h * 6,
+                        child: PageView(
+                          controller: _mycontroller,
+                          children: const [
+                            QuoteWidget(),
+                            QuoteWidget(),
+                            QuoteWidget(),
                           ],
                         ),
-                        //1.83
-                        SizedBox(
-                          height: h * 1.83,
+                      ),
+                      SizedBox(
+                        height: h * 4,
+                      ),
+                      Center(
+                        child: MyPageIndicator(
+                          controller: _mycontroller,
+                          dotwidth: w * 1.19,
+                          dotheight: h * 0.53,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ActionSquare(
-                              txt: 'Donate Blood',
-                              img: Image.asset("assets/blood_donate.png"),
-                              onpressed: () async {
-                                print(cities);
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) {
-                                  return const CompleteProfileFormScreen();
-                                }));
-                              },
-                            ),
-                            ActionSquare(
-                              txt: 'Send Request',
-                              img: Image.asset("assets/send_request.png"),
-                              onpressed: () async {
-                                print(createdmap);
-                                if (!createdmap.isEmpty) {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => AvailableDonors()));
-                                } else if (!sentmap.isEmpty ||
-                                    !acceptedmap.isEmpty ||
-                                    !confirmedmap.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Only one request can be sent.')));
-                                } else {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => const RequestForm()));
-                                }
-                                // DatabaseEvent evt = await ref;
-                                // print(evt.snapshot.value);
-                              },
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: h * 3,
-                        ),
-                        ActionRectangle(
+                      ),
+                      SizedBox(
+                        height: h * 2,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: w * 6.94,
+                          ),
+                          Text(
+                            'Actions',
+                            style: TextStyle(
+                                color: secondaryText,
+                                fontWeight: FontWeight.w800),
+                          ),
+                        ],
+                      ),
+                      //1.83
+                      SizedBox(
+                        height: h * 1.83,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ActionSquare(
+                            txt: 'Donate Blood',
+                            img: Image.asset("assets/blood_donate.png"),
+                            onpressed: () async {
+                              print(cities);
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) {
+                                return const CompleteProfileFormScreen();
+                              }));
+                            },
+                          ),
+                          ActionSquare(
+                            txt: 'Send Request',
+                            img: Image.asset("assets/send_request.png"),
+                            onpressed: () async {
+                              print(Provider.of<RequestsProvider>(context,
+                                      listen: false)
+                                  .pcreatedmap);
+                              if (userRequest.status == 'created') {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => AvailableDonors()));
+                              } else if (!Provider.of<RequestsProvider>(context,
+                                      listen: false)
+                                  .sendnewreq) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Only one request can be sent.')));
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const RequestForm()));
+                              }
+                              // DatabaseEvent evt = await ref;
+                              // print(evt.snapshot.value);
+                            },
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: h * 3,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: w * 6.94),
+                        child: ActionRectangle(
                           img: Image.asset('assets/urgent_req.png'),
                           txt: "Call for Urgent Requirement",
                         ),
-                        SizedBox(
-                          height: h * 2,
-                        ),
-                        Row(
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(
-                              width: w * 6.94,
-                            ),
-                            Text(
-                              'Stories',
-                              style: TextStyle(
-                                  color: secondaryText,
-                                  fontWeight: FontWeight.w800),
-                            ),
-                            Spacer(),
-                            Text(
-                              'View all',
-                              style: TextStyle(
-                                  color: secondaryText,
-                                  fontWeight: FontWeight.w800),
-                            ),
-                            SizedBox(
-                              width: w * 6.94,
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: h * 2,
-                        ),
-                        Container(
-                          width: w * 86.11,
-                          height: h * 13.2,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: primaryText!)),
-                          child: Row(
-                            children: [
-                              Container(
-                                child: Image.asset(
-                                  'assets/news_img.png',
-                                  height: h * 11.92,
-                                ),
-                                padding: EdgeInsets.all(h * 0.6),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: w * 48.33,
-                                    child: Text(
-                                      overflow: TextOverflow.ellipsis,
-                                      softWrap: true,
-                                      maxLines: 4,
-                                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electron",
-                                      style: TextStyle(
-                                          fontSize: h * 1.54,
-                                          color: primaryColor,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
-                                  Text(
-                                    '10/12/2022',
-                                    style: TextStyle(
-                                      color: secondaryText,
-                                      fontSize: h * 1.54,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
+                      ),
+                      SizedBox(
+                        height: h * 2,
+                      ),
+                      Row(
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: w * 6.94,
                           ),
-                        )
-                      ],
-                    )
-                  ],
+                          Text(
+                            'Stories',
+                            style: TextStyle(
+                                color: secondaryText,
+                                fontWeight: FontWeight.w800),
+                          ),
+                          Spacer(),
+                          Text(
+                            'View all',
+                            style: TextStyle(
+                                color: secondaryText,
+                                fontWeight: FontWeight.w800),
+                          ),
+                          SizedBox(
+                            width: w * 6.94,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: h * 2,
+                      ),
+                      Container(
+                        height: 1000,
+                        child: FutureBuilder(
+                            future: StoryViewModel.instance.getAllStories(),
+                            builder: (context, snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.active:
+                                case ConnectionState.waiting:
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                case ConnectionState.done:
+                                  print("DONE");
+                                  if (snapshot.data != null) {
+                                    List<StoryModel> all =
+                                        snapshot.data as List<StoryModel>;
+
+                                    print("snapdata:  " +
+                                        snapshot.data.toString());
+
+                                    return ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemCount: all.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Story(
+                                              description:
+                                                  all[index].description,
+                                              date: all[index].postCreationDate,
+                                              url: all[index].photoURL),
+                                        );
+                                      },
+                                    );
+                                  }
+                              }
+                              return SizedBox();
+                            }),
+                      )
+                    ],
+                  ),
                 ),
               ));
+  }
+}
+
+class Story extends StatelessWidget {
+  const Story({
+    Key? key,
+    this.url,
+    this.date,
+    this.description,
+  }) : super(key: key);
+  final String? description;
+  final String? date;
+  final String? url;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: SizeConfig.blockSizeHorizontal! * 6.94),
+      child: Container(
+        height: SizeConfig.blockSizeVertical! * 13.2,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: primaryText!)),
+        child: Row(
+          children: [
+            SizedBox(
+              width: SizeConfig.blockSizeHorizontal! * 1,
+            ),
+            StoryImage(
+              url: url,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: SizeConfig.blockSizeVertical! * 0.6,
+                ),
+                SizedBox(
+                  width: SizeConfig.blockSizeHorizontal! * 48.33,
+                  child: Text(
+                    description!,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                    maxLines: 4,
+                    style: TextStyle(
+                        fontSize: SizeConfig.blockSizeVertical! * 1.54,
+                        color: primaryColor,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Spacer(),
+                Text(
+                  date!,
+                  style: TextStyle(
+                    color: secondaryText,
+                    fontSize: SizeConfig.blockSizeVertical! * 1.54,
+                  ),
+                ),
+                SizedBox(
+                  height: SizeConfig.blockSizeVertical! * 1,
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

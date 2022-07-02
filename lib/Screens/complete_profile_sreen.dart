@@ -6,6 +6,7 @@ import 'package:blood_donation/Widgets/dropdown_field.dart';
 import 'package:blood_donation/Widgets/profile_input_field.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
+import 'package:blood_donation/viewModels/request_form_viewmodel.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import '../Widgets/edit_button.dart';
 import '../Widgets/profile_image.dart';
 import 'package:provider/provider.dart';
 import '../Providers/profile_provider.dart';
+import 'activity.dart';
 
 final List<String> bloodgroups = [
   'A+',
@@ -81,16 +83,17 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
     //setting data
     if (citytxt != null) {
       hasdonatedgroup = userdata.noOfBloodDonations == 0 ? 'No' : 'yes';
-      newnamecontroller.text = userdata.name!;
+      newnamecontroller.text = userdata.name.toString();
       hasDonatedController.text = (userdata.noOfBloodDonations == 0
-          ? ''
-          : userdata.dateOfLastDonationOfBlood)!;
-      dobcontroller.text = userdata.dateOfBirth!;
+              ? ''
+              : userdata.dateOfLastDonationOfBlood)
+          .toString();
+      dobcontroller.text = userdata.dateOfBirth.toString();
       bloodgroup = userdata.bloodGroup;
       gender = userdata.sex;
       print(profilepic);
-      emailcontroller.text = userdata.emailAddress!;
-      streetaddresscontroller.text = userdata.address!;
+      emailcontroller.text = userdata.emailAddress.toString();
+      streetaddresscontroller.text = userdata.address.toString();
     }
 
     isnameEnabled = false;
@@ -429,9 +432,9 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                           setState(() {
                             isProfileComplete = true;
                           });
-
                           await ProfileFormVM.instance
                               .addUpdateProfile(context, usermodel);
+                          await ProfileFormVM.instance.getProfileData(context);
 
                           pref.setBool('isinitialprofilecomplete', true);
                           print("stored locally");
@@ -440,7 +443,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (BuildContext context) =>
-                                  const HomePage(),
+                                  const ActivityPage(),
                             ),
                             (route) => false,
                           );

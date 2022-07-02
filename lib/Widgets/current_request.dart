@@ -3,10 +3,12 @@ import 'package:blood_donation/Widgets/accepted_request.dart';
 import 'package:blood_donation/Widgets/new_request.dart';
 import 'package:flutter/material.dart';
 import 'package:blood_donation/constants/color_constants.dart';
+import 'package:provider/provider.dart';
+import '../Providers/requests_provider.dart';
 import '../Size Config/size_config.dart';
 import '../viewModels/request_form_viewmodel.dart';
 
-class CurrentRequest extends StatelessWidget {
+class CurrentRequest extends StatefulWidget {
   const CurrentRequest({
     this.requestUid,
     this.requestPushId,
@@ -16,9 +18,15 @@ class CurrentRequest extends StatelessWidget {
   final String? requestUid;
   final String? requestPushId;
   final String? status;
+
+  @override
+  State<CurrentRequest> createState() => _CurrentRequestState();
+}
+
+class _CurrentRequestState extends State<CurrentRequest> {
   @override
   Widget build(BuildContext context) {
-    if (status == 'SENT') {
+    if (widget.status == 'SENT') {
       return Padding(
         padding: EdgeInsets.only(
           bottom: SizeConfig.blockSizeVertical! * 2,
@@ -69,8 +77,8 @@ class CurrentRequest extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     print(k.toString());
-                    RequestFormVM.instance
-                        .cancelRequest(context, auth.currentUser!.uid, k);
+                    RequestFormVM.instance.cancelCurrentRequest(
+                        context, auth.currentUser!.uid, k);
                     RequestFormVM.instance.getRequestData(context);
                   },
                   child: Container(
@@ -112,7 +120,7 @@ class CurrentRequest extends StatelessWidget {
           ),
         ),
       );
-    } else if (status == 'ACCEPTED') {
+    } else if (widget.status == 'ACCEPTED') {
       return Padding(
         padding: EdgeInsets.only(
           bottom: SizeConfig.blockSizeVertical! * 2,
@@ -140,7 +148,7 @@ class CurrentRequest extends StatelessWidget {
               Align(
                 alignment: const Alignment(-0.9, -0.5),
                 child: Text(
-                  acceptedRequest.patientName ?? '',
+                  userRequest.patientName ?? '',
                   style: TextStyle(
                       color: primaryColor,
                       fontWeight: FontWeight.w800,
@@ -153,7 +161,7 @@ class CurrentRequest extends StatelessWidget {
                   width: SizeConfig.blockSizeHorizontal! * 30,
                   height: SizeConfig.blockSizeVertical! * 4,
                   child: Text(
-                    'Nearest blood bank ${acceptedRequest.nearByBloodBank}',
+                    'Nearest blood bank ${userRequest.nearByBloodBank}',
                     style: TextStyle(color: primaryColor),
                   ),
                 ),
@@ -163,8 +171,8 @@ class CurrentRequest extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     print(k);
-                    RequestFormVM.instance
-                        .cancelRequest(context, auth.currentUser!.uid, k);
+                    RequestFormVM.instance.cancelCurrentRequest(
+                        context, auth.currentUser!.uid, k);
                     RequestFormVM.instance.getRequestData(context);
                   },
                   child: Container(
@@ -212,18 +220,15 @@ class CurrentRequest extends StatelessWidget {
           ),
         ),
       );
-    } else if (status == 'CONFIRMED') {
+    } else if (widget.status == 'CONFIRMED') {
       return AcceptedRequest(
         patientname: sentRequest.patientName,
         nearestbank: sentRequest.nearByBloodBank,
-        status: status,
+        status: widget.status,
       );
-    } else if (status == 'COMPLETED') {
-      return AcceptedRequest(
-        patientname: sentRequest.patientName,
-        nearestbank: sentRequest.nearByBloodBank,
-        status: status,
-      );
+    } else if (widget.status == 'COMPLETED') {
+      //RequestFormVM.instance.completeandmoveRequest();
+      return SizedBox();
     } else {
       return SizedBox();
     }

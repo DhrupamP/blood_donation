@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Screens/otp_input_screen.dart';
+
 void verifyNumber(BuildContext context, String number) {
   auth.verifyPhoneNumber(
       phoneNumber: '+91' + number,

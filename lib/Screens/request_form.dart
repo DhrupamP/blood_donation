@@ -178,12 +178,11 @@ class _RequestFormState extends State<RequestForm> {
                             yourLocation: "");
                         await RequestFormVM.instance
                             .addUpdateProfile(context, reqdata);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) {
-                            return AvailableDonors();
-                          }),
-                        );
+                        RequestFormVM.instance.getRequestData(context);
+                        Navigator.pushAndRemoveUntil(context,
+                            MaterialPageRoute(builder: (_) {
+                          return AvailableDonors();
+                        }), (route) => false);
                       }
                     },
                   )

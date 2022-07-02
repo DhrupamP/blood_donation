@@ -1,12 +1,20 @@
+import 'package:blood_donation/Screens/edit_story_screen.dart';
 import 'package:blood_donation/Screens/home_page.dart';
+import 'package:blood_donation/Screens/story_screen.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
+import 'package:blood_donation/viewModels/story_viewmodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
+import '../Models/story_model.dart';
+import '../Providers/profile_provider.dart';
 import '../Size Config/size_config.dart';
+import 'number_input.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -47,11 +55,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Stack(
                     children: [
-                      const Align(
+                      Align(
                         alignment: Alignment(-0.9, -0.9),
-                        child: Icon(
-                          FontAwesomeIcons.arrowLeftLong,
-                          color: Colors.white,
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            FontAwesomeIcons.arrowLeftLong,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                       Align(
@@ -107,8 +120,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               padding: EdgeInsets.all(w * 1),
                               child: CircleAvatar(
                                 backgroundImage: CachedNetworkImageProvider(
-                                    isProfileComplete!
-                                        ? userdata.profilePhoto.toString()
+                                    isProfileComplete ?? false
+                                        ? context
+                                            .watch<ProfileProvider>()
+                                            .profilepicurl
                                         : defaultprofilepic),
                               ),
                             )),
@@ -235,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Donation Photos',
+                          'Donation Stories',
                           style: TextStyle(
                               color: secondaryText,
                               fontWeight: FontWeight.w800),
@@ -251,12 +266,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       height: h * 2,
                     ),
+                    Container(
+                      height: h * 12,
+                      width: w * 100,
+                      child: FutureBuilder(
+                        future: FirebaseDatabase.instance
+                            .ref()
+                            .child('StorySection/$usercity/${userdata.uid}')
+                            .once(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if ((snapshot.data as DatabaseEvent)
+                                    .snapshot
+                                    .value !=
+                                null) {
+                              userstories.clear();
+                              print((snapshot.data as DatabaseEvent)
+                                  .snapshot
+                                  .value
+                                  .runtimeType);
+                              Map<dynamic, dynamic> stories =
+                                  (snapshot.data as DatabaseEvent)
+                                      .snapshot
+                                      .value as Map<dynamic, dynamic>;
+                              stories.forEach((key, value) {
+                                userstories.add(StoryModel.fromJson(value));
+                              });
+
+                              return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: userstories.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //       builder: (context) =>
+                                      //           EditStoryScreen(
+                                      //               description:
+                                      //                   userstories[index]
+                                      //                       .description,
+                                      //               imageurl: userstories[index]
+                                      //                   .photoURL,
+                                      //               Title: userstories[index]
+                                      //                   .title),
+                                      //     ));
+                                    },
+                                    child: StoryImage(
+                                      url: userstories[index].photoURL,
+                                    ),
+                                  );
+                                },
+                              );
+                            } else {
+                              return Center(
+                                child: Text('No Story'),
+                              );
+                            }
+                          } else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      height: h * 2,
+                    ),
                     ContinueButton(
-                      txt: 'Upload Recent Photo',
+                      txt: 'Write Your Story',
                       txtColor: primaryDesign,
                       bgcolor: Colors.white,
                       icon: Icons.upload_rounded,
                       iconColor: primaryDesign,
+                      onpressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => StoryScreen()));
+                      },
                     ),
                     SizedBox(
                       height: h * 3,
@@ -311,67 +397,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
+class StoryImage extends StatelessWidget {
+  const StoryImage({Key? key, this.url}) : super(key: key);
+
+  final String? url;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(right: 10),
+      child: CachedNetworkImage(
+        imageBuilder: (context, imageProvider) => Container(
+          height: SizeConfig.blockSizeVertical! * 12,
+          width: SizeConfig.blockSizeVertical! * 12,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+          ),
+        ),
+        imageUrl: url!,
+        fit: BoxFit.fill,
+      ),
+    );
+  }
+}
+
 TextStyle detailsStyle =
     TextStyle(color: primaryText, fontWeight: FontWeight.w700);
-
-// Padding(
-//   padding: EdgeInsets.only(left: w * 10, right: w * 20),
-//   child:
-//   Column(
-//     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//     children: [
-//       Row(
-//           mainAxisAlignment:
-//               MainAxisAlignment.spaceBetween,
-//           children: [
-//             Text(
-//               'Age',
-//               style: detailsStyle,
-//             ),
-//             Text(
-//               userdata.age.toString(),
-//               style: detailsStyle,
-//             )
-//           ]),
-//       Row(
-//           mainAxisAlignment:
-//               MainAxisAlignment.spaceBetween,
-//           children: [
-//             Text(
-//               'Sex',
-//               style: detailsStyle,
-//             ),
-//             Text(
-//               userdata.sex ?? 'N/A',
-//               style: detailsStyle,
-//             )
-//           ]),
-//       Row(
-//           mainAxisAlignment:
-//               MainAxisAlignment.spaceBetween,
-//           children: [
-//             Text(
-//               'Contact Number',
-//               style: detailsStyle,
-//             ),
-//             Text(
-//               userdata.contactNo.toString(),
-//               style: detailsStyle,
-//             )
-//           ]),
-//       Row(
-//           mainAxisAlignment:
-//               MainAxisAlignment.spaceBetween,
-//           children: [
-//             Text(
-//               'Number of Donations',
-//               style: detailsStyle,
-//             ),
-//             Text(
-//               userdata.noOfBloodDonations.toString(),
-//               style: detailsStyle,
-//             )
-//           ]),
-//     ],
-//   ),
-// ),

@@ -5,8 +5,12 @@ import '../Size Config/size_config.dart';
 import '../constants/color_constants.dart';
 
 class DrawerTile extends StatefulWidget {
-  const DrawerTile({Key? key, required this.index, this.text, this.icon})
-      : super(key: key);
+  const DrawerTile({
+    Key? key,
+    required this.index,
+    this.text,
+    this.icon,
+  }) : super(key: key);
   final int index;
   final IconData? icon;
   final String? text;
@@ -18,7 +22,7 @@ class _DrawerTileState extends State<DrawerTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         setState(() {
           draweridx = widget.index;
           Navigator.pop(context);
