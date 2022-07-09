@@ -2,6 +2,7 @@ import 'package:blood_donation/Screens/activity.dart';
 import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Screens/profile_form.dart';
 import 'package:blood_donation/viewModels/login_viewmodel.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,7 @@ import '../Widgets/otp_textField.dart';
 import '../Widgets/resend_code_button.dart';
 import '../constants/color_constants.dart';
 import '../constants/string_constants.dart';
+import '../l10n/locale_keys.g.dart';
 
 bool isotpEmpty = true;
 TextEditingController otpController = TextEditingController();
@@ -54,8 +56,9 @@ class _OTPInputScreenState extends State<OTPInputScreen> {
             Padding(
               padding: EdgeInsets.only(left: w * 3),
               child: DetailsBox(
-                  title: enterOTPTitle,
-                  details: enterOTPdetails + "${widget.phoneNumber}"),
+                  title: LocaleKeys.enterOTPTitle.tr(),
+                  details: LocaleKeys.enterOTPdetails.tr() +
+                      "${widget.phoneNumber}"),
             ),
             SizedBox(
               height: h * 2.75,
@@ -67,7 +70,7 @@ class _OTPInputScreenState extends State<OTPInputScreen> {
               height: h * 47,
             ),
             ContinueButton(
-              txt: "Continue",
+              txt: LocaleKeys.continuetxt.tr(),
               bgcolor: isotpEmpty ? Colors.white : primaryDesign,
               txtColor: isotpEmpty ? primaryDesign : Colors.white,
               onpressed: () async {

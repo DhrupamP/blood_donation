@@ -151,11 +151,6 @@ class RequestFormVM {
         .ref()
         .child('requestBloodSection/C1/$requestuid/$requestpushid')
         .update({'status': 'COMPLETED'});
-
-    // Provider.of<RequestsProvider>(context, listen: false).psentmap.clear();
-    // Provider.of<RequestsProvider>(context, listen: false).pconfirmedmap.clear();
-    // Provider.of<RequestsProvider>(context, listen: false).pacceptedmap.clear();
-    // Provider.of<RequestsProvider>(context, listen: false).pcreatedmap.clear();
   }
 
   Future<void> confirmRequest(BuildContext context) async {
@@ -167,10 +162,24 @@ class RequestFormVM {
   }
 
   Future<void> completeandmoveRequest() async {
+    print('moved....');
+    DatabaseEvent databaseevt = await FirebaseDatabase.instance
+        .ref()
+        .child('users/$usercity/${userdata.uid}/noOfBloodDonations')
+        .once();
+    print('no of donations: ' + databaseevt.snapshot.value.toString());
+    int noofdonations = databaseevt.snapshot.value as int;
+    noofdonations++;
+    await FirebaseDatabase.instance
+        .ref()
+        .child('users/$usercity/${userdata.uid}')
+        .update({'noOfBloodDonations': noofdonations});
     await FirebaseDatabase.instance
         .ref()
         .child('requestBloodSection/$usercity/${userdata.uid}/$k')
-        .update({'status': 'COMPLETED AND MOVED'});
+        .update({
+      'status': 'COMPLETED AND MOVED',
+    });
   }
 
   Future<void> cancelRequest(

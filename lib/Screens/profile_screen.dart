@@ -1,10 +1,18 @@
+import 'package:blood_donation/Providers/profile_page_provider.dart';
 import 'package:blood_donation/Screens/all_user_stories.dart';
 import 'package:blood_donation/Screens/edit_story_screen.dart';
+import 'package:blood_donation/l10n/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+import 'package:blood_donation/Providers/profile_provider.dart';
 import 'package:blood_donation/Screens/home_page.dart';
+import 'package:blood_donation/Screens/profile_form.dart';
 import 'package:blood_donation/Screens/story_screen.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
+import 'package:blood_donation/Widgets/profile_input_field.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:blood_donation/viewModels/download_viewmodel.dart';
+import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:blood_donation/viewModels/story_viewmodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -16,6 +24,8 @@ import 'package:provider/provider.dart';
 import '../Models/story_model.dart';
 import '../Providers/profile_provider.dart';
 import '../Size Config/size_config.dart';
+import '../Widgets/dropdown_field.dart';
+import '../constants/string_constants.dart';
 import 'number_input.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -26,7 +36,41 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool? editmode;
   bool status2 = true;
+  TextEditingController namecontroller = TextEditingController();
+  TextEditingController contactcontroller = TextEditingController();
+  TextEditingController dobcontroller = TextEditingController();
+  FocusNode dobfn = FocusNode();
+  DateTime? _selectedDate;
+
+  selectDate(BuildContext context, DateTime? selected,
+      TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selected ?? DateTime(2004),
+        firstDate: DateTime(1920),
+        lastDate: DateTime(2004));
+    if (picked != null) {
+      setState(() {
+        selected = picked;
+        var date =
+            "${picked.toLocal().day}/${picked.toLocal().month}/${picked.toLocal().year}";
+        controller.text = date;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    editmode = false;
+    namecontroller = TextEditingController();
+    dobcontroller = TextEditingController();
+    dobfn = FocusNode();
+    contactcontroller = TextEditingController();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -34,10 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var w = SizeConfig.blockSizeHorizontal!;
     return SafeArea(
       child: Scaffold(
-          body: SizedBox(
-        height: h * 100,
-        width: w * 100,
-        child: ListView(
+        body: ListView(
           children: [
             SizedBox(
               height: h * 30,
@@ -72,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Align(
                         alignment: const Alignment(0, -0.9),
                         child: Text(
-                          'My Profile',
+                          LocaleKeys.myprofiletxt.tr(),
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: h * 2,
@@ -89,24 +130,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(h * 1.5),
                                     bottomLeft: Radius.circular(h * 1.5))),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.edit_outlined,
-                                  size: h * 1.5,
-                                  color: primaryDesign,
-                                ),
-                                SizedBox(
-                                  width: w * 1,
-                                ),
-                                Text(
-                                  'Edit',
-                                  style: TextStyle(
-                                      color: primaryDesign,
-                                      fontWeight: FontWeight.w700),
-                                )
-                              ],
+                            child: Consumer<ProfilePageProvider>(
+                              builder: (context, value, child) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    value.toggleEdit();
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.edit_outlined,
+                                        size: h * 1.5,
+                                        color: primaryDesign,
+                                      ),
+                                      SizedBox(
+                                        width: w * 1,
+                                      ),
+                                      Text(
+                                        'Edit',
+                                        style: TextStyle(
+                                            color: primaryDesign,
+                                            fontWeight: FontWeight.w700),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
                             )),
                       ),
                       Align(
@@ -140,22 +190,132 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Container(
                 child: Column(
                   children: [
-                    Text(
-                      userdata.name ?? 'N/A',
-                      style: TextStyle(
-                          fontSize: h * 2,
-                          color: primaryColor,
-                          fontWeight: FontWeight.w700),
+                    Consumer<ProfilePageProvider>(
+                      builder: (context, value, child) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Consumer<ProfileProvider>(
+                              builder: (context, value, child) {
+                                return Text(
+                                  value.username ?? 'N/A',
+                                  style: TextStyle(
+                                      fontSize: h * 2,
+                                      color: primaryColor,
+                                      fontWeight: FontWeight.w700),
+                                );
+                              },
+                            ),
+                            value.editmode
+                                ? EditProfileButton(
+                                    onpressed: () {
+                                      print('show dialog');
+                                      setState(() {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            FocusNode namefn = FocusNode();
+                                            namecontroller.text =
+                                                Provider.of<ProfileProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .username!;
+                                            String? bg =
+                                                Provider.of<ProfileProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .userbloodgrp;
+                                            return AlertDialog(
+                                              actions: [
+                                                Container(
+                                                  width: w * 91.11,
+                                                  height: h * 27.94,
+                                                  decoration: BoxDecoration(
+                                                      color: white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8)),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      ProfileInputField(
+                                                        focusnode: namefn,
+                                                        hinttxt: LocaleKeys
+                                                            .nametxt
+                                                            .tr(),
+                                                        controller:
+                                                            namecontroller,
+                                                      ),
+                                                      DropDownField(
+                                                        value: bg,
+                                                        items: bloodgroups,
+                                                        hinttext: LocaleKeys
+                                                            .bloodgrouptxt
+                                                            .tr(),
+                                                        errortxt: LocaleKeys
+                                                            .selectBloodGrouptxt
+                                                            .tr(),
+                                                        onchanged: (newitem) {
+                                                          bg = newitem;
+                                                        },
+                                                      ),
+                                                      ContinueButton(
+                                                        onpressed: () {
+                                                          Provider.of<ProfileProvider>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .updatename(
+                                                                  namecontroller
+                                                                      .text,
+                                                                  bg!);
+
+                                                          ProfileFormVM.instance
+                                                              .updatename(
+                                                                  namecontroller
+                                                                      .text,
+                                                                  bg!);
+
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        txt: LocaleKeys.donetxt
+                                                            .tr()
+                                                            .tr(),
+                                                        txtColor: white,
+                                                        bgcolor: primaryDesign,
+                                                        height: h * 5.38,
+                                                        width: w * 85.37,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      });
+                                    },
+                                  )
+                                : SizedBox(),
+                          ],
+                        );
+                      },
                     ),
                     SizedBox(
                       height: h * 1,
                     ),
-                    Text(
-                      'Blood Group: ${userdata.bloodGroup ?? 'N/A'}',
-                      style: TextStyle(
-                        fontSize: h * 1.8,
-                        color: primaryText,
-                      ),
+                    Consumer<ProfileProvider>(
+                      builder: (context, value, child) {
+                        return Text(
+                          '${LocaleKeys.bloodgrouptxt.tr()}: ${value.userbloodgrp ?? 'N/A'}',
+                          style: TextStyle(
+                            fontSize: h * 1.8,
+                            color: primaryText,
+                          ),
+                        );
+                      },
                     ),
                     SizedBox(
                       height: h * 2.25,
@@ -169,8 +329,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           status2 = val;
                         });
                       },
-                      inactiveText: 'Unavailable',
-                      activeText: 'Available',
+                      inactiveText: LocaleKeys.unavailabletxt.tr(),
+                      activeText: LocaleKeys.availabletxt.tr(),
                       activeTextColor: Colors.white,
                       inactiveTextColor: Colors.white,
                       activeColor: acceptColor!,
@@ -181,12 +341,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: h * 4.63,
                     ),
                     Container(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Basic Details',
-                        style: TextStyle(color: secondaryText),
-                      ),
-                    ),
+                        alignment: Alignment.centerLeft,
+                        child: Consumer<ProfilePageProvider>(
+                          builder: (context, value, child) {
+                            return Row(
+                              children: [
+                                Text(
+                                  LocaleKeys.basicdetailstxt.tr(),
+                                  style: TextStyle(color: secondaryText),
+                                ),
+                                value.editmode
+                                    ? EditProfileButton(
+                                        onpressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              String? gender =
+                                                  Provider.of<ProfileProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .usergender;
+                                              return AlertDialog(
+                                                actions: [
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      selectDate(
+                                                          context,
+                                                          _selectedDate,
+                                                          dobcontroller);
+                                                    },
+                                                    child: AbsorbPointer(
+                                                      child: ProfileInputField(
+                                                          validate: (value) {
+                                                            if (value == null ||
+                                                                value == '') {
+                                                              return LocaleKeys
+                                                                  .selectdobtxt;
+                                                            }
+
+                                                            return null;
+                                                          },
+                                                          isEnabled: true,
+                                                          inputType:
+                                                              TextInputType
+                                                                  .datetime,
+                                                          controller:
+                                                              dobcontroller,
+                                                          focusnode: dobfn,
+                                                          hinttxt: LocaleKeys
+                                                              .DOBtxt),
+                                                    ),
+                                                  ),
+                                                  DropDownField(
+                                                    value: gender,
+                                                    items: bloodgroups,
+                                                    hinttext: LocaleKeys
+                                                        .gendertxt
+                                                        .tr(),
+                                                    errortxt: LocaleKeys
+                                                        .selectgendertxt
+                                                        .tr(),
+                                                    onchanged: (newitem) {
+                                                      setState(() {
+                                                        gender = newitem;
+                                                      });
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      )
+                                    : SizedBox()
+                              ],
+                            );
+                          },
+                        )),
                     SizedBox(
                       height: h * 2,
                     ),
@@ -204,19 +435,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(
-                                  'Age',
+                                  LocaleKeys.agetxt.tr(),
                                   style: detailsStyle,
                                 ),
                                 Text(
-                                  'Sex',
+                                  LocaleKeys.sextxt.tr(),
                                   style: detailsStyle,
                                 ),
                                 Text(
-                                  'Contact Number',
+                                  LocaleKeys.contactnumbertxt.tr(),
                                   style: detailsStyle,
                                 ),
                                 Text(
-                                  'Number of Donations',
+                                  LocaleKeys.no_of_donation_txt.tr(),
                                   style: detailsStyle,
                                 ),
                               ],
@@ -266,7 +497,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ));
                           },
                           child: Text(
-                            'View all',
+                            LocaleKeys.viewalltxt.tr(),
                             style: TextStyle(
                                 color: secondaryText,
                                 fontWeight: FontWeight.w800),
@@ -277,14 +508,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // SizedBox(
                     //   height: h * 2,
                     // ),
+
                     Container(
                       height: h * 12,
                       width: w * 100,
-                      child: FutureBuilder(
-                        future: FirebaseDatabase.instance
+                      child: StreamBuilder(
+                        stream: FirebaseDatabase.instance
                             .ref()
                             .child('StorySection/$usercity/${userdata.uid}')
-                            .once(),
+                            .onValue,
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             if ((snapshot.data as DatabaseEvent)
@@ -300,7 +532,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   (snapshot.data as DatabaseEvent)
                                       .snapshot
                                       .value as Map<dynamic, dynamic>;
+                              List<String> userStoryPushIDs = [];
                               stories.forEach((key, value) {
+                                userStoryPushIDs.add(key);
                                 userstories.add(StoryModel.fromJson(value));
                               });
 
@@ -310,19 +544,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
                                     onTap: () {
-                                      // Navigator.push(
-                                      //     context,
-                                      //     MaterialPageRoute(
-                                      //       builder: (context) =>
-                                      //           EditStoryScreen(
-                                      //               description:
-                                      //                   userstories[index]
-                                      //                       .description,
-                                      //               imageurl: userstories[index]
-                                      //                   .photoURL,
-                                      //               Title: userstories[index]
-                                      //                   .title),
-                                      //     ));
+                                      print('$index' + userStoryPushIDs[index]);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                EditStoryScreen(
+                                                    pushID:
+                                                        userStoryPushIDs[index],
+                                                    description:
+                                                        userstories[index]
+                                                            .description,
+                                                    imageurl: userstories[index]
+                                                        .photoURL,
+                                                    Title: userstories[index]
+                                                        .title),
+                                          ));
                                     },
                                     child: StoryImage(
                                       url: userstories[index].photoURL,
@@ -345,7 +582,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: h * 2,
                     ),
                     ContinueButton(
-                      txt: 'Write Your Story',
+                      txt: LocaleKeys.write_your_story_txt.tr(),
                       txtColor: primaryDesign,
                       bgcolor: Colors.white,
                       icon: Icons.upload_rounded,
@@ -361,7 +598,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'My Achievements',
+                        LocaleKeys.myachievementstxt.tr(),
                         style: TextStyle(
                             color: secondaryText, fontWeight: FontWeight.w800),
                       ),
@@ -377,10 +614,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Container(
                       child: ContinueButton(
                         onpressed: () {
-                          DownloadVM.instance
-                              .pdfGenerator('dhrupam', 2, context);
+                          DownloadVM.instance.pdfGenerator(
+                              userdata.name.toString(),
+                              userdata.noOfBloodDonations!,
+                              context);
                         },
-                        txt: 'Download Certificate',
+                        txt: LocaleKeys.downloadCertitxt.tr(),
                         txtColor: Colors.white,
                         icon: FontAwesomeIcons.download,
                         iconColor: Colors.white,
@@ -391,7 +630,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: h * 2,
                     ),
                     ContinueButton(
-                      txt: 'Share App',
+                      txt: LocaleKeys.shareapptxt.tr(),
                       txtColor: Colors.white,
                       icon: FontAwesomeIcons.shareNodes,
                       iconColor: Colors.white,
@@ -407,8 +646,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-      )),
+      ),
     );
+  }
+}
+
+class EditProfileButton extends StatelessWidget {
+  const EditProfileButton({Key? key, this.onpressed}) : super(key: key);
+  final VoidCallback? onpressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: SizeConfig.blockSizeVertical! * 3.46,
+        width: SizeConfig.blockSizeHorizontal! * 16.11,
+        child: ElevatedButton(
+          style: ButtonStyle(
+              elevation: MaterialStateProperty.all(0),
+              backgroundColor: MaterialStateProperty.all(focusedTextField),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ))),
+          onPressed: onpressed,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.edit_outlined,
+                size: SizeConfig.blockSizeVertical! * 1.2,
+                color: primaryText,
+              ),
+              SizedBox(
+                width: SizeConfig.blockSizeHorizontal! * 1,
+              ),
+              Text(
+                'Edit',
+                style: TextStyle(
+                    fontSize: SizeConfig.blockSizeVertical! * 1.1,
+                    color: primaryText,
+                    fontWeight: FontWeight.w700),
+              )
+            ],
+          ),
+        ));
   }
 }
 

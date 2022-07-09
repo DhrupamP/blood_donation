@@ -12,11 +12,31 @@ import '../Screens/number_input.dart';
 String? usercity;
 
 class ProfileProvider extends ChangeNotifier {
+  String? username;
+  String? usergender;
+  String? usercontactnumber;
+  String? userbloodgrp;
   bool isloading = false;
   String profilepicurl = userdata.profilePhoto == null
       ? defaultprofilepic
       : userdata.profilePhoto!;
   File? tempProfilePic;
+
+  void getdetails(
+      String name, String gender, String contact, String bloodgroup) {
+    username = name;
+    userbloodgrp = bloodgroup;
+    usergender = gender;
+    usercontactnumber = contact;
+    notifyListeners();
+  }
+
+  void updatename(String name, String bg) {
+    username = name;
+    userbloodgrp = bg;
+    notifyListeners();
+  }
+
   addupdateProfilePicture() async {
     final profileresult = await FilePicker.platform.pickFiles(
         type: FileType.custom, allowedExtensions: ['jpg', 'png', 'jpeg']);

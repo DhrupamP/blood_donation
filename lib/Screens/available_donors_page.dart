@@ -4,17 +4,20 @@ import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Size%20Config/size_config.dart';
 import 'package:blood_donation/Widgets/donor_item.dart';
 import 'package:blood_donation/constants/color_constants.dart';
+import 'package:blood_donation/constants/string_constants.dart';
+import 'package:blood_donation/l10n/locale_keys.g.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:blood_donation/viewModels/request_form_viewmodel.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../Providers/profile_provider.dart';
 import 'activity.dart';
 
 int temp = 0;
 
 class AvailableDonors extends StatefulWidget {
-  const AvailableDonors({Key? key}) : super(key: key);
-
+  const AvailableDonors({Key? key, this.bloodgroup}) : super(key: key);
+  final String? bloodgroup;
   @override
   _AvailableDonorsState createState() => _AvailableDonorsState();
 }
@@ -54,7 +57,7 @@ class _AvailableDonorsState extends State<AvailableDonors> {
               },
             ),
             title: Text(
-              'Available Donors',
+              LocaleKeys.availabledonorstxt.tr(),
               style:
                   TextStyle(color: primaryColor, fontWeight: FontWeight.w600),
             ),
@@ -74,8 +77,10 @@ class _AvailableDonorsState extends State<AvailableDonors> {
                       if (check.uid == userdata.uid) {
                         return;
                       }
-                      completedetails!
-                          .add(UserDetailModel.fromJson(value, key));
+                      if (check.bloodGroup == widget.bloodgroup) {
+                        completedetails!
+                            .add(UserDetailModel.fromJson(value, key));
+                      }
                     });
                     print(completedetails!.length);
 

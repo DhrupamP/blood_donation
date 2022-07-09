@@ -4,11 +4,16 @@ import 'package:blood_donation/Size%20Config/size_config.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:blood_donation/constants/string_constants.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../Widgets/continue_button.dart';
 import '../Widgets/onboarding_page.dart';
 import '../Widgets/page_indicator.dart';
 import '../Widgets/skip_button.dart';
+import '../l10n/locale_keys.g.dart';
+
+var items = ['English', 'हिन्दी'];
+String? dropdownvalue = 'English';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
@@ -19,8 +24,7 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   PageController controller = PageController();
-  String? dropdownvalue = 'English';
-  var items = ['English', 'Hindi'];
+
   @override
   void initState() {
     super.initState();
@@ -55,7 +59,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   height: SizeConfig.blockSizeVertical! * 11.88,
                 ),
                 SizedBox(
-                  height: SizeConfig.blockSizeVertical! * 44.5,
+                  height: SizeConfig.blockSizeVertical! * 45,
                   width: SizeConfig.screenWidth,
                   child: NotificationListener<OverscrollIndicatorNotification>(
                     onNotification: (overScroll) {
@@ -64,22 +68,21 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     },
                     child: PageView(
                       controller: controller,
-                      children: const [
+                      children: [
                         OnBoardingPage(
                           img: 'assets/ob1.png',
-                          title: 'We Save Lives',
-                          subtitle: 'Connecting blood donors with recipients',
+                          title: LocaleKeys.title1txt.tr(),
+                          subtitle: LocaleKeys.subtitle1.tr(),
                         ),
                         OnBoardingPage(
                           img: 'assets/ob2.png',
-                          title: 'Find Blood',
-                          subtitle:
-                              'We match and connect you with nearby donors',
+                          title: LocaleKeys.title2txt.tr(),
+                          subtitle: LocaleKeys.subtitle2.tr(),
                         ),
                         OnBoardingPage(
                           img: 'assets/ob3.png',
-                          title: 'Always Free',
-                          subtitle: 'You don' 't have to pay anything',
+                          title: LocaleKeys.title3txt.tr(),
+                          subtitle: LocaleKeys.subtitle3.tr(),
                         ),
                       ],
                     ),
@@ -98,7 +101,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
                 ContinueButton(
                   bgcolor: primaryDesign,
-                  txt: 'CONTINUE WITH NUMBER',
+                  txt: LocaleKeys.continuewithnum.tr(),
                   txtColor: Colors.white,
                   onpressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) {
@@ -114,7 +117,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Language',
+                      LocaleKeys.languagetxt.tr(),
                       maxLines: 1,
                       style: TextStyle(color: secondaryText),
                     ),
@@ -158,7 +161,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                                     ),
                             );
                           }).toList(),
-                          onChanged: (String? newValue) {
+                          onChanged: (String? newValue) async {
+                            if (newValue == 'English') {
+                              await context.setLocale(Locale('en'));
+                            } else if (newValue == 'हिन्दी') {
+                              await context.setLocale(Locale('hi'));
+                            }
                             setState(() {
                               dropdownvalue = newValue!;
                             });
@@ -174,7 +182,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 Padding(
                   padding: EdgeInsets.symmetric(
                       horizontal: SizeConfig.blockSizeHorizontal! * 20),
-                  child: Text(tandc,
+                  child: Text(LocaleKeys.tandc.tr(),
                       softWrap: true,
                       textAlign: TextAlign.center,
                       style: TextStyle(

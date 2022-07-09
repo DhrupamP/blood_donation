@@ -8,7 +8,7 @@ class ProfileInputField extends StatefulWidget {
   const ProfileInputField(
       {Key? key,
       this.controller,
-      required this.focusnode,
+      this.focusnode,
       this.hinttxt,
       this.validate,
       this.inputType,
@@ -72,7 +72,8 @@ class _ProfileInputFieldState extends State<ProfileInputField> {
                     widget.focusnode!.hasFocus ? focusedTextField : background,
                 enabled: widget.isEnabled == null ? true : widget.isEnabled!,
                 filled: true,
-                errorStyle: const TextStyle(textBaseline: TextBaseline.alphabetic),
+                errorStyle:
+                    const TextStyle(textBaseline: TextBaseline.alphabetic),
                 enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: const BorderSide(color: Colors.transparent)),

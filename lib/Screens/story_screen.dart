@@ -1,7 +1,9 @@
 import 'package:blood_donation/Models/story_model.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
+import 'package:blood_donation/l10n/locale_keys.g.dart';
 import 'package:blood_donation/viewModels/story_viewmodel.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +33,7 @@ class _StoryScreenState extends State<StoryScreen> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Your Story',
+          LocaleKeys.yourstoryTxt.tr(),
           style: TextStyle(color: primaryText),
         ),
         leading: IconButton(
@@ -81,7 +83,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                 ),
                                 Align(
                                   child: Text(
-                                    'Upload your Story',
+                                    LocaleKeys.upload_your_story_txt.tr(),
                                     style: TextStyle(
                                       fontSize: h * 1.53,
                                       color: white,
@@ -122,7 +124,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       decoration: InputDecoration(
                         errorBorder: InputBorder.none,
                         focusedErrorBorder: InputBorder.none,
-                        hintText: 'Write your story',
+                        hintText: LocaleKeys.write_your_story_txt.tr(),
                         hintStyle: TextStyle(
                             color: secondaryText,
                             fontSize: SizeConfig.blockSizeVertical! * 2.05),
@@ -144,18 +146,18 @@ class _StoryScreenState extends State<StoryScreen> {
                   height: h * 1.79,
                 ),
                 ContinueButton(
-                  txt: 'Done',
+                  txt: LocaleKeys.donetxt.tr(),
                   bgcolor: primaryDesign,
                   txtColor: white,
                   onpressed: () {
                     Navigator.pop(context);
-                    Provider.of<StoryProvider>(context, listen: false)
-                        .storyimg = null;
                     StoryModel story = StoryModel(
                         title: 'Title',
                         description: storycontroller.text,
                         postCreationDate: DateTime.now().toString());
                     StoryViewModel.instance.addStory(context, story);
+                    Provider.of<StoryProvider>(context, listen: false)
+                        .storyimg = null;
                   },
                 )
               ],

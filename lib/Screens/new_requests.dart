@@ -8,9 +8,11 @@ import 'package:blood_donation/Size%20Config/size_config.dart';
 import 'package:blood_donation/Widgets/accepted_request.dart';
 import 'package:blood_donation/Widgets/current_request.dart';
 import 'package:blood_donation/Widgets/new_request.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../Widgets/sentRequest.dart';
+import '../l10n/locale_keys.g.dart';
 import '../viewModels/request_form_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -52,11 +54,6 @@ class _NewRequestsPageState extends State<NewRequestsPage> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        // requestsdetails = [];
-        // await RequestFormVM.instance.getCityCodeFromSharedPref();
-        // await RequestFormVM.instance.getRequestData(context);
-        // print(code);
-        // print(acceptedRequest.patientName);
         rebuildAllChildren(context);
       },
       child: ListView(
@@ -164,10 +161,10 @@ class _NewRequestsPageState extends State<NewRequestsPage> {
                     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
                       Provider.of<RequestsProvider>(context, listen: false)
                           .requestcomplete();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Request Completed')));
+                      RequestFormVM.instance.completeandmoveRequest();
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(LocaleKeys.requestcompletedtxt.tr())));
                     });
-                    RequestFormVM.instance.completeandmoveRequest();
                   }
                   print(k);
 

@@ -5,8 +5,11 @@ import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/Widgets/dropdown_field.dart';
 import 'package:blood_donation/Widgets/profile_input_field.dart';
 import 'package:blood_donation/constants/color_constants.dart';
+import 'package:blood_donation/constants/string_constants.dart';
+import 'package:blood_donation/l10n/locale_keys.g.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:blood_donation/viewModels/request_form_viewmodel.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -107,7 +110,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
     isDonationDateEnabled = false;
   }
 
-  _selectDate(BuildContext context, DateTime? selected,
+  selectDate(BuildContext context, DateTime? selected,
       TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -128,6 +131,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     double h = SizeConfig.blockSizeVertical!;
+
     return SafeArea(
         child: Scaffold(
       body: SizedBox(
@@ -163,7 +167,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     padding: EdgeInsets.only(top: h * 3),
                     child: Center(
                         child: Text(
-                      'My Donor Profile',
+                      LocaleKeys.mydonorprofiletxt.tr(),
                       style: TextStyle(
                           color: primaryColor,
                           fontSize: h * 2.5,
@@ -192,24 +196,23 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     data: 'name',
                     validate: (val) {
                       if (val == null || val.isEmpty) {
-                        return 'Please enter name';
+                        return LocaleKeys.pleaseenternametxt.tr();
                       }
                       return null;
                     },
-                    hinttxt: "Name",
+                    hinttxt: LocaleKeys.nametxt.tr(),
                   ),
                   IgnorePointer(
                     ignoring: !isdobEnabled!,
                     child: GestureDetector(
                       onTap: () {
-                        _selectDate(context, _selectedDate, dobcontroller);
+                        selectDate(context, _selectedDate, dobcontroller);
                       },
                       child: AbsorbPointer(
                         child: ProfileInputField(
                             validate: (value) {
                               if (value == null || value == '') {
-                                print("null" + value.toString());
-                                return "Select DOB";
+                                return LocaleKeys.selectdobtxt.tr();
                               }
 
                               return null;
@@ -218,7 +221,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                             inputType: TextInputType.datetime,
                             controller: dobcontroller,
                             focusnode: dobfn,
-                            hinttxt: 'Date Of Birth'),
+                            hinttxt: LocaleKeys.DOBtxt.tr()),
                       ),
                     ),
                   ),
@@ -229,8 +232,8 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     value: bloodgroup,
                     items: bloodgroups,
                     isEnabled: isbloodgroupEnabled,
-                    hinttext: 'Blood Group',
-                    errortxt: 'Select Blood Group',
+                    hinttext: LocaleKeys.bloodgrouptxt.tr(),
+                    errortxt: LocaleKeys.selectBloodGrouptxt.tr(),
                     onchanged: (newitem) {
                       setState(() {
                         bloodgroup = newitem;
@@ -241,8 +244,8 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     value: gender,
                     items: genders,
                     isEnabled: isgenderEnabled,
-                    hinttext: 'Gender',
-                    errortxt: 'Select Gender',
+                    hinttext: LocaleKeys.gendertxt.tr(),
+                    errortxt: LocaleKeys.selectgendertxt.tr(),
                     onchanged: (newitem) {
                       setState(() {
                         gender = newitem;
@@ -254,13 +257,13 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     controller: emailcontroller,
                     focusnode: emailfn,
                     isEnabled: isemailEnabled,
-                    hinttxt: "Email",
+                    hinttxt: LocaleKeys.emailtxt.tr(),
                     suffixIcon: Icons.email_outlined,
                     validate: (val) {
                       if (val == null || val.isEmpty) {
-                        return 'Please enter name';
+                        return LocaleKeys.emailvalidationtxt.tr();
                       } else if (!EmailValidator.validate(val, false, true)) {
-                        return 'invalid Email';
+                        return LocaleKeys.invalidemail.tr();
                       }
                       return null;
                     },
@@ -269,8 +272,8 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     value: citytxt,
                     items: cities,
                     isEnabled: iscityEnabled,
-                    hinttext: 'Select City',
-                    errortxt: 'Select City',
+                    hinttext: LocaleKeys.cityHintText.tr(),
+                    errortxt: LocaleKeys.cityHintText.tr(),
                     onchanged: (newitem) {
                       setState(() {
                         citytxt = newitem;
@@ -282,10 +285,10 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     focusnode: addressfn,
                     controller: streetaddresscontroller,
                     isEnabled: isaddressEnabled,
-                    hinttxt: 'Street address',
+                    hinttxt: LocaleKeys.addressHintText.tr(),
                     validate: (val) {
                       if (val == null || val.isEmpty) {
-                        return 'Please enter Street Address';
+                        return LocaleKeys.addressvalidationtxt.tr();
                       }
                       return null;
                     },
@@ -294,7 +297,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     padding: EdgeInsets.only(
                         right: SizeConfig.blockSizeHorizontal! * 25),
                     child: Text(
-                      'Have you donated blood before?',
+                      LocaleKeys.havedonatedtxt.tr(),
                       textAlign: TextAlign.left,
                       style: TextStyle(
                           color: secondaryText, fontWeight: FontWeight.w600),
@@ -326,7 +329,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                                     ),
                                     scale: 1.2,
                                   ),
-                                  const Text('Yes'),
+                                  Text(LocaleKeys.yestxt.tr()),
                                 ],
                               ),
                             ),
@@ -338,7 +341,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                                   Transform.scale(
                                     child: Radio(
                                       activeColor: primaryDesign,
-                                      value: 'No',
+                                      value: "No",
                                       groupValue: hasdonatedgroup,
                                       onChanged: (String? value) {
                                         setState(() {
@@ -349,7 +352,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                                     ),
                                     scale: 1.2,
                                   ),
-                                  const Text('No'),
+                                  Text(LocaleKeys.notxt.tr()),
                                 ],
                               ),
                             ),
@@ -365,7 +368,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     ignoring: !isDonationDateEnabled!,
                     child: GestureDetector(
                       onTap: () {
-                        _selectDate(
+                        selectDate(
                             context, hasDonatedDate, hasDonatedController);
                       },
                       child: AbsorbPointer(
@@ -373,7 +376,8 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                             validate: (value) {
                               if (value == null || value == '') {
                                 print("null" + value.toString());
-                                return "Select Donation Date";
+                                return LocaleKeys.donationdatevalidationtxt
+                                    .tr();
                               }
 
                               return null;
@@ -382,7 +386,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                             inputType: TextInputType.datetime,
                             controller: hasDonatedController,
                             focusnode: dobfn,
-                            hinttxt: 'Date of Donation'),
+                            hinttxt: LocaleKeys.donationdate_hinttxt.tr()),
                       ),
                     ),
                   ),
@@ -390,11 +394,10 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     height: h * 3,
                   ),
                   ContinueButton(
-                    txt: "Done",
+                    txt: LocaleKeys.donetxt.tr(),
                     txtColor: Colors.white,
                     bgcolor: primaryDesign,
                     onpressed: () async {
-                      print('citytxt: ' + citytxt.toString());
                       if (_key.currentState!.validate() &&
                           EmailValidator.validate(
                               emailcontroller.text, false, true)) {
@@ -404,7 +407,6 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                               await SharedPreferences.getInstance();
 
                           pref.setString('citycode', citycode!);
-                          print("stored locally");
                           UserDetailModel usermodel = UserDetailModel(
                             address: streetaddresscontroller.text.trim(),
                             bloodGroup: bloodgroup,
@@ -438,7 +440,6 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                           await ProfileFormVM.instance.getProfileData(context);
 
                           pref.setBool('isinitialprofilecomplete', true);
-                          print("stored locally");
 
                           Navigator.pushAndRemoveUntil(
                             context,
@@ -449,9 +450,9 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                             (route) => false,
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('City not available')));
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content:
+                                  Text(LocaleKeys.cityValidationtxt.tr())));
                         }
                       }
                     },

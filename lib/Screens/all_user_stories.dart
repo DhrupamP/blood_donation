@@ -41,32 +41,6 @@ class _AllUserStoriesState extends State<AllUserStories> {
                   );
                 },
               ),
-            )
-            // StreamBuilder(
-            //   stream: FirebaseDatabase.instance
-            //       .ref()
-            //       .child('StorySection/$usercity/${userdata.uid}')
-            //       .onValue,
-            //   builder: (context, snapshot) {
-            //     if(snapshot.hasData){
-            //       if(snapshot.data!=null){
-            //         Map alluserstories = (snapshot.data as DatabaseEvent).snapshot.value as Map;
-            //         List<>
-            //         alluserstories.forEach((key, value) { });
-            //         return Story(url: ,);
-            //       }else{
-            //         return Text('No Data');
-            //       }
-            //     }else{
-            //       if(snapshot.data == null){
-            //          return Text('No Data');
-            //       }
-            //       return CircularProgressIndicator();
-            //     }
-            //
-            //
-            //   },
-            // ),
-            ));
+            )));
   }
 }

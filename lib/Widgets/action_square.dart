@@ -6,7 +6,7 @@ import '../constants/color_constants.dart';
 class ActionSquare extends StatelessWidget {
   const ActionSquare({Key? key, this.txt, this.img, this.onpressed})
       : super(key: key);
-  final Image? img;
+  final Widget? img;
   final String? txt;
   final VoidCallback? onpressed;
   @override

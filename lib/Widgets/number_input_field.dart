@@ -38,7 +38,8 @@ class _NumberInputFieldState extends State<NumberInputField> {
               style: TextStyle(color: primaryText),
             ),
           ),
-          prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+          prefixIconConstraints:
+              const BoxConstraints(minWidth: 0, minHeight: 0),
           prefixStyle: const TextStyle(color: Colors.red),
           hintText: "Phone Number",
           hintStyle: TextStyle(

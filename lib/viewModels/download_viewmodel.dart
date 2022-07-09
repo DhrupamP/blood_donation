@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,18 +20,9 @@ class DownloadVM {
     SizeConfig().init(context);
     try {
       final _pdf = pdf.Document();
-      //String url = "https://media.istockphoto.com/vectors/elegant-blue-and-gold-diploma-certificate-template-vector-id1128426035?k=20&m=1128426035&s=612x612&w=0&h=IRbCMn_Ueo36GgkQJxxsvsmMdp4JII73KZabuvhJY64=";
-      //final _assetImage = await flutterImageProvider(NetworkImage(url));
       final _assetImage =
           await flutterImageProvider(AssetImage("assets/certificate.jpg"));
-      // pdf.Image(AssetImage("assets/certificate.jpg") as PdfImage);
-      //     await AssetImage("assets/certificate.jpg");
-      // final _assetImage = await pdfImageFromImageProvider(
-      //   pdf: _pdf.document,
-      //   image: AssetImage(
-      //     'assets/images/account.png',
-      //   ),
-      // );
+
       _pdf.addPage(
         pdf.Page(
           pageFormat: PdfPageFormat.a4,
@@ -78,73 +67,10 @@ class DownloadVM {
           ),
         ),
       );
-      // _pdf.addPage(
-      //   pdf.Page(
-      //     pageFormat: PdfPageFormat.a4,
-      //     build: (context) => pdf.Center(
-      //       child: pdf.Container(
-      //         margin: pdf.EdgeInsets.all(16),
-      //         width: double.maxFinite,
-      //         color: PdfColors.deepPurple50,
-      //         child: pdf.Column(
-      //           mainAxisAlignment: pdf.MainAxisAlignment.center,
-      //           crossAxisAlignment: pdf.CrossAxisAlignment.center,
-      //           children: [
-      //             pdf.SizedBox(
-      //               height: 50,
-      //             ),
-      //             pdf.Container(
-      //               width: 360,
-      //               height: 360,
-      //               decoration: pdf.BoxDecoration(
-      //                 shape: pdf.BoxShape.circle,
-      //                 color: PdfColors.deepPurple200,
-      //               ),
-      //               child: pdf.Image(_assetImage),
-      //             ),
-      //             pdf.SizedBox(
-      //               height: 50,
-      //             ),
-      //             pdf.Text(
-      //               'certificate of completion',
-      //               style: pdf.TextStyle(
-      //                 fontSize: 22,
-      //                 color: PdfColors.grey700,
-      //               ),
-      //             ),
-      //             pdf.SizedBox(
-      //               height: 20,
-      //             ),
-      //             pdf.Text(
-      //               'presented to:',
-      //               style: pdf.TextStyle(
-      //                 color: PdfColors.grey600,
-      //               ),
-      //             ),
-      //             pdf.SizedBox(
-      //               height: 30,
-      //             ),
-      //             pdf.Text(
-      //               name,
-      //               style: pdf.TextStyle(
-      //                 fontSize: 24,
-      //                 fontWeight: pdf.FontWeight.bold,
-      //                 color: PdfColors.grey800,
-      //               ),
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // );
-      //var path = await getApplicationDocumentsDirectory();
       var storagePermission = await Permission.storage.status;
-
       if (!storagePermission.isGranted) {
         await Permission.storage.request();
       }
-
       storagePermission = await Permission.storage.status;
       if (storagePermission.isGranted) {
         final d = await getExternalStorageDirectory();
@@ -168,7 +94,6 @@ class DownloadVM {
       }
     } catch (e) {
       print(e);
-      //Navigator.of(context).push(MaterialPageRoute(builder: (context)=>ErrorScreen(error: e.toString(),)));
     }
   }
 }

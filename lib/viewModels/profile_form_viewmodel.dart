@@ -61,6 +61,11 @@ class ProfileFormVM {
       profilepic = userdata.profilePhoto!;
       Provider.of<ProfileProvider>(ctx, listen: false).profilepicurl =
           userdata.profilePhoto!;
+      Provider.of<ProfileProvider>(ctx, listen: false).getdetails(
+          userdata.name!,
+          userdata.sex!,
+          userdata.contactNo!.toString(),
+          userdata.bloodGroup!);
       // Provider.of<HomePageProvider>(ctx, listen: false).Stoploading();
       print(userdata.requestList);
     }
@@ -132,6 +137,15 @@ class ProfileFormVM {
         .push()
         .update(req.toJson());
   }
+
+  Future<void> updatename(String name, String bloodgroup) async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('users/${usercity}/${userdata.uid}')
+        .update({'name': name, 'bloodGroup': bloodgroup});
+  }
+
+  Future<void> updateBasicDetails(String gender, String dob) async {}
 
   getRequests() async {
     final pref = await SharedPreferences.getInstance();

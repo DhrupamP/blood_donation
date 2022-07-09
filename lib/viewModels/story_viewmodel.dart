@@ -35,13 +35,6 @@ class StoryViewModel {
     map1.forEach((key, value) {
       maps.add(value);
     });
-    // List<Map> elements = [];
-    // await Future.forEach(maps, (element) async {
-    //   elements.add(element as Map);
-    // });
-    // await Future.forEach(elements, (element) {
-    //   temp.add(StoryModel.fromJson(element as Map));
-    // });
     maps.forEach((element) {
       element.forEach((key, value) {
         temp.add(StoryModel.fromJson(value));
@@ -68,7 +61,6 @@ class StoryViewModel {
 
   Future<void> addStoryImage(BuildContext context) async {
     print('picking file//....');
-
     final storyimage = await FilePicker.platform.pickFiles(
         type: FileType.custom, allowedExtensions: ['jpg', 'png', 'jpeg']);
     if (storyimage == null) return;
@@ -87,16 +79,21 @@ class StoryViewModel {
 
   Future<void> addStory(BuildContext context, StoryModel story) async {
     try {
+      print('storyimg:  ' +
+          Provider.of<StoryProvider>(context, listen: false)
+              .storyimg
+              .toString());
       final storageref = FirebaseStorage.instance.ref();
       String randomID = generateRandomString(5);
       final storyref = storageref
           .child('StorySection/$usercity/${userdata.uid}/story$randomID.jpg');
 
       await storyref.putFile(
-          Provider.of<StoryProvider>(context, listen: false).storyimg!,
-          SettableMetadata(
-            contentType: "image/jpeg",
-          ));
+        Provider.of<StoryProvider>(context, listen: false).storyimg!,
+        SettableMetadata(
+          contentType: "image/jpeg",
+        ),
+      );
       String? storyurl = await storyref.getDownloadURL();
       story.photoURL = storyurl;
       await FirebaseDatabase.instance
@@ -109,21 +106,23 @@ class StoryViewModel {
     }
   }
 
-  static void deleteFireBaseStorageItem(String fileUrl) {
-    String filePath = fileUrl.replaceAll(
-        RegExp(
-            r'https://firebasestorage.googleapis.com/v0/b/dial-in-2345.appspot.com/o/'),
-        '');
-
-    filePath = filePath.replaceAll(RegExp(r'%2F'), '/');
-
-    filePath = filePath.replaceAll(RegExp(r'(\?alt).*'), '');
-
-    final storageReferance = FirebaseStorage.instance.ref();
-
-    storageReferance
-        .child(filePath)
-        .delete()
-        .then((_) => print('Successfully deleted $filePath storage item'));
+  Future<void> deleteStory(
+      String pushid, BuildContext context, String url) async {
+    // print('deleting...');
+    // String filename = url.split(RegExp(r'(%2F)..*(%2F)'))[1].split(".")[0];
+    // final storageref = FirebaseStorage.instance.ref();
+    // print('citycode: ' + usercity.toString());
+    // print('uid: ' + userdata.uid.toString());
+    // print('filename: ' + filename);
+    //
+    // final imgref = storageref
+    //     .child('StorySection/$usercity/${userdata.uid}/$filename.jpg');
+    // await imgref.delete();
+    await FirebaseDatabase.instance
+        .ref()
+        .child('StorySection/$usercity/${userdata.uid}/$pushid')
+        .remove()
+        .then((value) => Navigator.pop(context));
+    print('deleted!');
   }
 }

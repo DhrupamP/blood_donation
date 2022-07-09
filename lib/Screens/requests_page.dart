@@ -1,7 +1,9 @@
 import 'package:blood_donation/Screens/all_requests.dart';
 import 'package:blood_donation/Screens/new_requests.dart';
 import 'package:blood_donation/constants/color_constants.dart';
+import 'package:blood_donation/l10n/locale_keys.g.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../Size Config/size_config.dart';
@@ -40,11 +42,11 @@ class _RequestsPageState extends State<RequestsPage> {
             indicator: UnderlineTabIndicator(
                 insets: EdgeInsets.symmetric(horizontal: w * 10),
                 borderSide: BorderSide(width: 3, color: primaryDesign!)),
-            tabs: const [
+            tabs: [
               Text(
-                'New Requests',
+                LocaleKeys.newrequests.tr(),
               ),
-              Text('All Requests'),
+              Text(LocaleKeys.allrequests.tr()),
             ],
           ),
         ),

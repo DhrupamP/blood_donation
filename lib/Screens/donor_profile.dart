@@ -3,9 +3,11 @@ import 'package:blood_donation/Screens/activity.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
+import 'package:blood_donation/constants/string_constants.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:blood_donation/viewModels/request_form_viewmodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -15,6 +17,7 @@ import 'package:provider/provider.dart';
 import '../Models/request_model.dart';
 import '../Providers/requests_provider.dart';
 import '../Size Config/size_config.dart';
+import '../l10n/locale_keys.g.dart';
 
 class DonorProfile extends StatefulWidget {
   const DonorProfile(
@@ -49,6 +52,7 @@ class _DonorProfileState extends State<DonorProfile> {
     SizeConfig().init(context);
     var h = SizeConfig.blockSizeVertical!;
     var w = SizeConfig.blockSizeHorizontal!;
+
     return SafeArea(
       child: Scaffold(
           floatingActionButton: FloatingActionButton(
@@ -65,7 +69,7 @@ class _DonorProfileState extends State<DonorProfile> {
           appBar: AppBar(
             elevation: 0,
             title: Text(
-              'My Profile',
+              'Donor Profile',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: h * 2.3,
@@ -73,16 +77,21 @@ class _DonorProfileState extends State<DonorProfile> {
             ),
             centerTitle: true,
             backgroundColor: primaryDesign,
-            leading: Icon(
-              FontAwesomeIcons.arrowLeftLong,
-              color: Colors.white,
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                FontAwesomeIcons.arrowLeftLong,
+                color: Colors.white,
+              ),
             ),
             actions: [
               Padding(
                 padding: EdgeInsets.only(right: w * 5),
                 child: Center(
                   child: Text(
-                    'Done',
+                    LocaleKeys.donetxt.tr(),
                     style: TextStyle(
                         color: white,
                         fontSize: h * 1.8,
@@ -153,7 +162,7 @@ class _DonorProfileState extends State<DonorProfile> {
                         height: h * 1,
                       ),
                       Text(
-                        'Blood Group: ${widget.bloodgroup ?? 'N/A'}',
+                        '${LocaleKeys.bloodgrouptxt.tr()}: ${widget.bloodgroup ?? 'N/A'}',
                         style: TextStyle(
                           fontSize: h * 1.8,
                           color: primaryText,
@@ -193,7 +202,8 @@ class _DonorProfileState extends State<DonorProfile> {
                           ignoring: ignoringSentBtn,
                           child: Container(
                             decoration: BoxDecoration(
-                                color: acceptColor,
+                                color:
+                                    ignoringSentBtn ? Colors.grey : acceptColor,
                                 borderRadius: BorderRadius.circular(36)),
                             height: h * 4.38,
                             width: w * 53.61,
@@ -210,7 +220,7 @@ class _DonorProfileState extends State<DonorProfile> {
                                   width: w * 4,
                                 ),
                                 Text(
-                                  'Send Request',
+                                  LocaleKeys.sendRequesttxt.tr(),
                                   style: TextStyle(
                                       color: white,
                                       fontWeight: FontWeight.w600),
@@ -226,7 +236,7 @@ class _DonorProfileState extends State<DonorProfile> {
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Basic Details',
+                          LocaleKeys.basicdetailstxt.tr(),
                           style: TextStyle(color: secondaryText),
                         ),
                       ),
@@ -248,19 +258,19 @@ class _DonorProfileState extends State<DonorProfile> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Text(
-                                    'Age',
+                                    LocaleKeys.agetxt.tr(),
                                     style: detailsStyle,
                                   ),
                                   Text(
-                                    'Sex',
+                                    LocaleKeys.sextxt.tr(),
                                     style: detailsStyle,
                                   ),
                                   Text(
-                                    'Contact Number',
+                                    LocaleKeys.contactnumbertxt.tr(),
                                     style: detailsStyle,
                                   ),
                                   Text(
-                                    'Number of Donations',
+                                    LocaleKeys.no_of_donation_txt.tr(),
                                     style: detailsStyle,
                                   ),
                                 ],
@@ -297,13 +307,13 @@ class _DonorProfileState extends State<DonorProfile> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Donation Photos',
+                            LocaleKeys.donationphotostxt.tr(),
                             style: TextStyle(
                                 color: secondaryText,
                                 fontWeight: FontWeight.w800),
                           ),
                           Text(
-                            'View all',
+                            LocaleKeys.viewalltxt.tr(),
                             style: TextStyle(
                                 color: secondaryText,
                                 fontWeight: FontWeight.w800),
@@ -319,7 +329,7 @@ class _DonorProfileState extends State<DonorProfile> {
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'My Achievements',
+                          LocaleKeys.myachievementstxt.tr(),
                           style: TextStyle(
                               color: secondaryText,
                               fontWeight: FontWeight.w800),
@@ -328,31 +338,12 @@ class _DonorProfileState extends State<DonorProfile> {
                       SizedBox(
                         height: h * 20.5,
                         width: w * 73.24,
-                        child: const Center(child: Text("achievements")),
+                        child: Center(
+                            child: Text(LocaleKeys.achievementstxt.tr())),
                       ),
                       SizedBox(
                         height: h * 3,
                       ),
-                      // Container(
-                      //   child: ContinueButton(
-                      //     txt: 'Download Certificate',
-                      //     txtColor: Colors.white,
-                      //     icon: FontAwesomeIcons.download,
-                      //     iconColor: Colors.white,
-                      //     bgcolor: primaryDesign,
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   height: h * 2,
-                      // ),
-                      // ContinueButton(
-                      //   txt: 'Share App',
-                      //   txtColor: Colors.white,
-                      //   icon: FontAwesomeIcons.shareNodes,
-                      //   iconColor: Colors.white,
-                      //   bgcolor: sharebg,
-                      //   borderColor: Colors.transparent,
-                      // ),
                       SizedBox(
                         height: h * 2,
                       ),
@@ -368,14 +359,3 @@ class _DonorProfileState extends State<DonorProfile> {
 
 TextStyle detailsStyle =
     TextStyle(color: primaryText, fontWeight: FontWeight.w700);
-
-class myclipper extends CustomClipper<Rect> {
-  Rect getClip(Size size) {
-    return Rect.fromLTWH(1, 0, 200, 100);
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) {
-    return false;
-  }
-}

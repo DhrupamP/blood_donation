@@ -2,13 +2,14 @@ import 'package:blood_donation/Screens/onboarding_screen.dart';
 import 'package:blood_donation/Screens/otp_input_screen.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
-import 'package:blood_donation/constants/string_constants.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/details_box.dart';
 import '../Widgets/number_input_field.dart';
+import '../l10n/locale_keys.g.dart';
 
 SnackBar invalidNumber = const SnackBar(content: Text('Invalid Phone Number'));
 
@@ -63,7 +64,8 @@ class _NumberInputScreenState extends State<NumberInputScreen> {
             Padding(
               padding: EdgeInsets.only(left: w * 3),
               child: DetailsBox(
-                  title: numberInputTitle, details: numberInputDetails),
+                  title: LocaleKeys.numberInputTitle.tr(),
+                  details: LocaleKeys.numberInputDetails.tr()),
             ),
             SizedBox(
               height: h * 2.75,
@@ -74,7 +76,7 @@ class _NumberInputScreenState extends State<NumberInputScreen> {
               height: h * 51.88,
             ),
             ContinueButton(
-              txt: "Send OTP",
+              txt: LocaleKeys.sendotptxt.tr(),
               bgcolor: isEmpty ? Colors.white : primaryDesign,
               txtColor: isEmpty ? primaryDesign : Colors.white,
               onpressed: () {

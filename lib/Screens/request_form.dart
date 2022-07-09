@@ -7,8 +7,11 @@ import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
 import 'package:blood_donation/Widgets/profile_input_field.dart';
 import 'package:blood_donation/Widgets/profile_textarea.dart';
+import 'package:blood_donation/constants/string_constants.dart';
+import 'package:blood_donation/l10n/locale_keys.g.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:blood_donation/viewModels/request_form_viewmodel.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +56,7 @@ class _RequestFormState extends State<RequestForm> {
             color: secondaryText,
           ),
           title: Text(
-            'Request Form',
+            LocaleKeys.requestformtxt.tr(),
             style: TextStyle(
                 color: primaryColor,
                 fontWeight: FontWeight.w600,
@@ -71,11 +74,11 @@ class _RequestFormState extends State<RequestForm> {
                   ProfileInputField(
                     focusnode: patientnamefn,
                     controller: patientnamecontroller,
-                    hinttxt: '  Patient Name',
+                    hinttxt: LocaleKeys.patient_name_hint_txt.tr(),
                     inputType: TextInputType.name,
                     validate: (val) {
                       if (val == null || val.isEmpty) {
-                        return 'Please enter Patient Name';
+                        return LocaleKeys.patient_name_error_txt.tr();
                       }
                       return null;
                     },
@@ -83,11 +86,11 @@ class _RequestFormState extends State<RequestForm> {
                   ProfileInputField(
                     focusnode: patientagefn,
                     controller: patientagecontroller,
-                    hinttxt: '  Patient Age',
+                    hinttxt: LocaleKeys.patient_age_hint_txt.tr(),
                     inputType: TextInputType.number,
                     validate: (val) {
                       if (val == null || val.isEmpty) {
-                        return 'Please enter Patient Age';
+                        return LocaleKeys.patient_age_error_txt.tr();
                       }
                       return null;
                     },
@@ -95,10 +98,10 @@ class _RequestFormState extends State<RequestForm> {
                   ProfileInputTextArea(
                     focusnode: mainproblemfn,
                     controller: mainproblemcontroller,
-                    hinttxt: '  Main Problem',
+                    hinttxt: LocaleKeys.problemhintTxt.tr(),
                     validate: (val) {
                       if (val == null || val.isEmpty) {
-                        return 'Please enter the problem';
+                        return LocaleKeys.problemErrortxt.tr();
                       }
                       return null;
                     },
@@ -106,8 +109,8 @@ class _RequestFormState extends State<RequestForm> {
                   DropDownField(
                     value: reqbloodgroup,
                     items: bloodgroups,
-                    hinttext: '  Blood Group',
-                    errortxt: 'Select Blood Group',
+                    hinttext: LocaleKeys.bloodgrphinttxt.tr(),
+                    errortxt: LocaleKeys.bloodgrpErrortxt.tr(),
                     onchanged: (newitem) {
                       setState(() {
                         reqbloodgroup = newitem;
@@ -115,7 +118,7 @@ class _RequestFormState extends State<RequestForm> {
                     },
                   ),
                   UploadDocRow(
-                    text: 'Upload ID',
+                    text: LocaleKeys.uploadidtxt.tr(),
                     onpressed: () {
                       context.read<RequestFormProvider>().Uploaded('id');
                     },
@@ -125,7 +128,7 @@ class _RequestFormState extends State<RequestForm> {
                     height: h * 1.3,
                   ),
                   UploadDocRow(
-                    text: 'Blood Requirement Form',
+                    text: LocaleKeys.brftxt.tr(),
                     onpressed: () {
                       context.read<RequestFormProvider>().Uploaded('brf');
                     },
@@ -137,8 +140,8 @@ class _RequestFormState extends State<RequestForm> {
                   DropDownField(
                     value: nearest,
                     items: ['abcd', 'xyz'],
-                    hinttext: 'Nearest blood Bank',
-                    errortxt: 'Please Select nearest Blood Bank',
+                    hinttext: LocaleKeys.nearestbloodbanktxt.tr(),
+                    errortxt: LocaleKeys.nearestbloodbankerrortxt.tr(),
                     onchanged: (newitem) {
                       setState(() {
                         nearest = newitem;
@@ -146,7 +149,7 @@ class _RequestFormState extends State<RequestForm> {
                     },
                   ),
                   ContinueButton(
-                    txt: 'Done',
+                    txt: LocaleKeys.donetxt.tr(),
                     txtColor: white,
                     bgcolor: primaryDesign,
                     onpressed: () async {
@@ -181,7 +184,9 @@ class _RequestFormState extends State<RequestForm> {
                         RequestFormVM.instance.getRequestData(context);
                         Navigator.pushAndRemoveUntil(context,
                             MaterialPageRoute(builder: (_) {
-                          return AvailableDonors();
+                          return AvailableDonors(
+                            bloodgroup: reqbloodgroup,
+                          );
                         }), (route) => false);
                       }
                     },

@@ -5,7 +5,7 @@ import '../constants/color_constants.dart';
 
 class ActionRectangle extends StatelessWidget {
   const ActionRectangle({Key? key, this.txt, this.img}) : super(key: key);
-  final Image? img;
+  final Widget? img;
   final String? txt;
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,10 @@ class ActionRectangle extends StatelessWidget {
                   ),
                   width: SizeConfig.blockSizeHorizontal! * 20.32,
                   height: SizeConfig.blockSizeVertical! * 8.86,
-                  child: img),
+                  child: Container(
+                      width: SizeConfig.blockSizeHorizontal! * 7.9,
+                      height: SizeConfig.blockSizeVertical! * 3.9,
+                      child: img)),
             ),
             Align(
               alignment: const Alignment(0.1, 0),

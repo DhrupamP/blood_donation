@@ -1,17 +1,23 @@
+import 'package:blood_donation/constants/string_constants.dart';
+import 'package:blood_donation/viewModels/story_viewmodel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../Size Config/size_config.dart';
 import '../Widgets/continue_button.dart';
 import '../constants/color_constants.dart';
+import '../l10n/locale_keys.g.dart';
 
 class EditStoryScreen extends StatefulWidget {
-  const EditStoryScreen({Key? key, this.description, this.imageurl, this.Title})
+  const EditStoryScreen(
+      {Key? key, this.description, this.imageurl, this.Title, this.pushID})
       : super(key: key);
   final String? description;
   final String? Title;
   final String? imageurl;
+  final String? pushID;
 
   @override
   _EditStoryScreenState createState() => _EditStoryScreenState();
@@ -22,6 +28,7 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
   @override
   void initState() {
     mycontroller = TextEditingController();
+    mycontroller.text = widget.description!;
     super.initState();
   }
 
@@ -38,7 +45,7 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Your Story',
+          LocaleKeys.yourstoryTxt.tr(),
           style: TextStyle(color: primaryText),
         ),
         leading: IconButton(
@@ -49,6 +56,24 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
               FontAwesomeIcons.leftLong,
               color: secondaryText,
             )),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: w * 2),
+            child: Center(
+              child: TextButton(
+                onPressed: () {
+                  print('push id:  ' + widget.pushID.toString());
+                  StoryViewModel.instance
+                      .deleteStory(widget.pushID!, context, widget.imageurl!);
+                },
+                child: Text(
+                  LocaleKeys.deletetxt,
+                  style: TextStyle(color: primaryDesign),
+                ),
+              ),
+            ),
+          )
+        ],
       ),
       body: Center(
         child: Column(
@@ -83,7 +108,7 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
                             ),
                             Align(
                               child: Text(
-                                'Upload your Story',
+                                LocaleKeys.upload_your_story_txt,
                                 style: TextStyle(
                                   fontSize: h * 1.53,
                                   color: white,
@@ -123,7 +148,7 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
                   decoration: InputDecoration(
                     errorBorder: InputBorder.none,
                     focusedErrorBorder: InputBorder.none,
-                    hintText: 'Write your story',
+                    hintText: LocaleKeys.write_your_story_txt,
                     hintStyle: TextStyle(
                         color: secondaryText,
                         fontSize: SizeConfig.blockSizeVertical! * 2.05),
@@ -144,7 +169,7 @@ class _EditStoryScreenState extends State<EditStoryScreen> {
               height: h * 1.79,
             ),
             ContinueButton(
-              txt: 'Done',
+              txt: LocaleKeys.donetxt,
               bgcolor: primaryDesign,
               txtColor: white,
               onpressed: () {

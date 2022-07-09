@@ -1,8 +1,10 @@
 import 'package:dashed_circle/dashed_circle.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import '../Size Config/size_config.dart';
+import '../l10n/locale_keys.g.dart';
 import '../viewModels/request_form_viewmodel.dart';
 
 class AcceptedRequest extends StatefulWidget {
@@ -154,8 +156,9 @@ class _AcceptedRequestState extends State<AcceptedRequest> {
                               isCompleted = true;
                             });
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Request Completed')));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content:
+                                    Text(LocaleKeys.requestcompletedtxt.tr())));
                           },
                           child: Container(
                             width: w * 10.56,

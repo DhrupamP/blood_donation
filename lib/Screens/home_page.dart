@@ -9,8 +9,13 @@ import 'package:blood_donation/Screens/help_page.dart';
 import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Screens/our_experts.dart';
 import 'package:blood_donation/Screens/profile_form.dart';
+import 'package:blood_donation/constants/string_constants.dart';
+import 'package:blood_donation/l10n/locale_keys.g.dart';
 import 'package:blood_donation/viewModels/login_viewmodel.dart';
 import 'package:blood_donation/viewModels/story_viewmodel.dart';
+import 'package:blood_donation/viewModels/translateVM.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:blood_donation/Providers/requests_provider.dart';
 import 'package:blood_donation/Screens/profile_screen.dart';
@@ -34,10 +39,10 @@ import 'package:provider/provider.dart';
 import '../Providers/profile_provider.dart';
 import '../Widgets/story_widget.dart';
 import '../viewModels/request_form_viewmodel.dart';
+import 'activity.dart';
 
 List<Widget> allScreens = [OurExperts(), Container(), AboutPage()];
 bool? isProfileComplete = false;
-GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
 int? draweridx = 0;
 UserDetailModel userdata = UserDetailModel();
 bool isLoading = false;
@@ -45,6 +50,7 @@ String profilepic = '';
 String? usercitycode = '';
 String defaultprofilepic =
     'https://firebasestorage.googleapis.com/v0/b/nmo-blood-donation.appspot.com/o/user1.png?alt=media&token=8c7b068f-29da-4beb-9df3-9141f990d343';
+GlobalKey<ScaffoldState> homepagekey = GlobalKey<ScaffoldState>();
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -58,6 +64,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // ProfileFormVM.instance.getProfileData(context);
     // RequestFormVM.instance.getRequestData(context);
+
     print('userdata.uid:  ' + userdata.uid.toString());
     super.initState();
   }
@@ -72,138 +79,14 @@ class _HomePageState extends State<HomePage> {
         child: context.watch<HomePageProvider>().isloading
             ? const Scaffold(body: Center(child: CircularProgressIndicator()))
             : Scaffold(
+                key: homepagekey,
                 backgroundColor: white,
-                drawer: Drawer(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: w * 10, vertical: h * 5),
-                    child: ListView(
-                      children: [
-                        Text(
-                          userdata.name ?? 'N/A',
-                          style:
-                              TextStyle(fontSize: h * 3, color: primaryColor),
-                        ),
-                        SizedBox(
-                          height: h * 1.26,
-                        ),
-                        Text(
-                          'Blood Group: ${userdata.bloodGroup ?? 'N/A'}',
-                          style: TextStyle(
-                            color: primaryText,
-                          ),
-                        ),
-                        SizedBox(
-                          height: h * 1.08,
-                        ),
-                        Row(
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.phone,
-                              color: primaryText,
-                              size: h * 1.5,
-                            ),
-                            SizedBox(
-                              width: w * 1,
-                            ),
-                            Text(userdata.contactNo == null
-                                ? 'N/A'
-                                : userdata.contactNo.toString())
-                          ],
-                        ),
-                        SizedBox(
-                          height: h * 1.88,
-                        ),
-                        Divider(
-                          color: secondaryText,
-                          thickness: 1.5,
-                        ),
-                        SizedBox(
-                          height: h * 2.5,
-                        ),
-                        const DrawerTile(
-                          index: 0,
-                          text: 'Our Experts',
-                          icon: FontAwesomeIcons.peopleGroup,
-                        ),
-                        const DrawerTile(
-                          index: 1,
-                          text: 'Suggestions',
-                          icon: FontAwesomeIcons.comment,
-                        ),
-                        const DrawerTile(
-                          index: 2,
-                          text: 'About Us',
-                          icon: FontAwesomeIcons.circleInfo,
-                        ),
-                        GestureDetector(
-                          onTap: () async {
-                            print("signing out....");
-                            await LoginVM.instance.signout();
-                            print("logged out");
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => NumberInputScreen()),
-                                (route) => false);
-                          },
-                          child: Container(
-                            width: SizeConfig.blockSizeHorizontal! * 60,
-                            height: SizeConfig.blockSizeVertical! * 6,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.93),
-                            ),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: SizeConfig.blockSizeHorizontal! * 2,
-                                ),
-                                Icon(Icons.logout),
-                                SizedBox(
-                                  width: SizeConfig.blockSizeHorizontal! * 5,
-                                ),
-                                Text(
-                                  'Log Out',
-                                  style: TextStyle(
-                                      color: primaryColor,
-                                      fontWeight: FontWeight.w700),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: h * 32,
-                        ),
-                        Divider(
-                          color: secondaryText,
-                          thickness: 1.5,
-                        ),
-                        const DrawerShare(
-                          icon: FontAwesomeIcons.shareNodes,
-                          text: 'Share the App',
-                        ),
-                        DrawerShare(
-                          onpressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const HelpPage(),
-                                ));
-                          },
-                          icon: FontAwesomeIcons.circleQuestion,
-                          text: 'Help',
-                        )
-                      ],
-                    ),
-                  ),
-                ),
                 appBar: AppBar(
                   backgroundColor: white,
                   elevation: 0,
                   leading: IconButton(
                       onPressed: () {
-                        _scaffoldkey.currentState?.openDrawer();
+                        scaffoldkey.currentState?.openDrawer();
                       },
                       icon: Icon(
                         Icons.menu,
@@ -231,7 +114,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                key: _scaffoldkey,
                 body: SizedBox(
                   height: h * 100,
                   width: w * 100,
@@ -262,6 +144,7 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(
                         height: h * 2,
                       ),
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -269,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                             width: w * 6.94,
                           ),
                           Text(
-                            'Actions',
+                            LocaleKeys.actionstxt.tr(),
                             style: TextStyle(
                                 color: secondaryText,
                                 fontWeight: FontWeight.w800),
@@ -284,8 +167,11 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           ActionSquare(
-                            txt: 'Donate Blood',
-                            img: Image.asset("assets/blood_donate.png"),
+                            txt: LocaleKeys.donateBloodtxt.tr(),
+                            img: SvgPicture.asset(
+                              "assets/blood_donation.svg",
+                              fit: BoxFit.none,
+                            ),
                             onpressed: () async {
                               print(cities);
                               Navigator.push(context,
@@ -295,8 +181,11 @@ class _HomePageState extends State<HomePage> {
                             },
                           ),
                           ActionSquare(
-                            txt: 'Send Request',
-                            img: Image.asset("assets/send_request.png"),
+                            txt: LocaleKeys.sendRequesttxt.tr(),
+                            img: SvgPicture.asset(
+                              "assets/request.svg",
+                              fit: BoxFit.none,
+                            ),
                             onpressed: () async {
                               print(Provider.of<RequestsProvider>(context,
                                       listen: false)
@@ -331,8 +220,11 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: w * 6.94),
                         child: ActionRectangle(
-                          img: Image.asset('assets/urgent_req.png'),
-                          txt: "Call for Urgent Requirement",
+                          img: SvgPicture.asset(
+                            'assets/urgent_req.svg',
+                            fit: BoxFit.none,
+                          ),
+                          txt: LocaleKeys.call_for_urgent_txt.tr(),
                         ),
                       ),
                       SizedBox(
@@ -345,14 +237,14 @@ class _HomePageState extends State<HomePage> {
                             width: w * 6.94,
                           ),
                           Text(
-                            'Stories',
+                            LocaleKeys.storiestxt.tr(),
                             style: TextStyle(
                                 color: secondaryText,
                                 fontWeight: FontWeight.w800),
                           ),
                           Spacer(),
                           Text(
-                            'View all',
+                            LocaleKeys.viewalltxt.tr(),
                             style: TextStyle(
                                 color: secondaryText,
                                 fontWeight: FontWeight.w800),

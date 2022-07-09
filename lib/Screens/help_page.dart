@@ -1,9 +1,12 @@
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Widgets/continue_button.dart';
+import 'package:blood_donation/constants/string_constants.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../Size Config/size_config.dart';
 import '../constants/color_constants.dart';
+import '../l10n/locale_keys.g.dart';
 
 class HelpPage extends StatefulWidget {
   const HelpPage({Key? key}) : super(key: key);
@@ -35,7 +38,7 @@ class _HelpPageState extends State<HelpPage> {
         elevation: 0,
         backgroundColor: white,
         title: Text(
-          'Help',
+          LocaleKeys.helptxt.tr(),
           style: TextStyle(
               color: primaryColor,
               fontWeight: FontWeight.w600,
@@ -90,7 +93,7 @@ class _HelpPageState extends State<HelpPage> {
               height: h * 6,
             ),
             Text(
-              'Get In Touch',
+              LocaleKeys.getInTouchtxt.tr(),
               style: TextStyle(
                   fontSize: h * 2.56,
                   color: primaryColor,
@@ -102,7 +105,7 @@ class _HelpPageState extends State<HelpPage> {
             TextField(
               controller: emailcontroller,
               decoration: InputDecoration(
-                  hintText: 'Email',
+                  hintText: LocaleKeys.emailtxt.tr(),
                   hintStyle: TextStyle(fontSize: h * 1.79, color: primaryText)),
             ),
             SizedBox(
@@ -116,7 +119,7 @@ class _HelpPageState extends State<HelpPage> {
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintStyle: TextStyle(fontSize: h * 1.79, color: primaryText),
-                  hintText: '  Type your message here....',
+                  hintText: LocaleKeys.messagehintText.tr(),
                 ),
               ),
             ),
@@ -125,7 +128,7 @@ class _HelpPageState extends State<HelpPage> {
             ),
             ContinueButton(
               bgcolor: primaryDesign,
-              txt: 'Send',
+              txt: LocaleKeys.sendtxt.tr(),
               txtColor: white,
             )
           ],

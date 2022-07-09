@@ -10,6 +10,7 @@ import 'package:blood_donation/Widgets/skip_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:blood_donation/constants/string_constants.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -20,10 +21,21 @@ import '../Size Config/size_config.dart';
 import '../Widgets/profile_image.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/locale_keys.g.dart';
 import 'number_input.dart';
 
 String? dobtxt;
 String? citytxt;
+final List<String> bloodgroups = [
+  'A+',
+  'A-',
+  'B+',
+  'B-',
+  'O+',
+  'O-',
+  'AB+',
+  'AB-'
+];
 
 class ProfileFormScreen extends StatefulWidget {
   const ProfileFormScreen({Key? key}) : super(key: key);
@@ -34,16 +46,7 @@ class ProfileFormScreen extends StatefulWidget {
 
 class _ProfileFormScreenState extends State<ProfileFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final List<String> _bloodgroups = [
-    'A+',
-    'A-',
-    'B+',
-    'B-',
-    'O+',
-    'O-',
-    'AB+',
-    'AB-'
-  ];
+
   List<String> genders = ['male', 'female', 'others'];
   FocusNode? namefn = FocusNode();
   FocusNode? dobfn = FocusNode();
@@ -119,7 +122,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                   padding: EdgeInsets.only(top: h * 3),
                   child: Center(
                       child: Text(
-                    completeprofile,
+                    LocaleKeys.completeprofile.tr(),
                     style: TextStyle(
                         color: primaryColor,
                         fontSize: h * 2.5,
@@ -147,11 +150,11 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                   focusnode: namefn,
                   validate: (val) {
                     if (val == null || val.isEmpty) {
-                      return 'Please enter name';
+                      return LocaleKeys.pleaseenternametxt.tr();
                     }
                     return null;
                   },
-                  hinttxt: "Name",
+                  hinttxt: LocaleKeys.nametxt.tr(),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -162,7 +165,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                         validate: (value) {
                           if (value == null || value == '') {
                             print("null" + value.toString());
-                            return "Select DOB";
+                            return LocaleKeys.selectdobtxt.tr();
                           }
 
                           return null;
@@ -170,7 +173,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                         inputType: TextInputType.datetime,
                         controller: dobcontroller,
                         focusnode: dobfn,
-                        hinttxt: 'Date Of Birth'),
+                        hinttxt: LocaleKeys.DOBtxt.tr()),
                   ),
                 ),
                 SizedBox(
@@ -178,9 +181,9 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 ),
                 DropDownField(
                   value: bloodgroup,
-                  items: _bloodgroups,
-                  hinttext: 'Blood Group',
-                  errortxt: 'Select Blood Group',
+                  items: bloodgroups,
+                  hinttext: LocaleKeys.bloodgrouptxt.tr(),
+                  errortxt: LocaleKeys.selectBloodGrouptxt.tr(),
                   onchanged: (newitem) {
                     setState(() {
                       bloodgroup = newitem;
@@ -190,8 +193,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 DropDownField(
                   value: gender,
                   items: genders,
-                  hinttext: 'Gender',
-                  errortxt: 'Select Gender',
+                  hinttext: LocaleKeys.gendertxt.tr(),
+                  errortxt: LocaleKeys.selectgendertxt.tr(),
                   onchanged: (newitem) {
                     setState(() {
                       gender = newitem;
@@ -202,13 +205,13 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                   inputType: TextInputType.emailAddress,
                   controller: emailcontroller,
                   focusnode: emailfn,
-                  hinttxt: "Email",
+                  hinttxt: LocaleKeys.emailtxt.tr(),
                   suffixIcon: Icons.email_outlined,
                   validate: (val) {
                     if (val == null || val.isEmpty) {
-                      return 'Please enter name';
+                      return LocaleKeys.emailvalidationtxt.tr();
                     } else if (!EmailValidator.validate(val, false, true)) {
-                      return 'invalid Email';
+                      return LocaleKeys.invalidemail.tr();
                     }
                     return null;
                   },
@@ -216,8 +219,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 DropDownField(
                   value: citytxt,
                   items: cities,
-                  hinttext: 'Select City',
-                  errortxt: 'Select City',
+                  hinttext: LocaleKeys.cityHintText.tr(),
+                  errortxt: LocaleKeys.cityHintText.tr(),
                   onchanged: (newitem) {
                     setState(() {
                       citytxt = newitem;
