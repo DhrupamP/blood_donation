@@ -1,10 +1,8 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../Screens/number_input.dart';
 
 class RequestFormProvider extends ChangeNotifier {
@@ -16,7 +14,7 @@ class RequestFormProvider extends ChangeNotifier {
   String? idurl;
   String? brfurl;
 
-  void Uploaded(String docname) async {
+  void uploaded(String docname) async {
     if (docname == 'id') {
       idresult = await FilePicker.platform.pickFiles(
           type: FileType.custom,

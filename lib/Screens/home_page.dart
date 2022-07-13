@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => ProfileScreen()));
+                                  builder: (_) => const ProfileScreen()));
                         },
                         child: CircleAvatar(
                           radius: h * 2,

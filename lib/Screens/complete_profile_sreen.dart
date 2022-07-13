@@ -267,6 +267,8 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     height: h * 2.88,
                   ),
                   ProfileImage(
+                      height: 17.5,
+                      width: 19,
                       profilepicurl:
                           context.watch<ProfileProvider>().profilepicurl,
                       onpressed: () {

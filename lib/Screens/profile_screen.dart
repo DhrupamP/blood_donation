@@ -95,6 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var w = SizeConfig.blockSizeHorizontal!;
     return SafeArea(
       child: Scaffold(
+        backgroundColor: white,
         body: ListView(
           children: [
             SizedBox(
@@ -181,8 +182,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Align(
                         alignment: const Alignment(0, 0.5),
                         child: Container(
-                            height: h * 21.38,
-                            width: h * 21.38,
+                            height: h * 17.5,
+                            width: h * 19,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.white,
@@ -190,6 +191,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Padding(
                               padding: EdgeInsets.all(w * 1),
                               child: ProfileImage(
+                                  height: 17,
+                                  width: 19,
                                   profilepicurl: context
                                       .watch<ProfileProvider>()
                                       .profilepicurl,

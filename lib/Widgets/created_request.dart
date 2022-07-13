@@ -153,9 +153,7 @@ class _NewRequestState extends State<NewRequest> {
                   },
                   child: Center(
                     child: Text(
-                      widget.status == 'created'
-                          ? 'Check for donors.'
-                          : 'Accept',
+                      'Accept',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

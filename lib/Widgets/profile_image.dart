@@ -9,10 +9,14 @@ import '../constants/color_constants.dart';
 import 'loading_widget.dart';
 
 class ProfileImage extends StatefulWidget {
-  const ProfileImage({Key? key, this.profilepicurl, this.onpressed})
+  const ProfileImage(
+      {Key? key, this.profilepicurl, this.onpressed, this.height, this.width})
       : super(key: key);
   final String? profilepicurl;
   final VoidCallback? onpressed;
+  final double? height;
+  final double? width;
+
   @override
   State<ProfileImage> createState() => _ProfileImageState();
 }
@@ -26,8 +30,8 @@ class _ProfileImageState extends State<ProfileImage> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: SizeConfig.blockSizeVertical! * 17.5,
-      width: SizeConfig.blockSizeVertical! * 19,
+      height: SizeConfig.blockSizeVertical! * widget.height!,
+      width: SizeConfig.blockSizeVertical! * widget.width!,
       child: context.watch<ProfileProvider>().isloading
           ? Center(
               child: MyCircularIndicator(),

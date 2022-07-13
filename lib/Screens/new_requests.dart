@@ -104,6 +104,7 @@ class _NewRequestsPageState extends State<NewRequestsPage> {
                                   RequestModel temp =
                                       snapshot.data as RequestModel;
                                   print(temp.status);
+
                                   if (temp.status == 'SENT' ||
                                       temp.status == 'ACCEPTED') {
                                     return NewRequest(

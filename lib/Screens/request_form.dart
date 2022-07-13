@@ -120,7 +120,7 @@ class _RequestFormState extends State<RequestForm> {
                   UploadDocRow(
                     text: LocaleKeys.uploadidtxt.tr(),
                     onpressed: () {
-                      context.read<RequestFormProvider>().Uploaded('id');
+                      context.read<RequestFormProvider>().uploaded('id');
                     },
                     docname: 'id',
                   ),
@@ -130,7 +130,7 @@ class _RequestFormState extends State<RequestForm> {
                   UploadDocRow(
                     text: LocaleKeys.brftxt.tr(),
                     onpressed: () {
-                      context.read<RequestFormProvider>().Uploaded('brf');
+                      context.read<RequestFormProvider>().uploaded('brf');
                     },
                     docname: 'brf',
                   ),

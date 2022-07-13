@@ -85,6 +85,12 @@ class _AvailableDonorsState extends State<AvailableDonors> {
                       }
                     });
                     print(completedetails!.length);
+                    if (completedetails!.length == 0 ||
+                        completedetails == null) {
+                      return Center(
+                        child: Text('No Donor for required blood group.'),
+                      );
+                    }
 
                     return Column(
                       children: <Widget>[
