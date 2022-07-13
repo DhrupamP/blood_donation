@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:blood_donation/viewModels/request_form_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../Providers/profile_provider.dart';
+import '../Widgets/loading_widget.dart';
 import 'activity.dart';
 
 int temp = 0;
@@ -67,6 +68,7 @@ class _AvailableDonorsState extends State<AvailableDonors> {
               stream:
                   usersref.orderByChild('isAvailable').equalTo(true).onValue,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
+                print(userRequest.bloodGroup);
                 if (snapshot.hasData) {
                   if (snapshot.data != null) {
                     completedetails!.clear();
@@ -139,10 +141,10 @@ class _AvailableDonorsState extends State<AvailableDonors> {
                       ],
                     );
                   } else {
-                    return CircularProgressIndicator();
+                    return Center(child: MyCircularIndicator());
                   }
                 } else {
-                  return CircularProgressIndicator();
+                  return Center(child: MyCircularIndicator());
                 }
               })),
     );

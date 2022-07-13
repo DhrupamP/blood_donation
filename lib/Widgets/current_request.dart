@@ -1,6 +1,8 @@
 import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Widgets/accepted_request.dart';
 import 'package:blood_donation/Widgets/new_request.dart';
+import 'package:blood_donation/l10n/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import 'package:provider/provider.dart';
@@ -195,6 +197,8 @@ class _CurrentRequestState extends State<CurrentRequest> {
                 child: GestureDetector(
                   onTap: () async {
                     await RequestFormVM.instance.confirmRequest(context);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(LocaleKeys.requestcompletedtxt.tr())));
                     print(currentuserRequest.status);
                   },
                   child: Container(
@@ -220,15 +224,6 @@ class _CurrentRequestState extends State<CurrentRequest> {
           ),
         ),
       );
-    } else if (widget.status == 'CONFIRMED') {
-      return AcceptedRequest(
-        patientname: sentRequest.patientName,
-        nearestbank: sentRequest.nearByBloodBank,
-        status: widget.status,
-      );
-    } else if (widget.status == 'COMPLETED') {
-      //RequestFormVM.instance.completeandmoveRequest();
-      return SizedBox();
     } else {
       return SizedBox();
     }

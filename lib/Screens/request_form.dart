@@ -90,7 +90,7 @@ class _RequestFormState extends State<RequestForm> {
                     inputType: TextInputType.number,
                     validate: (val) {
                       if (val == null || val.isEmpty) {
-                        return LocaleKeys.patient_age_error_txt.tr();
+                        return LocaleKeys.patient_name_error_txt.tr();
                       }
                       return null;
                     },

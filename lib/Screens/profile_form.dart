@@ -26,6 +26,8 @@ import 'number_input.dart';
 
 String? dobtxt;
 String? citytxt;
+List<String> genders = ['male', 'female', 'others'];
+
 final List<String> bloodgroups = [
   'A+',
   'A-',
@@ -47,7 +49,6 @@ class ProfileFormScreen extends StatefulWidget {
 class _ProfileFormScreenState extends State<ProfileFormScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  List<String> genders = ['male', 'female', 'others'];
   FocusNode? namefn = FocusNode();
   FocusNode? dobfn = FocusNode();
   FocusNode? emailfn = FocusNode();
@@ -82,6 +83,16 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
   DateTime? _selectedDate;
   _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: primaryDesign!, // <-- SEE HERE
+              ),
+            ),
+            child: child!,
+          );
+        },
         context: context,
         initialDate: _selectedDate == null ? DateTime(2004) : _selectedDate!,
         firstDate: DateTime(1920),

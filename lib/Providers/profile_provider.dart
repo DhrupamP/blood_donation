@@ -16,24 +16,39 @@ class ProfileProvider extends ChangeNotifier {
   String? usergender;
   String? usercontactnumber;
   String? userbloodgrp;
+  int? userage;
   bool isloading = false;
+  int? usernoofdonations;
   String profilepicurl = userdata.profilePhoto == null
       ? defaultprofilepic
       : userdata.profilePhoto!;
   File? tempProfilePic;
+  void updateDonations(int donations) {
+    usernoofdonations = donations;
+    notifyListeners();
+  }
 
-  void getdetails(
-      String name, String gender, String contact, String bloodgroup) {
+  void getdetails(String name, String gender, String contact, String bloodgroup,
+      int age, int noofdonations) {
     username = name;
     userbloodgrp = bloodgroup;
     usergender = gender;
     usercontactnumber = contact;
+    userage = age;
+    usernoofdonations = noofdonations;
     notifyListeners();
   }
 
   void updatename(String name, String bg) {
     username = name;
     userbloodgrp = bg;
+    notifyListeners();
+  }
+
+  void updatebasicdetails(int age, String contact, String gender) {
+    userage = age;
+    usergender = gender;
+    usercontactnumber = contact;
     notifyListeners();
   }
 

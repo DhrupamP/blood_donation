@@ -11,6 +11,7 @@ import 'package:blood_donation/Widgets/new_request.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import '../Widgets/loading_widget.dart';
 import '../Widgets/sentRequest.dart';
 import '../l10n/locale_keys.g.dart';
 import '../viewModels/request_form_viewmodel.dart';
@@ -139,7 +140,10 @@ class _NewRequestsPageState extends State<NewRequestsPage> {
                         }),
                   );
                 } else {
-                  return Center(child: CircularProgressIndicator());
+                  // if (requestsdetails!.isEmpty) {
+                  //   return Center(child: Text('No Request'));
+                  // }
+                  return Center(child: MyCircularIndicator());
                 }
               }),
           StreamBuilder(
@@ -162,8 +166,8 @@ class _NewRequestsPageState extends State<NewRequestsPage> {
                       Provider.of<RequestsProvider>(context, listen: false)
                           .requestcomplete();
                       RequestFormVM.instance.completeandmoveRequest();
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(LocaleKeys.requestcompletedtxt.tr())));
+                      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      //     content: Text(LocaleKeys.requestcompletedtxt.tr())));
                     });
                   }
                   print(k);

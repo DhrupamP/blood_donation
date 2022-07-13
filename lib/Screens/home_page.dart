@@ -34,6 +34,7 @@ import '../Widgets/actiion_rectangle.dart';
 import '../Widgets/action_square.dart';
 import '../Widgets/drawer_share_icon.dart';
 import '../Widgets/drawer_tile.dart';
+import '../Widgets/loading_widget.dart';
 import '../Widgets/quote_widget.dart';
 import 'package:provider/provider.dart';
 import '../Providers/profile_provider.dart';
@@ -77,7 +78,7 @@ class _HomePageState extends State<HomePage> {
     var w = SizeConfig.blockSizeHorizontal!;
     return SafeArea(
         child: context.watch<HomePageProvider>().isloading
-            ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+            ? const Scaffold(body: Center(child: MyCircularIndicator()))
             : Scaffold(
                 key: homepagekey,
                 backgroundColor: white,
@@ -194,7 +195,10 @@ class _HomePageState extends State<HomePage> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (_) => AvailableDonors()));
+                                        builder: (_) => AvailableDonors(
+                                              bloodgroup:
+                                                  userRequest.bloodGroup,
+                                            )));
                               } else if (!Provider.of<RequestsProvider>(context,
                                       listen: false)
                                   .sendnewreq) {
@@ -265,8 +269,7 @@ class _HomePageState extends State<HomePage> {
                               switch (snapshot.connectionState) {
                                 case ConnectionState.active:
                                 case ConnectionState.waiting:
-                                  return Center(
-                                      child: CircularProgressIndicator());
+                                  return Center(child: MyCircularIndicator());
                                 case ConnectionState.done:
                                   print("DONE");
                                   if (snapshot.data != null) {

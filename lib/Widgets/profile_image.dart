@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Providers/profile_provider.dart';
 import '../constants/color_constants.dart';
+import 'loading_widget.dart';
 
 class ProfileImage extends StatefulWidget {
   const ProfileImage({Key? key, this.profilepicurl, this.onpressed})
@@ -29,7 +30,7 @@ class _ProfileImageState extends State<ProfileImage> {
       width: SizeConfig.blockSizeVertical! * 19,
       child: context.watch<ProfileProvider>().isloading
           ? Center(
-              child: CircularProgressIndicator(),
+              child: MyCircularIndicator(),
             )
           : Stack(children: [
               Align(

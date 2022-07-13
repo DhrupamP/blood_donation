@@ -147,6 +147,18 @@ class RequestFormVM {
 
   Future<void> uploadDocument(
       BuildContext context, String requestuid, String requestpushid) async {
+    DatabaseEvent databaseevt = await FirebaseDatabase.instance
+        .ref()
+        .child('users/$usercity/${userdata.uid}/noOfBloodDonations')
+        .once();
+    print('no of donations: ' + databaseevt.snapshot.value.toString());
+    int noofdonations = databaseevt.snapshot.value as int;
+    noofdonations++;
+    Provider.of<ProfileProvider>(context).updateDonations(noofdonations);
+    await FirebaseDatabase.instance
+        .ref()
+        .child('users/$usercity/${userdata.uid}')
+        .update({'noOfBloodDonations': noofdonations});
     await FirebaseDatabase.instance
         .ref()
         .child('requestBloodSection/C1/$requestuid/$requestpushid')
@@ -163,17 +175,7 @@ class RequestFormVM {
 
   Future<void> completeandmoveRequest() async {
     print('moved....');
-    DatabaseEvent databaseevt = await FirebaseDatabase.instance
-        .ref()
-        .child('users/$usercity/${userdata.uid}/noOfBloodDonations')
-        .once();
-    print('no of donations: ' + databaseevt.snapshot.value.toString());
-    int noofdonations = databaseevt.snapshot.value as int;
-    noofdonations++;
-    await FirebaseDatabase.instance
-        .ref()
-        .child('users/$usercity/${userdata.uid}')
-        .update({'noOfBloodDonations': noofdonations});
+
     await FirebaseDatabase.instance
         .ref()
         .child('requestBloodSection/$usercity/${userdata.uid}/$k')

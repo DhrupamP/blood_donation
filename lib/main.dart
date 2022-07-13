@@ -75,6 +75,6 @@ class _NMOAppState extends State<NMOApp> {
   }
 }
 
-// adb connect 192.168.1.7
+// adb connect 192.168.1.2
 
 //TODO: request completed

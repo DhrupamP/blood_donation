@@ -86,20 +86,6 @@ class _DonorProfileState extends State<DonorProfile> {
                 color: Colors.white,
               ),
             ),
-            actions: [
-              Padding(
-                padding: EdgeInsets.only(right: w * 5),
-                child: Center(
-                  child: Text(
-                    LocaleKeys.donetxt.tr(),
-                    style: TextStyle(
-                        color: white,
-                        fontSize: h * 1.8,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-            ],
           ),
           body: ListView(
             children: [
@@ -329,7 +315,7 @@ class _DonorProfileState extends State<DonorProfile> {
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          LocaleKeys.myachievementstxt.tr(),
+                          LocaleKeys.achievementstxt.tr(),
                           style: TextStyle(
                               color: secondaryText,
                               fontWeight: FontWeight.w800),

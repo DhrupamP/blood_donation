@@ -65,7 +65,9 @@ class ProfileFormVM {
           userdata.name!,
           userdata.sex!,
           userdata.contactNo!.toString(),
-          userdata.bloodGroup!);
+          userdata.bloodGroup!,
+          userdata.age!,
+          userdata.noOfBloodDonations!);
       // Provider.of<HomePageProvider>(ctx, listen: false).Stoploading();
       print(userdata.requestList);
     }
@@ -143,6 +145,19 @@ class ProfileFormVM {
         .ref()
         .child('users/${usercity}/${userdata.uid}')
         .update({'name': name, 'bloodGroup': bloodgroup});
+  }
+
+  Future<void> updatebasicdetails(
+      int age, String gender, int contact, String dob) async {
+    await FirebaseDatabase.instance
+        .ref()
+        .child('users/${usercity}/${userdata.uid}')
+        .update({
+      'dateOfBirth': dob,
+      'sex': gender,
+      'contactNo': contact,
+      'age': age
+    });
   }
 
   Future<void> updateBasicDetails(String gender, String dob) async {}

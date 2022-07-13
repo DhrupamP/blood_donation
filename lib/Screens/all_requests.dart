@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:blood_donation/Providers/requests_provider.dart';
 
+import '../Widgets/loading_widget.dart';
 import '../constants/color_constants.dart';
 import '../l10n/locale_keys.g.dart';
 
@@ -48,7 +49,7 @@ class _AllRequestsState extends State<AllRequests> {
     return Padding(
       padding: EdgeInsets.only(top: h * 2.88, left: w * 10, right: w * 10),
       child: Provider.of<RequestsProvider>(context).isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: MyCircularIndicator())
           : ListView.builder(
               itemCount: allrequests.length,
               itemBuilder: (context, index) {

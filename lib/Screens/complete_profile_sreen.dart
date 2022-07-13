@@ -31,6 +31,7 @@ final List<String> bloodgroups = [
   'AB+',
   'AB-'
 ];
+String hasdonatedgroup = '';
 
 class CompleteProfileFormScreen extends StatefulWidget {
   const CompleteProfileFormScreen({Key? key}) : super(key: key);
@@ -41,11 +42,12 @@ class CompleteProfileFormScreen extends StatefulWidget {
 }
 
 class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
+  final hasdonatedkey = GlobalKey<FormFieldState>();
   final _key = GlobalKey<FormState>();
-
   List<String> genders = ['male', 'female', 'others'];
   FocusNode? newnamefn = FocusNode();
   FocusNode? dobfn = FocusNode();
+  FocusNode? hasdonatedfn = FocusNode();
   FocusNode? emailfn = FocusNode();
   FocusNode? addressfn = FocusNode();
   bool? isnameEnabled;
@@ -56,7 +58,6 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
   bool? iscityEnabled;
   bool? isaddressEnabled;
   bool? isDonationDateEnabled;
-  String? hasdonatedgroup;
 
   TextEditingController newnamecontroller = TextEditingController();
   TextEditingController dobcontroller = TextEditingController();
@@ -67,7 +68,8 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
   String? gender;
   String? city;
   DateTime? hasDonatedDate;
-  DateTime? _selectedDate;
+  DateTime? selectedDate;
+  bool edittxt = true;
 
   @override
   void initState() {
@@ -75,7 +77,12 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
     print('useruid:' + userdata.uid.toString());
     ProfileFormVM.instance.getCityNames();
     newnamefn = FocusNode();
+    String temp = userdata.dateOfBirth.toString();
+    final f = DateFormat("dd/MM/yyyy");
+    selectedDate = f.parse(temp);
+    print("selected date:  " + selectedDate.toString());
     dobfn = FocusNode();
+    hasdonatedfn = FocusNode();
     emailfn = FocusNode();
     addressfn = FocusNode();
     newnamecontroller = TextEditingController();
@@ -85,13 +92,12 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
     hasDonatedController = TextEditingController();
 
     //setting data
+
+    print("citytxt:  " + '\'' + citytxt.toString() + '\'');
     if (citytxt != null) {
-      hasdonatedgroup = userdata.noOfBloodDonations == 0 ? 'No' : 'yes';
-      newnamecontroller.text = userdata.name.toString();
-      hasDonatedController.text = (userdata.noOfBloodDonations == 0
-              ? ''
-              : userdata.dateOfLastDonationOfBlood)
-          .toString();
+      hasdonatedgroup = userdata.isDonatedBloodBefore! ? 'Yes' : 'No';
+      // newnamecontroller.text = userdata.name.toString();
+      hasDonatedController.text = userdata.dateOfLastDonationOfBlood.toString();
       dobcontroller.text = userdata.dateOfBirth.toString();
       bloodgroup = userdata.bloodGroup;
       gender = userdata.sex;
@@ -110,18 +116,29 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
     isDonationDateEnabled = false;
   }
 
-  selectDate(BuildContext context, DateTime? selected,
-      TextEditingController controller) async {
+  selectDate(BuildContext context, TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: primaryDesign!,
+              ),
+            ),
+            child: child!,
+          );
+        },
         context: context,
-        initialDate: selected ?? DateTime(2004),
+        initialDate: selectedDate ?? DateTime.now(),
         firstDate: DateTime(1920),
-        lastDate: DateTime(2004));
+        lastDate: DateTime.now());
     if (picked != null) {
       setState(() {
-        selected = picked;
+        selectedDate = picked;
+
+        print('selescted:  ' + selectedDate.toString());
         var date =
-            "${picked.toLocal().day}/${picked.toLocal().month}/${picked.toLocal().year}";
+            "${picked.toLocal().day < 10 ? '0' + picked.toLocal().day.toString() : picked.toLocal().day.toString()}/${picked.toLocal().month < 10 ? '0' + picked.toLocal().month.toString() : picked.toLocal().month.toString()}/${picked.toLocal().year}";
         controller.text = date;
       });
     }
@@ -142,18 +159,90 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
             Stack(
               children: [
                 EditButton(
-                  onPressed: () {
-                    setState(() {
-                      isnameEnabled = true;
-                      isdobEnabled = true;
-                      isDonationDateEnabled = true;
-                      isbloodgroupEnabled = true;
-                      isgenderEnabled = true;
-                      isemailEnabled = true;
-                      iscityEnabled = true;
-                      isaddressEnabled = true;
-                    });
-                  },
+                  txt: edittxt ? 'Edit' : 'Done',
+                  onPressed: edittxt
+                      ? () {
+                          setState(() {
+                            edittxt = !edittxt;
+                            isnameEnabled = true;
+                            isdobEnabled = true;
+                            isDonationDateEnabled = true;
+                            isbloodgroupEnabled = true;
+                            isgenderEnabled = true;
+                            isemailEnabled = true;
+                            iscityEnabled = true;
+                            isaddressEnabled = true;
+                          });
+                        }
+                      : () async {
+                          if (_key.currentState!.validate() &&
+                              EmailValidator.validate(
+                                  emailcontroller.text, false, true)) {
+                            if (ProfileFormVM.instance.isCityAvailable()) {
+                              ProfileFormVM.instance.getCityCode();
+                              SharedPreferences pref =
+                                  await SharedPreferences.getInstance();
+
+                              pref.setString('citycode', citycode!);
+                              UserDetailModel usermodel = UserDetailModel(
+                                age: DateTime.now().year - selectedDate!.year,
+                                address: streetaddresscontroller.text.trim(),
+                                bloodGroup: bloodgroup,
+                                city: ProfileFormVM.instance
+                                    .getFirstWord(citytxt!),
+                                dateOfBirth: dobcontroller.text,
+                                name: newnamecontroller.text.trim(),
+                                sex: gender,
+                                emailAddress: emailcontroller.text.trim(),
+                                contactNo: int.parse(FirebaseAuth
+                                    .instance.currentUser?.phoneNumber
+                                    .toString()
+                                    .substring(1) as String),
+                                dateOfLastDonationOfBlood:
+                                    hasdonatedgroup == 'Yes'
+                                        ? hasDonatedController.text
+                                        : "",
+                                isDonatedBloodBefore: hasdonatedgroup == 'Yes',
+                                isMedico: false,
+                                medicalCollege: '',
+                                nearByBloodBank: '',
+                                noOfAchievments: 0,
+                                noOfBloodDonations:
+                                    Provider.of<ProfileProvider>(context,
+                                            listen: false)
+                                        .usernoofdonations,
+                                profilePhoto: Provider.of<ProfileProvider>(
+                                        context,
+                                        listen: false)
+                                    .profilepicurl,
+                                isAvailable: true,
+                              );
+                              setState(() {
+                                isProfileComplete = true;
+                              });
+                              await ProfileFormVM.instance
+                                  .addUpdateProfile(context, usermodel);
+                              await ProfileFormVM.instance
+                                  .getProfileData(context);
+
+                              pref.setBool('isinitialprofilecomplete', true);
+
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      const ActivityPage(),
+                                ),
+                                (route) => false,
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          LocaleKeys.cityValidationtxt.tr())));
+                            }
+                          }
+                        },
                   hper: 2,
                   wper: 85,
                 ),
@@ -188,25 +277,30 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                   SizedBox(
                     height: h * 1.75,
                   ),
-                  ProfileInputField(
-                    inputType: TextInputType.text,
-                    controller: newnamecontroller,
-                    focusnode: newnamefn,
-                    isEnabled: isnameEnabled,
-                    data: 'name',
-                    validate: (val) {
-                      if (val == null || val.isEmpty) {
-                        return LocaleKeys.pleaseenternametxt.tr();
-                      }
-                      return null;
+                  Consumer<ProfileProvider>(
+                    builder: (context, value, child) {
+                      newnamecontroller.text = value.username.toString();
+                      return ProfileInputField(
+                        inputType: TextInputType.text,
+                        controller: newnamecontroller,
+                        focusnode: newnamefn,
+                        isEnabled: isnameEnabled,
+                        data: 'name',
+                        validate: (val) {
+                          if (val == null || val.isEmpty) {
+                            return LocaleKeys.pleaseenternametxt.tr();
+                          }
+                          return null;
+                        },
+                        hinttxt: LocaleKeys.nametxt.tr(),
+                      );
                     },
-                    hinttxt: LocaleKeys.nametxt.tr(),
                   ),
                   IgnorePointer(
                     ignoring: !isdobEnabled!,
                     child: GestureDetector(
                       onTap: () {
-                        selectDate(context, _selectedDate, dobcontroller);
+                        selectDate(context, dobcontroller);
                       },
                       child: AbsorbPointer(
                         child: ProfileInputField(
@@ -277,7 +371,7 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     onchanged: (newitem) {
                       setState(() {
                         citytxt = newitem;
-                        print(citytxt);
+                        print(citytxt.toString());
                       });
                     },
                   ),
@@ -306,160 +400,97 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                   Padding(
                     padding: EdgeInsets.only(
                         right: SizeConfig.blockSizeHorizontal! * 40),
-                    child: SizedBox(
-                      width: SizeConfig.blockSizeHorizontal! * 53,
-                      height: h * 3.07,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ListTile(
-                              title: Row(
-                                children: <Widget>[
-                                  Transform.scale(
-                                    child: Radio(
+                    child: IgnorePointer(
+                      ignoring: !isDonationDateEnabled!,
+                      child: SizedBox(
+                        width: SizeConfig.blockSizeHorizontal! * 53,
+                        height: h * 3.07,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ListTile(
+                                title: Row(
+                                  children: <Widget>[
+                                    Radio(
                                       activeColor: primaryDesign,
                                       value: 'Yes',
                                       groupValue: hasdonatedgroup,
-                                      onChanged: (String? value) {
+                                      onChanged: (value) {
                                         setState(() {
-                                          hasdonatedgroup = value;
-                                          isDonationDateEnabled = true;
+                                          hasdonatedgroup = value as String;
+                                          print(hasdonatedgroup);
                                         });
                                       },
                                     ),
-                                    scale: 1.2,
-                                  ),
-                                  Text(LocaleKeys.yestxt.tr()),
-                                ],
+                                    Text(LocaleKeys.yestxt.tr()),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: ListTile(
-                              title: Row(
-                                children: <Widget>[
-                                  Transform.scale(
-                                    child: Radio(
+                            Expanded(
+                              child: ListTile(
+                                title: Row(
+                                  children: <Widget>[
+                                    Radio(
                                       activeColor: primaryDesign,
-                                      value: "No",
+                                      value: 'No',
                                       groupValue: hasdonatedgroup,
-                                      onChanged: (String? value) {
+                                      onChanged: (value) {
                                         setState(() {
-                                          hasdonatedgroup = value;
-                                          isDonationDateEnabled = false;
+                                          hasdonatedgroup = value.toString();
+                                          print(hasdonatedgroup);
                                         });
                                       },
                                     ),
-                                    scale: 1.2,
-                                  ),
-                                  Text(LocaleKeys.notxt.tr()),
-                                ],
+                                    Text(LocaleKeys.notxt.tr()),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                   SizedBox(
                     height: h * 3,
                   ),
-                  IgnorePointer(
-                    ignoring: !isDonationDateEnabled!,
-                    child: GestureDetector(
-                      onTap: () {
-                        selectDate(
-                            context, hasDonatedDate, hasDonatedController);
-                      },
-                      child: AbsorbPointer(
-                        child: ProfileInputField(
-                            validate: (value) {
-                              if (value == null || value == '') {
-                                print("null" + value.toString());
-                                return LocaleKeys.donationdatevalidationtxt
-                                    .tr();
-                              }
-
-                              return null;
+                  hasdonatedgroup == 'Yes'
+                      ? IgnorePointer(
+                          ignoring: !isDonationDateEnabled!,
+                          child: GestureDetector(
+                            onTap: () {
+                              selectDate(context, hasDonatedController);
                             },
-                            isEnabled: isDonationDateEnabled,
-                            inputType: TextInputType.datetime,
-                            controller: hasDonatedController,
-                            focusnode: dobfn,
-                            hinttxt: LocaleKeys.donationdate_hinttxt.tr()),
-                      ),
-                    ),
-                  ),
+                            child: AbsorbPointer(
+                              child: ProfileInputField(
+                                  key: hasdonatedkey,
+                                  validate: (value) {
+                                    if (value == null || value == '') {
+                                      print("null" + value.toString());
+                                      return LocaleKeys
+                                          .donationdatevalidationtxt
+                                          .tr();
+                                    }
+
+                                    return null;
+                                  },
+                                  isEnabled: isDonationDateEnabled,
+                                  inputType: TextInputType.datetime,
+                                  controller: hasDonatedController,
+                                  focusnode: hasdonatedfn,
+                                  hinttxt:
+                                      LocaleKeys.donationdate_hinttxt.tr()),
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
                   SizedBox(
                     height: h * 3,
-                  ),
-                  ContinueButton(
-                    txt: LocaleKeys.donetxt.tr(),
-                    txtColor: Colors.white,
-                    bgcolor: primaryDesign,
-                    onpressed: () async {
-                      if (_key.currentState!.validate() &&
-                          EmailValidator.validate(
-                              emailcontroller.text, false, true)) {
-                        if (ProfileFormVM.instance.isCityAvailable()) {
-                          ProfileFormVM.instance.getCityCode();
-                          SharedPreferences pref =
-                              await SharedPreferences.getInstance();
-
-                          pref.setString('citycode', citycode!);
-                          UserDetailModel usermodel = UserDetailModel(
-                            address: streetaddresscontroller.text.trim(),
-                            bloodGroup: bloodgroup,
-                            city: ProfileFormVM.instance.getFirstWord(citytxt!),
-                            dateOfBirth: dobcontroller.text,
-                            name: newnamecontroller.text.trim(),
-                            sex: gender,
-                            emailAddress: emailcontroller.text.trim(),
-                            contactNo: int.parse(FirebaseAuth
-                                .instance.currentUser?.phoneNumber
-                                .toString()
-                                .substring(1) as String),
-                            dateOfLastDonationOfBlood:
-                                hasDonatedController.text,
-                            isDonatedBloodBefore: false,
-                            isMedico: false,
-                            medicalCollege: '',
-                            nearByBloodBank: '',
-                            noOfAchievments: 0,
-                            noOfBloodDonations: 0,
-                            profilePhoto: Provider.of<ProfileProvider>(context,
-                                    listen: false)
-                                .profilepicurl,
-                            isAvailable: true,
-                          );
-                          setState(() {
-                            isProfileComplete = true;
-                          });
-                          await ProfileFormVM.instance
-                              .addUpdateProfile(context, usermodel);
-                          await ProfileFormVM.instance.getProfileData(context);
-
-                          pref.setBool('isinitialprofilecomplete', true);
-
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  const ActivityPage(),
-                            ),
-                            (route) => false,
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content:
-                                  Text(LocaleKeys.cityValidationtxt.tr())));
-                        }
-                      }
-                    },
                   ),
                   SizedBox(
                     height: h * 2,
-                  )
+                  ),
                 ],
               ),
             ),

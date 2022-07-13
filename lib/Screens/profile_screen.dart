@@ -25,6 +25,8 @@ import '../Models/story_model.dart';
 import '../Providers/profile_provider.dart';
 import '../Size Config/size_config.dart';
 import '../Widgets/dropdown_field.dart';
+import '../Widgets/loading_widget.dart';
+import '../Widgets/profile_image.dart';
 import '../constants/string_constants.dart';
 import 'number_input.dart';
 
@@ -42,20 +44,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController contactcontroller = TextEditingController();
   TextEditingController dobcontroller = TextEditingController();
   FocusNode dobfn = FocusNode();
-  DateTime? _selectedDate;
+  FocusNode contactfn = FocusNode();
+  DateTime? selectedDate;
 
-  selectDate(BuildContext context, DateTime? selected,
-      TextEditingController controller) async {
+  selectDate(BuildContext context, TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: primaryDesign!, // <-- SEE HERE
+              ),
+            ),
+            child: child!,
+          );
+        },
         context: context,
-        initialDate: selected ?? DateTime(2004),
+        initialDate: selectedDate ?? DateTime.now(),
         firstDate: DateTime(1920),
-        lastDate: DateTime(2004));
+        lastDate: DateTime.now());
     if (picked != null) {
       setState(() {
-        selected = picked;
+        selectedDate = picked;
         var date =
-            "${picked.toLocal().day}/${picked.toLocal().month}/${picked.toLocal().year}";
+            "${picked.toLocal().day < 10 ? '0' + picked.toLocal().day.toString() : picked.toLocal().day.toString()}/${picked.toLocal().month < 10 ? '0' + picked.toLocal().month.toString() : picked.toLocal().month.toString()}/${picked.toLocal().year}";
         controller.text = date;
       });
     }
@@ -67,7 +79,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     namecontroller = TextEditingController();
     dobcontroller = TextEditingController();
     dobfn = FocusNode();
+    contactfn = FocusNode();
     contactcontroller = TextEditingController();
+    String temp = userdata.dateOfBirth.toString();
+    final f = DateFormat("dd/MM/yyyy");
+    selectedDate = f.parse(temp);
+
     super.initState();
   }
 
@@ -139,16 +156,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        Icons.edit_outlined,
-                                        size: h * 1.5,
-                                        color: primaryDesign,
-                                      ),
+                                      value.editmode
+                                          ? SizedBox()
+                                          : Icon(
+                                              Icons.edit_outlined,
+                                              size: h * 1.5,
+                                              color: primaryDesign,
+                                            ),
                                       SizedBox(
                                         width: w * 1,
                                       ),
                                       Text(
-                                        'Edit',
+                                        value.editmode ? 'Done' : 'Edit',
                                         style: TextStyle(
                                             color: primaryDesign,
                                             fontWeight: FontWeight.w700),
@@ -170,14 +189,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(w * 1),
-                              child: CircleAvatar(
-                                backgroundImage: CachedNetworkImageProvider(
-                                    isProfileComplete ?? false
-                                        ? context
-                                            .watch<ProfileProvider>()
-                                            .profilepicurl
-                                        : defaultprofilepic),
-                              ),
+                              child: ProfileImage(
+                                  profilepicurl: context
+                                      .watch<ProfileProvider>()
+                                      .profilepicurl,
+                                  onpressed: () {
+                                    context
+                                        .read<ProfileProvider>()
+                                        .addupdateProfilePicture();
+                                  }),
                             )),
                       ),
                     ],
@@ -226,21 +246,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         listen: false)
                                                     .userbloodgrp;
                                             return AlertDialog(
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          16)),
                                               actions: [
-                                                Container(
-                                                  width: w * 91.11,
-                                                  height: h * 27.94,
-                                                  decoration: BoxDecoration(
-                                                      color: white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8)),
+                                                SizedBox(
                                                   child: Column(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
                                                             .center,
                                                     children: [
                                                       ProfileInputField(
+                                                        leftpadding: 5,
+                                                        rightpadding: 5,
+                                                        inputType:
+                                                            TextInputType.text,
+                                                        isEnabled: true,
                                                         focusnode: namefn,
                                                         hinttxt: LocaleKeys
                                                             .nametxt
@@ -249,6 +271,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                             namecontroller,
                                                       ),
                                                       DropDownField(
+                                                        leftpadding: 5,
+                                                        rightpadding: 5,
+                                                        isEnabled: true,
                                                         value: bg,
                                                         items: bloodgroups,
                                                         hinttext: LocaleKeys
@@ -290,6 +315,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       ),
                                                     ],
                                                   ),
+                                                  width: w * 91.11,
+                                                  height: h * 27.94,
                                                 ),
                                               ],
                                             );
@@ -356,56 +383,138 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           showDialog(
                                             context: context,
                                             builder: (context) {
+                                              dobcontroller.text =
+                                                  userdata.dateOfBirth!;
+                                              contactcontroller.text =
+                                                  Provider.of<ProfileProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .usercontactnumber!;
                                               String? gender =
                                                   Provider.of<ProfileProvider>(
                                                           context,
                                                           listen: false)
                                                       .usergender;
                                               return AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16)),
                                                 actions: [
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      selectDate(
-                                                          context,
-                                                          _selectedDate,
-                                                          dobcontroller);
-                                                    },
-                                                    child: AbsorbPointer(
-                                                      child: ProfileInputField(
-                                                          validate: (value) {
-                                                            if (value == null ||
-                                                                value == '') {
-                                                              return LocaleKeys
-                                                                  .selectdobtxt;
-                                                            }
-
-                                                            return null;
+                                                  SizedBox(
+                                                    child: Column(
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            selectDate(context,
+                                                                dobcontroller);
                                                           },
-                                                          isEnabled: true,
+                                                          child: AbsorbPointer(
+                                                            child:
+                                                                ProfileInputField(
+                                                                    validate:
+                                                                        (value) {
+                                                                      if (value ==
+                                                                              null ||
+                                                                          value ==
+                                                                              '') {
+                                                                        return LocaleKeys
+                                                                            .selectdobtxt;
+                                                                      }
+                                                                      return null;
+                                                                    },
+                                                                    leftpadding:
+                                                                        5,
+                                                                    rightpadding:
+                                                                        5,
+                                                                    isEnabled:
+                                                                        true,
+                                                                    inputType:
+                                                                        TextInputType
+                                                                            .datetime,
+                                                                    suffixIcon: Icons
+                                                                        .calendar_today,
+                                                                    controller:
+                                                                        dobcontroller,
+                                                                    focusnode:
+                                                                        dobfn,
+                                                                    hinttxt: LocaleKeys
+                                                                            .DOBtxt
+                                                                        .tr()),
+                                                          ),
+                                                        ),
+                                                        DropDownField(
+                                                          value: gender,
+                                                          items: genders,
+                                                          leftpadding: 5,
+                                                          rightpadding: 5,
+                                                          hinttext: LocaleKeys
+                                                              .gendertxt
+                                                              .tr(),
+                                                          errortxt: LocaleKeys
+                                                              .selectgendertxt
+                                                              .tr(),
+                                                          onchanged: (newitem) {
+                                                            setState(() {
+                                                              gender = newitem;
+                                                            });
+                                                          },
+                                                        ),
+                                                        ProfileInputField(
+                                                          focusnode: contactfn,
                                                           inputType:
                                                               TextInputType
-                                                                  .datetime,
-                                                          controller:
-                                                              dobcontroller,
-                                                          focusnode: dobfn,
+                                                                  .number,
                                                           hinttxt: LocaleKeys
-                                                              .DOBtxt),
+                                                              .contactnumbertxt
+                                                              .tr(),
+                                                          isEnabled: true,
+                                                          leftpadding: 5,
+                                                          rightpadding: 5,
+                                                          controller:
+                                                              contactcontroller,
+                                                        )
+                                                      ],
                                                     ),
+                                                    width: w * 91.11,
+                                                    height: h * 36.15,
                                                   ),
-                                                  DropDownField(
-                                                    value: gender,
-                                                    items: bloodgroups,
-                                                    hinttext: LocaleKeys
-                                                        .gendertxt
-                                                        .tr(),
-                                                    errortxt: LocaleKeys
-                                                        .selectgendertxt
-                                                        .tr(),
-                                                    onchanged: (newitem) {
-                                                      setState(() {
-                                                        gender = newitem;
-                                                      });
+                                                  ContinueButton(
+                                                    onpressed: () {
+                                                      Provider.of<ProfileProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .updatebasicdetails(
+                                                              DateTime.now()
+                                                                      .year -
+                                                                  selectedDate!
+                                                                      .year,
+                                                              contactcontroller
+                                                                  .text,
+                                                              gender!);
+
+                                                      ProfileFormVM.instance
+                                                          .updatebasicdetails(
+                                                              DateTime.now()
+                                                                      .year -
+                                                                  selectedDate!
+                                                                      .year,
+                                                              gender!,
+                                                              int.parse(
+                                                                  contactcontroller
+                                                                      .text),
+                                                              dobcontroller
+                                                                  .text);
+
+                                                      Navigator.pop(context);
                                                     },
+                                                    txt: LocaleKeys.donetxt
+                                                        .tr()
+                                                        .tr(),
+                                                    txtColor: white,
+                                                    bgcolor: primaryDesign,
+                                                    height: h * 5.38,
+                                                    width: w * 85.37,
                                                   ),
                                                 ],
                                               );
@@ -452,27 +561,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ],
                             ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(
-                                  userdata.age.toString(),
-                                  style: detailsStyle,
-                                ),
-                                Text(
-                                  userdata.sex ?? 'N/A',
-                                  style: detailsStyle,
-                                ),
-                                Text(
-                                  userdata.contactNo.toString(),
-                                  style: detailsStyle,
-                                ),
-                                Text(
-                                  userdata.noOfBloodDonations.toString(),
-                                  style: detailsStyle,
-                                )
-                              ],
+                            Consumer<ProfileProvider>(
+                              builder: (context, value, child) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text(
+                                      value.userage.toString(),
+                                      style: detailsStyle,
+                                    ),
+                                    Text(
+                                      value.usergender ?? 'N/A',
+                                      style: detailsStyle,
+                                    ),
+                                    Text(
+                                      value.usercontactnumber.toString(),
+                                      style: detailsStyle,
+                                    ),
+                                    Text(
+                                      value.usernoofdonations.toString(),
+                                      style: detailsStyle,
+                                    )
+                                  ],
+                                );
+                              },
                             )
                           ],
                         )),
@@ -573,7 +687,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               );
                             }
                           } else {
-                            return Center(child: CircularProgressIndicator());
+                            return Center(child: MyCircularIndicator());
                           }
                         },
                       ),
@@ -611,21 +725,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       height: h * 3,
                     ),
-                    Container(
-                      child: ContinueButton(
-                        onpressed: () {
-                          DownloadVM.instance.pdfGenerator(
-                              userdata.name.toString(),
-                              userdata.noOfBloodDonations!,
-                              context);
-                        },
-                        txt: LocaleKeys.downloadCertitxt.tr(),
-                        txtColor: Colors.white,
-                        icon: FontAwesomeIcons.download,
-                        iconColor: Colors.white,
-                        bgcolor: primaryDesign,
-                      ),
-                    ),
+                    Provider.of<ProfileProvider>(context, listen: false)
+                                .usernoofdonations! >
+                            0
+                        ? ContinueButton(
+                            onpressed: () {
+                              DownloadVM.instance.pdfGenerator(
+                                  userdata.name.toString(),
+                                  userdata.noOfBloodDonations!,
+                                  context);
+                            },
+                            txt: LocaleKeys.downloadCertitxt.tr(),
+                            txtColor: Colors.white,
+                            icon: FontAwesomeIcons.download,
+                            iconColor: Colors.white,
+                            bgcolor: primaryDesign,
+                          )
+                        : SizedBox(),
                     SizedBox(
                       height: h * 2,
                     ),

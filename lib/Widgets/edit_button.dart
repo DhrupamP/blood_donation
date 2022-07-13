@@ -4,11 +4,12 @@ import '../Size Config/size_config.dart';
 import '../constants/color_constants.dart';
 
 class EditButton extends StatelessWidget {
-  const EditButton({Key? key, this.hper, this.wper, this.onPressed})
+  const EditButton({Key? key, this.hper, this.wper, this.onPressed, this.txt})
       : super(key: key);
   final double? hper;
   final double? wper;
   final VoidCallback? onPressed;
+  final String? txt;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -18,7 +19,7 @@ class EditButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onPressed,
         child: Text(
-          'Edit',
+          txt ?? 'Edit',
           style: TextStyle(color: primaryDesign, fontWeight: FontWeight.w700),
         ),
       ),
