@@ -1,5 +1,4 @@
 import 'package:dashed_circle/dashed_circle.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:blood_donation/constants/color_constants.dart';
 import '../Size Config/size_config.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
-
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import '../viewModels/download_viewmodel.dart';
 
 class ViewerScreen extends StatelessWidget {
@@ -10,8 +9,8 @@ class ViewerScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text('Certificate'),
         ),
-        body: PdfView(
-          path: globalfilePath,
+        body: PDFView(
+          filePath: globalfilePath,
         ));
   }
 }
