@@ -188,30 +188,30 @@ class _HomePageState extends State<HomePage> {
                               fit: BoxFit.none,
                             ),
                             onpressed: () async {
-                              print(Provider.of<RequestsProvider>(context,
-                                      listen: false)
-                                  .pcreatedmap);
-                              if (userRequest.status == 'created') {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => AvailableDonors(
-                                              bloodgroup:
-                                                  userRequest.bloodGroup,
-                                            )));
-                              } else if (!Provider.of<RequestsProvider>(context,
-                                      listen: false)
-                                  .sendnewreq) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Only one request can be sent.')));
-                              } else {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const RequestForm()));
-                              }
+                              // print(Provider.of<RequestsProvider>(context,
+                              //         listen: false)
+                              //     .pcreatedmap);
+                              // if (userRequest.status == 'created') {
+                              //   Navigator.push(
+                              //       context,
+                              //       MaterialPageRoute(
+                              //           builder: (_) => AvailableDonors(
+                              //                 bloodgroup:
+                              //                     userRequest.bloodGroup,
+                              //               )));
+                              // } else if (!Provider.of<RequestsProvider>(context,
+                              //         listen: false)
+                              //     .sendnewreq) {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //       const SnackBar(
+                              //           content: Text(
+                              //               'Only one request can be sent.')));
+                              // }
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const RequestForm()));
+
                               // DatabaseEvent evt = await ref;
                               // print(evt.snapshot.value);
                             },

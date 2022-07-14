@@ -30,7 +30,9 @@ class DonorProfile extends StatefulWidget {
       this.isAvailable,
       this.contact,
       this.donations,
-      this.donorID})
+      this.donorID,
+      this.requestid,
+      this.userReq})
       : super(key: key);
   final String? donorname;
   final int? donorage;
@@ -41,6 +43,8 @@ class DonorProfile extends StatefulWidget {
   final bool? isAvailable;
   final String? profilepicurl;
   final String? donorID;
+  final String? requestid;
+  final RequestModel? userReq;
   @override
   _DonorProfileState createState() => _DonorProfileState();
 }
@@ -163,26 +167,25 @@ class _DonorProfileState extends State<DonorProfile> {
                             ignoringSentBtn = true;
                           });
                           await RequestFormVM.instance.getRequestData(context);
-                          currentuserRequest.status = 'SENT';
-                          currentuserRequest.donorName =
+                          widget.userReq!.status = 'SENT';
+                          widget.userReq!.donorName =
                               widget.donorname.toString();
-                          currentuserRequest.donorID =
-                              widget.donorID.toString();
+                          widget.userReq!.donorID = widget.donorID.toString();
                           Request newrequest = Request(
                               requestedBy: userdata.name,
                               requestUid: userdata.uid,
-                              requestId: k);
+                              requestId: widget.requestid);
                           await ProfileFormVM.instance
                               .addRequest(newrequest, widget.donorID!);
-                          await RequestFormVM.instance
-                              .UpdateProfile(context, currentuserRequest);
+                          await RequestFormVM.instance.UpdateProfile(
+                              context, widget.userReq!, widget.requestid!);
                           context.read<RequestsProvider>().onerequestdone();
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (_) => ActivityPage()),
                               (route) => false);
 
-                          print(currentuserRequest.status);
+                          print(widget.userReq!.status);
                         },
                         child: IgnorePointer(
                           ignoring: ignoringSentBtn,

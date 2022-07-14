@@ -8,20 +8,17 @@ import 'package:blood_donation/Widgets/initial_profile_pic.dart';
 import 'package:blood_donation/Widgets/profile_input_field.dart';
 import 'package:blood_donation/Widgets/skip_button.dart';
 import 'package:blood_donation/constants/color_constants.dart';
-import 'package:blood_donation/constants/string_constants.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Providers/profile_provider.dart';
 import '../Size Config/size_config.dart';
-import '../Widgets/profile_image.dart';
 import 'package:provider/provider.dart';
-
 import '../l10n/locale_keys.g.dart';
+import '../viewModels/request_form_viewmodel.dart';
 import 'number_input.dart';
 
 String? dobtxt;
@@ -96,7 +93,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
         context: context,
         initialDate: _selectedDate == null ? DateTime(2004) : _selectedDate!,
         firstDate: DateTime(1920),
-        lastDate: DateTime(2004));
+        lastDate: DateTime.now());
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
@@ -221,7 +218,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                   validate: (val) {
                     if (val == null || val.isEmpty) {
                       return LocaleKeys.emailvalidationtxt.tr();
-                    } else if (!EmailValidator.validate(val, false, true)) {
+                    } else if (!RequestFormVM.instance
+                        .isEmailValid(emailcontroller.text)) {
                       return LocaleKeys.invalidemail.tr();
                     }
                     return null;
@@ -259,8 +257,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                   bgcolor: primaryDesign,
                   onpressed: () async {
                     if (_formKey.currentState!.validate() &&
-                        EmailValidator.validate(
-                            emailcontroller.text, false, true)) {
+                        RequestFormVM.instance
+                            .isEmailValid(emailcontroller.text)) {
                       if (ProfileFormVM.instance.isCityAvailable()) {
                         ProfileFormVM.instance.getCityCode();
                         SharedPreferences pref =

@@ -8,6 +8,7 @@ import 'package:blood_donation/Size%20Config/size_config.dart';
 import 'package:blood_donation/Widgets/accepted_request.dart';
 import 'package:blood_donation/Widgets/current_request.dart';
 import 'package:blood_donation/Widgets/new_request.dart';
+import 'package:blood_donation/constants/color_constants.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -53,138 +54,185 @@ class _NewRequestsPageState extends State<NewRequestsPage> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    var h = SizeConfig.blockSizeVertical!;
+    var w = SizeConfig.blockSizeHorizontal!;
     return RefreshIndicator(
       onRefresh: () async {
         rebuildAllChildren(context);
       },
-      child: ListView(
-        children: [
-          SizedBox(
-            height: SizeConfig.blockSizeVertical! * 3,
-          ),
-          StreamBuilder(
-              stream: FirebaseDatabase.instance
-                  .ref()
-                  .child(
-                      'users/$usercity/${auth.currentUser!.uid}/requestList/')
-                  .onValue,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.data != null) {
-                  Map _map = snapshot.data.snapshot.value ?? {};
+      child: SizedBox(
+        height: h * 100,
+        width: w * 100,
+        child: ListView(
+          children: [
+            SizedBox(
+              height: SizeConfig.blockSizeVertical! * 3,
+            ),
+            StreamBuilder(
+                stream: FirebaseDatabase.instance
+                    .ref()
+                    .child(
+                        'users/$usercity/${auth.currentUser!.uid}/requestList/')
+                    .onValue,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  bool noreqs = true;
+                  if (snapshot.data != null) {
+                    Map _map = snapshot.data.snapshot.value ?? {};
 
-                  _map.forEach((key, value) {
-                    requestsdetails!.add(Request.fromJson(value));
-                  });
-                  return ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: SizeConfig.blockSizeVertical! * 50,
-                      maxWidth: 300.0,
-                      minHeight: 0,
-                      minWidth: 200.0,
-                    ),
-                    // width: SizeConfig.blockSizeHorizontal! * 100,
-                    // height: SizeConfig.blockSizeVertical! * 14.63,
-
-                    child: ListView.builder(
-                        itemCount: requestsdetails!.length,
-                        itemBuilder: (context, idx) {
-                          String temprequid =
-                              requestsdetails![idx].requestUid.toString();
-                          String tempreqpushid =
-                              requestsdetails![idx].requestId.toString();
-                          return FutureBuilder(
-                              future: getReqIdData(
-                                  requestsdetails![idx].requestId!,
-                                  requestsdetails![idx].requestUid!),
-                              builder: (context, snapshot) {
-                                if (idx == requestsdetails!.length - 1) {
-                                  requestsdetails!.clear();
-                                }
-                                if (snapshot.hasData) {
-                                  RequestModel temp =
-                                      snapshot.data as RequestModel;
-                                  print(temp.status);
-
-                                  if (temp.status == 'SENT' ||
-                                      temp.status == 'ACCEPTED') {
-                                    return NewRequest(
-                                      nearestbank: temp.nearByBloodBank,
-                                      patientbloodgroup: temp.bloodGroup,
-                                      patientname: temp.patientName,
-                                      requestUid: temprequid,
-                                      requestPushId: tempreqpushid,
-                                      status: temp.status,
-                                    );
-                                  } else if (temp.status == 'CONFIRMED') {
-                                    return AcceptedRequest(
-                                      requestPushId: tempreqpushid,
-                                      requestUid: temprequid,
-                                      status: temp.status,
-                                      patientname: temp.patientName,
-                                      nearestbank: temp.nearByBloodBank,
-                                    );
-                                  } else if (temp.status == 'COMPLETED') {
-                                    return AcceptedRequest(
-                                      requestPushId: tempreqpushid,
-                                      requestUid: temprequid,
-                                      status: temp.status,
-                                      patientname: temp.patientName,
-                                      nearestbank: temp.nearByBloodBank,
-                                    );
-                                  } else {
-                                    return SizedBox();
-                                  }
-                                } else {
-                                  return Center(child: Container());
-                                }
-                              });
-                        }),
-                  );
-                } else {
-                  // if (requestsdetails!.isEmpty) {
-                  //   return Center(child: Text('No Request'));
-                  // }
-                  return Center(child: MyCircularIndicator());
-                }
-              }),
-          StreamBuilder(
-              stream: FirebaseDatabase.instance
-                  .ref()
-                  .child(
-                      'requestBloodSection/$usercity/${auth.currentUser!.uid}/$k/status')
-                  .onValue,
-              builder: (_, snapshot) {
-                if (snapshot.hasData) {
-                  print("data..............");
-                  print((snapshot.data! as DatabaseEvent).snapshot.value);
-
-                  if ((snapshot.data! as DatabaseEvent)
-                          .snapshot
-                          .value
-                          .toString() ==
-                      'COMPLETED') {
-                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      Provider.of<RequestsProvider>(context, listen: false)
-                          .requestcomplete();
-                      RequestFormVM.instance.completeandmoveRequest();
-                      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      //     content: Text(LocaleKeys.requestcompletedtxt.tr())));
+                    _map.forEach((key, value) {
+                      requestsdetails!.add(Request.fromJson(value));
+                      if (RequestModel.fromJson(value).status == 'created' ||
+                          RequestModel.fromJson(value).status == 'SENT' ||
+                          RequestModel.fromJson(value).status == 'ACCEPTED' ||
+                          RequestModel.fromJson(value).status == 'COMPLETED' ||
+                          RequestModel.fromJson(value).status == 'CONFIRMED') {
+                        noreqs = false;
+                      } else {
+                        noreqs = true;
+                      }
                     });
-                  }
-                  print(k);
+                    return noreqs
+                        ? Center(
+                            child: Text('No Rquests for you'),
+                          )
+                        : ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: requestsdetails!.length,
+                            itemBuilder: (context, idx) {
+                              String temprequid =
+                                  requestsdetails![idx].requestUid.toString();
+                              String tempreqpushid =
+                                  requestsdetails![idx].requestId.toString();
+                              return FutureBuilder(
+                                  future: getReqIdData(
+                                      requestsdetails![idx].requestId!,
+                                      requestsdetails![idx].requestUid!),
+                                  builder: (context, snapshot) {
+                                    if (idx == requestsdetails!.length - 1) {
+                                      requestsdetails!.clear();
+                                    }
+                                    if (snapshot.hasData) {
+                                      RequestModel temp =
+                                          snapshot.data as RequestModel;
+                                      print(temp.status);
 
-                  return CurrentRequest(
-                    requestUid: userdata.uid,
-                    status: (snapshot.data! as DatabaseEvent)
-                        .snapshot
-                        .value
-                        .toString(),
-                  );
-                } else {
-                  return SizedBox();
+                                      if (temp.status == 'SENT' ||
+                                          temp.status == 'ACCEPTED') {
+                                        return NewRequest(
+                                          nearestbank: temp.nearByBloodBank,
+                                          patientbloodgroup: temp.bloodGroup,
+                                          patientname: temp.patientName,
+                                          requestUid: temprequid,
+                                          requestPushId: tempreqpushid,
+                                          status: temp.status,
+                                        );
+                                      } else if (temp.status == 'CONFIRMED') {
+                                        return AcceptedRequest(
+                                          requestPushId: tempreqpushid,
+                                          requestUid: temprequid,
+                                          status: temp.status,
+                                          patientname: temp.patientName,
+                                          nearestbank: temp.nearByBloodBank,
+                                        );
+                                      } else if (temp.status == 'COMPLETED') {
+                                        return AcceptedRequest(
+                                          requestPushId: tempreqpushid,
+                                          requestUid: temprequid,
+                                          status: temp.status,
+                                          patientname: temp.patientName,
+                                          nearestbank: temp.nearByBloodBank,
+                                        );
+                                      } else {
+                                        return SizedBox();
+                                      }
+                                    } else {
+                                      return SizedBox();
+                                    }
+                                  });
+                            });
+                  } else {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: MyCircularIndicator());
+                    }
+                    return Text("No requests");
+                  }
+                }),
+            Divider(
+              thickness: 2,
+              color: primaryText,
+              indent: w * 15,
+              endIndent: w * 15,
+            ),
+            SizedBox(
+              height: h * 2,
+            ),
+            StreamBuilder(
+              stream: FirebaseDatabase.instance
+                  .ref()
+                  .child(
+                      'requestBloodSection/$usercity/${auth.currentUser!.uid}')
+                  .onValue,
+              builder: (context, snapshot) {
+                {
+                  bool noRequests = true;
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: MyCircularIndicator());
+                  } else if (snapshot.connectionState ==
+                          ConnectionState.active ||
+                      snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return const Text('Error');
+                    } else if (snapshot.hasData) {
+                      Map userreqs = (snapshot.data as DatabaseEvent)
+                          .snapshot
+                          .value as Map;
+                      List<RequestModel> alluserreqs = [];
+                      List<String> userreqids = [];
+                      userreqs.forEach((key, value) {
+                        userreqids.add(key);
+                        alluserreqs.add(RequestModel.fromJson(value));
+                        if (RequestModel.fromJson(value).status == 'created' ||
+                            RequestModel.fromJson(value).status == 'SENT' ||
+                            RequestModel.fromJson(value).status == 'ACCEPTED' ||
+                            RequestModel.fromJson(value).status ==
+                                'CONFIRMED') {
+                          noRequests = false;
+                        } else {
+                          noRequests = true;
+                        }
+                      });
+                      return noRequests
+                          ? Center(child: Text('No Requests by You.'))
+                          : ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: alluserreqs.length,
+                              itemBuilder: (context, index) {
+                                print(index);
+                                print(alluserreqs[index].status);
+
+                                return CurrentRequest(
+                                  req: alluserreqs[index],
+                                  k: userreqids[index],
+                                );
+                              },
+                            );
+                    } else {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return MyCircularIndicator();
+                      }
+                      return const Text('Empty data');
+                    }
+                  } else {
+                    return Text('State: ${snapshot.connectionState}');
+                  }
                 }
-              }),
-        ],
+              },
+            )
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:blood_donation/Models/request_form_model.dart';
+import 'package:blood_donation/Screens/available_donors_page.dart';
 import 'package:blood_donation/Screens/number_input.dart';
 import 'package:blood_donation/Widgets/accepted_request.dart';
 import 'package:blood_donation/Widgets/new_request.dart';
@@ -14,12 +16,14 @@ class CurrentRequest extends StatefulWidget {
   const CurrentRequest({
     this.requestUid,
     this.requestPushId,
-    this.status,
+    this.k,
+    this.req,
     Key? key,
   }) : super(key: key);
   final String? requestUid;
   final String? requestPushId;
-  final String? status;
+  final String? k;
+  final RequestModel? req;
 
   @override
   State<CurrentRequest> createState() => _CurrentRequestState();
@@ -28,7 +32,114 @@ class CurrentRequest extends StatefulWidget {
 class _CurrentRequestState extends State<CurrentRequest> {
   @override
   Widget build(BuildContext context) {
-    if (widget.status == 'SENT') {
+    if (widget.req!.status == 'created') {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: SizeConfig.blockSizeVertical! * 2,
+          left: SizeConfig.blockSizeHorizontal! * 10,
+          right: SizeConfig.blockSizeHorizontal! * 10,
+        ),
+        child: Container(
+          width: SizeConfig.blockSizeHorizontal! * 86.11,
+          height: SizeConfig.blockSizeVertical! * 14.63,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: secondaryText!,
+              )),
+          child: Stack(
+            children: [
+              Align(
+                  alignment: const Alignment(-0.9, -0.9),
+                  child: Text(
+                    'Patient Name',
+                    style: TextStyle(
+                        color: secondaryText,
+                        fontSize: SizeConfig.blockSizeVertical! * 1.8),
+                  )),
+              Align(
+                alignment: const Alignment(-0.9, -0.5),
+                child: Text(
+                  widget.req!.patientName ?? '',
+                  style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w800,
+                      fontSize: SizeConfig.blockSizeVertical! * 2),
+                ),
+              ),
+              Align(
+                alignment: const Alignment(1, -0.9),
+                child: SizedBox(
+                  width: SizeConfig.blockSizeHorizontal! * 30,
+                  height: SizeConfig.blockSizeVertical! * 4,
+                  child: Text(
+                    'Nearest blood bank ${widget.req!.nearByBloodBank}',
+                    style: TextStyle(color: primaryColor),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: const Alignment(-0.8, 0.7),
+                child: GestureDetector(
+                  onTap: () {
+                    print(widget.k!.toString());
+                    RequestFormVM.instance.cancelCurrentRequest(
+                        context, auth.currentUser!.uid, widget.k!);
+                    RequestFormVM.instance.getRequestData(context);
+                  },
+                  child: Container(
+                    width: SizeConfig.blockSizeHorizontal! * 26.11,
+                    height: SizeConfig.blockSizeVertical! * 3.38,
+                    child: Center(
+                      child: Text(
+                        'Cancel Request',
+                        style: TextStyle(
+                            color: primaryDesign,
+                            fontSize: SizeConfig.blockSizeVertical! * 1.79,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: const Alignment(0.9, 0.7),
+                child: GestureDetector(
+                  onTap: () {
+                    print('check k : ' + widget.k.toString());
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AvailableDonors(
+                              currentreq: widget.req,
+                              requestid: widget.k,
+                              bloodgroup: widget.req!.bloodGroup),
+                        ));
+                  },
+                  child: Container(
+                    width: SizeConfig.blockSizeHorizontal! * 35.5,
+                    height: SizeConfig.blockSizeVertical! * 4.38,
+                    decoration: BoxDecoration(
+                      color: acceptColor,
+                      borderRadius: BorderRadius.circular(63),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Check For Donors',
+                        style: TextStyle(
+                            color: white,
+                            fontSize: SizeConfig.blockSizeVertical! * 1.79,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    } else if (widget.req!.status == 'SENT') {
       return Padding(
         padding: EdgeInsets.only(
           bottom: SizeConfig.blockSizeVertical! * 2,
@@ -78,9 +189,9 @@ class _CurrentRequestState extends State<CurrentRequest> {
                 alignment: const Alignment(-0.8, 0.7),
                 child: GestureDetector(
                   onTap: () {
-                    print(k.toString());
+                    print(widget.k!.toString());
                     RequestFormVM.instance.cancelCurrentRequest(
-                        context, auth.currentUser!.uid, k);
+                        context, auth.currentUser!.uid, widget.k!);
                     RequestFormVM.instance.getRequestData(context);
                   },
                   child: Container(
@@ -122,7 +233,7 @@ class _CurrentRequestState extends State<CurrentRequest> {
           ),
         ),
       );
-    } else if (widget.status == 'ACCEPTED') {
+    } else if (widget.req!.status == 'ACCEPTED') {
       return Padding(
         padding: EdgeInsets.only(
           bottom: SizeConfig.blockSizeVertical! * 2,
@@ -172,9 +283,9 @@ class _CurrentRequestState extends State<CurrentRequest> {
                 alignment: const Alignment(-0.8, 0.7),
                 child: GestureDetector(
                   onTap: () {
-                    print(k);
+                    print(widget.k);
                     RequestFormVM.instance.cancelCurrentRequest(
-                        context, auth.currentUser!.uid, k);
+                        context, auth.currentUser!.uid, widget.k!);
                     RequestFormVM.instance.getRequestData(context);
                   },
                   child: Container(

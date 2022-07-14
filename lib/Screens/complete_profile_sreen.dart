@@ -10,7 +10,6 @@ import 'package:blood_donation/l10n/locale_keys.g.dart';
 import 'package:blood_donation/viewModels/profile_form_viewmodel.dart';
 import 'package:blood_donation/viewModels/request_form_viewmodel.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -176,8 +175,8 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                         }
                       : () async {
                           if (_key.currentState!.validate() &&
-                              EmailValidator.validate(
-                                  emailcontroller.text, false, true)) {
+                              RequestFormVM.instance
+                                  .isEmailValid(emailcontroller.text)) {
                             if (ProfileFormVM.instance.isCityAvailable()) {
                               ProfileFormVM.instance.getCityCode();
                               SharedPreferences pref =
@@ -358,7 +357,8 @@ class _CompleteProfileFormScreenState extends State<CompleteProfileFormScreen> {
                     validate: (val) {
                       if (val == null || val.isEmpty) {
                         return LocaleKeys.emailvalidationtxt.tr();
-                      } else if (!EmailValidator.validate(val, false, true)) {
+                      } else if (!RequestFormVM.instance
+                          .isEmailValid(emailcontroller.text)) {
                         return LocaleKeys.invalidemail.tr();
                       }
                       return null;

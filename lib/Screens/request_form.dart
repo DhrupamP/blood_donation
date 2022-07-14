@@ -185,6 +185,8 @@ class _RequestFormState extends State<RequestForm> {
                         Navigator.pushAndRemoveUntil(context,
                             MaterialPageRoute(builder: (_) {
                           return AvailableDonors(
+                            currentreq: reqdata,
+                            requestid: reqid,
                             bloodgroup: reqbloodgroup,
                           );
                         }), (route) => false);

@@ -1,4 +1,5 @@
 import 'package:blood_donation/Models/profile_data_model.dart';
+import 'package:blood_donation/Models/request_form_model.dart';
 import 'package:blood_donation/Screens/donor_profile.dart';
 import 'package:blood_donation/Screens/home_page.dart';
 import 'package:blood_donation/Size%20Config/size_config.dart';
@@ -17,8 +18,12 @@ import 'activity.dart';
 int temp = 0;
 
 class AvailableDonors extends StatefulWidget {
-  const AvailableDonors({Key? key, this.bloodgroup}) : super(key: key);
+  const AvailableDonors(
+      {Key? key, this.bloodgroup, this.requestid, this.currentreq})
+      : super(key: key);
   final String? bloodgroup;
+  final String? requestid;
+  final RequestModel? currentreq;
   @override
   _AvailableDonorsState createState() => _AvailableDonorsState();
 }
@@ -116,9 +121,13 @@ class _AvailableDonorsState extends State<AvailableDonors> {
                                   return SizedBox();
                                 return GestureDetector(
                                     onTap: () {
+                                      print('check k  again: ' +
+                                          widget.requestid!);
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (_) {
                                         return DonorProfile(
+                                          userReq: widget.currentreq,
+                                          requestid: widget.requestid,
                                           profilepicurl: completedetails![index]
                                               .profilePhoto,
                                           bloodgroup: completedetails![index]

@@ -38,21 +38,20 @@ class RequestFormVM {
       final pref = await SharedPreferences.getInstance();
       String? cc = pref.getString('citycode');
       print('citycode' + cc!);
+      DatabaseReference ref = FirebaseDatabase.instance.ref().child(
+          "requestBloodSection/$cc/${FirebaseAuth.instance.currentUser!.uid}/");
+      String key = ref.push().key!;
 
-      await FirebaseDatabase.instance
-          .ref()
-          .child(
-              "requestBloodSection/$cc/${FirebaseAuth.instance.currentUser!.uid}/")
-          .push()
-          .update(model.toJson());
-
+      await ref.child(key).update(model.toJson());
+      print("key:  " + key);
+      reqid = key;
       print('done!!');
     } catch (e) {
       print(e);
     }
   }
 
-  UpdateProfile(BuildContext context, RequestModel model) async {
+  UpdateProfile(BuildContext context, RequestModel model, String id) async {
     try {
       print('processing');
       final pref = await SharedPreferences.getInstance();
@@ -62,7 +61,7 @@ class RequestFormVM {
       await FirebaseDatabase.instance
           .ref()
           .child(
-              "requestBloodSection/$cc/${FirebaseAuth.instance.currentUser!.uid}/$k")
+              "requestBloodSection/$cc/${FirebaseAuth.instance.currentUser!.uid}/$id")
           .update(model.toJson());
     } catch (e) {
       print(e);
@@ -154,7 +153,9 @@ class RequestFormVM {
     print('no of donations: ' + databaseevt.snapshot.value.toString());
     int noofdonations = databaseevt.snapshot.value as int;
     noofdonations++;
-    Provider.of<ProfileProvider>(context).updateDonations(noofdonations);
+    context.read<ProfileProvider>().updateDonations(noofdonations);
+    // Provider.of<ProfileProvider>(context, listen: false)
+    //     .updateDonations(noofdonations);
     await FirebaseDatabase.instance
         .ref()
         .child('users/$usercity/${userdata.uid}')
@@ -219,5 +220,11 @@ class RequestFormVM {
     if (completedevt.snapshot.value == null) {
       Provider.of<RequestsProvider>(context, listen: false).requestcomplete();
     }
+  }
+
+  bool isEmailValid(String email) {
+    return RegExp(
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+        .hasMatch(email);
   }
 }
